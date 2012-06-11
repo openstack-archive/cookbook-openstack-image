@@ -1,6 +1,6 @@
 Description
 ===========
-Placeholder for the OpenStack Compute service `Glance` as part of the OpenStack `Essex` reference architecture using Chef. The http://github.com/opscode/openstack-chef-repo will contain documentation for using this cookbook in the context of a full OpenStack deployment.
+Placeholder for the OpenStack Image service `Glance` as part of the OpenStack `Essex` reference architecture using Chef. The http://github.com/opscode/openstack-chef-repo will contain documentation for using this cookbook in the context of a full OpenStack deployment.
 
 Sharing the Nova database will be preferred for simplicity.
 
