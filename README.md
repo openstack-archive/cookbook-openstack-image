@@ -1,7 +1,10 @@
 Description
 ===========
 
-This cookbook installs the OpenStack Image service **Glance** as part of the OpenStack **Essex** reference deployment Chef for OpenStack. The http://github.com/opscode/openstack-chef-repo contains documentation for using this cookbook in the context of a full OpenStack deployment. Glance is installed from packages, optionally populating the repository with default images.
+This cookbook installs the OpenStack Image service **Glance** as part of an OpenStack
+reference deployment Chef for OpenStack. The http://github.com/opscode/openstack-chef-repo
+contains documentation for using this cookbook in the context of a full OpenStack deployment.
+Glance is installed from packages, optionally populating the repository with default images.
 
 http://glance.openstack.org/
 
@@ -55,7 +58,8 @@ Cloud Files
     }
 
 To obtain your Cloud Files Tenant ID use the following:
-curl -s -X POST https://identity.api.rackspacecloud.com/v2.0/tokens -d '{"auth": {"passwordCredentials": {"username": "<Rackspace Cloud User Name>", "password": "<Rackspace Cloud Password"}}}' -H "Content-type: application/json" | python -mjson.tool | grep "tenantId.*Mosso" | head -1
+    
+    curl -s -X POST https://identity.api.rackspacecloud.com/v2.0/tokens -d '{"auth": {"passwordCredentials": {"username": "<Rackspace Cloud User Name>", "password": "<Rackspace Cloud Password"}}}' -H "Content-type: application/json" | python -mjson.tool | grep "tenantId.*Mosso" | head -1
 
 Requirements
 ============
@@ -80,6 +84,8 @@ The following cookbooks are dependencies:
 * openstack-common
 * openstack-utils
 * osops-utils
+
+=======
 
 Recipes
 =======
