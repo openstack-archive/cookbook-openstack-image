@@ -2,8 +2,7 @@
 # Cookbook Name:: glance
 # Recipe:: default
 #
-# Copyright 2009-2012, Rackspace Hosting, Inc.
-# Copyright 2012, Opscode, Inc.
+# Copyright 2009, Rackspace Hosting, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,5 +17,15 @@
 # limitations under the License.
 #
 
-include_recipe "glance::registry"
-include_recipe "glance::api"
+if node["glance"]["syslog"]["use"] 
+    template "/etc/rsyslog.d/22-glance.conf" do
+        source "22-glance.conf.erb"
+        owner "root"
+        group "root"
+        mode "0644"
+        variables(
+            "use_syslog" => node["glance"]["syslog"]["use"],
+            "log_facility" => node["glance"]["syslog"]["facility"]
+        )
+    end
+end
