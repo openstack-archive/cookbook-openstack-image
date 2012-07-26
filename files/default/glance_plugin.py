@@ -5,6 +5,7 @@ import collectd
 
 global NAME, OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_AUTH_URL, OS_AUTH_STRATEGY, VERBOSE_LOGGING
 
+NAME = "glance_plugin"
 OS_USERNAME = "username"
 OS_PASSWORD = "password"
 OS_TENANT_NAME = "tenantname"
