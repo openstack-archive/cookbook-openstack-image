@@ -55,7 +55,7 @@ default["glance"]["image"]["tty"] = "http://c250663.r63.cf1.rackcdn.com/ttylinux
 default["glance"]["image"]["cirros"] = "https://launchpadlibrarian.net/83305869/cirros-0.3.0-x86_64-uec.tar.gz"
 
 # logging attribute
-default["glance"]["syslog"]["use"] = true
+default["glance"]["syslog"]["use"] = false
 default["glance"]["syslog"]["facility"] = "LOG_LOCAL2"
 default["glance"]["syslog"]["config_facility"] = "local2"
 

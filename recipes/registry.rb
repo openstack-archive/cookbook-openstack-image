@@ -19,7 +19,6 @@
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "mysql::client"
-include_recipe "glance::glance-rsyslog"
 
 platform_options = node["glance"]["platform"]
 
