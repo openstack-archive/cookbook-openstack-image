@@ -2,7 +2,7 @@
 # Cookbook Name:: glance
 # Recipe:: registry
 #
-# Copyright 2009, Rackspace Hosting, Inc.
+# Copyright 2012, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "mysql::client"
+include_recipe "mysql::ruby"
 
 platform_options = node["glance"]["platform"]
 
@@ -33,7 +34,7 @@ end
 node.set_unless['glance']['service_pass'] = secure_password
 
 package "python-keystone" do
-    action :install
+  action :install
 end
 
 ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
@@ -46,9 +47,9 @@ registry_endpoint = get_bind_endpoint("glance", "registry")
 #returns connection info
 #defined in osops-utils/libraries
 mysql_info = create_db_and_user("mysql",
-                                node["glance"]["db"]["name"],
-                                node["glance"]["db"]["username"],
-                                node["glance"]["db"]["password"])
+  node["glance"]["db"]["name"],
+  node["glance"]["db"]["username"],
+  node["glance"]["db"]["password"])
 
 package "curl" do
   action :install
@@ -73,9 +74,9 @@ service "glance-registry" do
 end
 
 execute "glance-manage db_sync" do
-        command "sudo -u glance glance-manage db_sync"
-        action :nothing
-        notifies :restart, resources(:service => "glance-registry"), :immediately
+  command "sudo -u glance glance-manage db_sync"
+  action :nothing
+  notifies :restart, resources(:service => "glance-registry"), :immediately
 end
 
 # Having to manually version the database because of Ubuntu bug
@@ -85,10 +86,11 @@ execute "glance-manage version_control" do
   action :nothing
   not_if "sudo -u glance glance-manage db_version"
   notifies :run, resources(:execute => "glance-manage db_sync"), :immediately
+  only_if { platform?(%w{ubuntu debian}) }
 end
 
 file "/var/lib/glance/glance.sqlite" do
-    action :delete
+  action :delete
 end
 
 # Register Service Tenant
@@ -152,7 +154,7 @@ template "/etc/glance/glance-registry.conf" do
     "db_name" => node["glance"]["db"]["name"],
     "use_syslog" => node["glance"]["syslog"]["use"],
     "log_facility" => node["glance"]["syslog"]["facility"]
-  )
+    )
   notifies :run, resources(:execute => "glance-manage version_control"), :immediately
 end
 
@@ -168,6 +170,6 @@ template "/etc/glance/glance-registry-paste.ini" do
     "service_tenant_name" => node["glance"]["service_tenant_name"],
     "service_user" => node["glance"]["service_user"],
     "service_pass" => node["glance"]["service_pass"]
-  )
+    )
   notifies :restart, resources(:service => "glance-registry"), :immediately
 end

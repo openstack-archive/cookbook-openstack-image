@@ -6,7 +6,7 @@ version           "5.0.0"
 recipe            "glance::api", "Installs packages required for a glance api server"
 recipe            "glance::registry", "Installs packages required for a glance registry server"
 
-%w{ ubuntu fedora }.each do |os|
+%w{ ubuntu fedora redhat centos }.each do |os|
   supports os
 end
 

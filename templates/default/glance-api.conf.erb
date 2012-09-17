@@ -143,17 +143,21 @@ filesystem_store_datadir = /var/lib/glance/images/
 # Address where the Swift authentication service lives
 # Valid schemes are 'http://' and 'https://'
 # If no scheme specified,  default to 'https://'
-swift_store_auth_address = http://<%= @keystone_api_ipaddress %>:<%= @keystone_service_port %>/v2.0
+swift_store_auth_address = <%= @swift_store_auth_address %>
+
+# Authentication version to use.  Current Rackspace CloudFiles supports
+# Version 1 while swift backed with keystone supports Version 2.
+swift_store_auth_version = <%= @swift_store_auth_version %>
 
 # User to authenticate against the Swift authentication service
 # If you use Swift authentication service, set it to 'account':'user'
 # where 'account' is a Swift storage account and 'user'
 # is a user in that account
-swift_store_user = <%= @service_tenant_name %>:<%= @service_user %>
+swift_store_user = <%= @swift_store_user %>
 
 # Auth key for the user authenticating against the
 # Swift authentication service
-swift_store_key = <%= @service_pass %>
+swift_store_key = <%= @swift_store_key %>
 
 # Container within the account that the account should use
 # for storing images in Swift
@@ -247,4 +251,4 @@ scrubber_datadir = /var/lib/glance/scrubber
 image_cache_dir = /var/lib/glance/image-cache/
 
 [paste_deploy]
-flavor = keystone
+flavor = <%= @glance_flavor %>
