@@ -237,11 +237,42 @@ if node["glance"]["image_upload"]
       user "root"
       environment ({"OS_USERNAME" => keystone_admin_user,
           "OS_PASSWORD" => keystone_admin_password,
-          "OS_TENANT_NAME" => keystone_tenant,
-          "OS_AUTH_URL" => ks_admin_endpoint["uri"]})
-      code <<-EOH
-          glance --silent-upload add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
-      EOH
+		      "OS_TENANT_NAME" => keystone_tenant,
+		      "OS_AUTH_URL" => ks_admin_endpoint["uri"]})
+      case File.extname(node["glance"]["image"][img.to_sym])
+      when ".gz", ".tgz"
+        code <<-EOH
+                set -e
+                set -x
+                mkdir -p images/#{img.to_s}
+                cd images/#{img.to_s}
+
+                curl -L #{node["glance"]["image"][img.to_sym]} | tar -zx
+                image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
+
+                image_name=${image_name%-multinic}
+
+                kernel_file=$(ls *vmlinuz-virtual | head -n1)
+                if [ ${#kernel_file} -eq 0 ]; then
+                   kernel_file=$(ls *vmlinuz | head -n1)
+                fi
+
+                ramdisk=$(ls *-initrd | head -n1)
+                if [ ${#ramdisk} -eq 0 ]; then
+                    ramdisk=$(ls *-loader | head -n1)
+                fi
+
+                kernel=$(ls *.img | head -n1)
+
+                kid=$(glance --silent-upload add name="${image_name}-kernel" is_public=true disk_format=aki container_format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
+                rid=$(glance --silent-upload add name="${image_name}-initrd" is_public=true disk_format=ari container_format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+                glance --silent-upload add name="#{img.to_s}-image" is_public=true disk_format=ami container_format=ami kernel_id=$kid ramdisk_id=$rid < ${kernel}
+            EOH
+      when ".img", ".qcow2"
+        code <<-EOH
+	        glance --silent-upload add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
+            EOH
+      end
       not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{ks_admin_endpoint["uri"]} index | grep #{img.to_s}-image"
     end
   end

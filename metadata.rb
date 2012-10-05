@@ -1,6 +1,6 @@
 maintainer        "Opscode, Inc."
 license           "Apache 2.0"
-description       "The Glance Image Registry and Delivery Service Glance"
+description       "Installs and configures the Glance Image Registry and Delivery Service"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version           "5.0.0"
 recipe            "glance::api", "Installs packages required for a glance api server"
