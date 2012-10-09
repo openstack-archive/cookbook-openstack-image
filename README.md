@@ -97,6 +97,8 @@ registry
 Attributes
 ==========
 
+* `glance["verbose"]` - Enables/disables verbose output for glance services.
+* `glance["debug"]` - Enables/disables debug output for glance services.
 * `glance["db"]["name"]` - Name of glance database
 * `glance["db"]["user"]` - Username for glance database access
 * `glance["db"]["password"]` - Password for glance database access

@@ -6,10 +6,10 @@
 
 [DEFAULT]
 # Show more verbose log output (sets INFO log level output)
-verbose = True
+verbose = <%= node["glance"]["verbose"] %>
 
 # Show debugging output in logs (sets DEBUG log level output)
-debug = False
+debug = <%= node["glance"]["debug"] %>
 
 # Address to bind the registry server
 bind_host = <%= @registry_bind_address %>
