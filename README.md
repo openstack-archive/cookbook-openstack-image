@@ -97,6 +97,8 @@ registry
 Attributes
 ==========
 
+* `glance["keystone_service_chef_role"]` - The name of the Chef role that installs the Keystone Service API
+* `glance["glance_api_chef_role"]` - The name of the Chef role that installs the Glance API service
 * `glance["db"]["name"]` - Name of glance database
 * `glance["db"]["user"]` - Username for glance database access
 * `glance["db"]["password"]` - Password for glance database access
@@ -115,7 +117,7 @@ Attributes
 * `glance["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["image_upload"]` - Toggles whether to automatically upload images in the `glance["images"]` array
 * `glance["images"]` - Default list of images to upload to the glance repository as part of the install
-* `glance["image]["<imagename>"]` - URL location of the <imagename> image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
+* `glance["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `glance["image]["natty"]` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
 * `glance["api"]["default_store"]` - Toggles the backend storage type.  Currently supported is "file" and "swift"
 * `glance["api"]["swift"]["store_container"] - Set the container used by glance to store images and snapshots.  Defaults to "glance"
