@@ -24,6 +24,11 @@ default["developer_mode"] = false  # we want secure passwords by default
 
 default["glance"]["verbose"] = "False"
 default["glance"]["debug"] = "False"
+# This is the name of the Chef role that will install the Keystone Service API
+default["glance"]["keystone_service_chef_role"] = "keystone"
+
+# This is the name of the Chef role that will install the Glance API service
+default["glance"]["glance_api_chef_role"] = "glance-api"
 
 default["glance"]["services"]["api"]["scheme"] = "http"    # node_attribute
 default["glance"]["services"]["api"]["network"] = "public" # node_attribute
