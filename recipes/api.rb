@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+class ::Chef::Recipe
+  include ::Openstack
+end
+
 platform_options = node["glance"]["platform"]
 
 package "curl" do
@@ -61,13 +65,14 @@ end
 
 rabbit_info = get_settings_by_role("rabbitmq-server", "rabbitmq") # FIXME: access
 
-ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
-ks_service_endpoint = get_access_endpoint("keystone", "keystone","service-api")
-keystone = get_settings_by_role(node["glance"]["keystone_service_chef_role"], "keystone")
+keystone_service_role = node["glance"]["keystone_service_chef_role"]
+keystone = get_settings_by_role(keystone_service_role, "keystone")
+identity_admin_endpoint = endpoint('identity-admin')
+identity_endpoint = endpoint('identity-api')
 glance = get_settings_by_role(node["glance"]["glance_api_chef_role"], "glance")
 
-registry_endpoint = get_access_endpoint("glance-registry", "glance", "registry")
-api_endpoint = get_bind_endpoint("glance", "api")
+registry_endpoint = endpoint("image-registry")
+api_endpoint = endpoint("image-api")
 
 # Possible combinations of options here
 # - default_store=file
@@ -81,7 +86,7 @@ api_endpoint = get_bind_endpoint("glance", "api")
 #           to the swift compatible API service running elsewhere - possibly
 #           Rackspace Cloud Files.
 if glance["api"]["swift_store_auth_address"].nil?
-  swift_store_auth_address="http://#{ks_admin_endpoint["host"]}:#{ks_service_endpoint["port"]}/v2.0"
+  swift_store_auth_address="http://#{identity_admin_endpoint["host"]}:#{identity_endpoint["port"]}/v2.0"
   swift_store_user="#{glance["service_tenant_name"]}:#{glance["service_user"]}"
   swift_store_key=glance["service_pass"]
   swift_store_auth_version=2
@@ -105,6 +110,7 @@ template "/etc/glance/glance-api.conf" do
   group "root"
   mode "0644"
   variables(
+    "custom_template_banner" => node["glance"]["custom_template_banner"],
     "api_bind_address" => api_endpoint["host"],
     "api_bind_port" => api_endpoint["port"],
     "registry_ip_address" => registry_endpoint["host"],
@@ -131,9 +137,10 @@ template "/etc/glance/glance-api-paste.ini" do
   group "root"
   mode "0644"
   variables(
-    "keystone_api_ipaddress" => ks_admin_endpoint["host"],
-    "keystone_service_port" => ks_service_endpoint["port"],
-    "keystone_admin_port" => ks_admin_endpoint["port"],
+    "custom_template_banner" => node["glance"]["custom_template_banner"],
+    "keystone_api_ipaddress" => identity_admin_endpoint["host"],
+    "keystone_service_port" => identity_endpoint["port"],
+    "keystone_admin_port" => identity_admin_endpoint["port"],
     "keystone_admin_token" => keystone["admin_token"],
     "service_tenant_name" => node["glance"]["service_tenant_name"],
     "service_user" => node["glance"]["service_user"],
@@ -148,6 +155,7 @@ template "/etc/glance/glance-cache.conf" do
   group "root"
   mode "0644"
   variables(
+    "custom_template_banner" => node["glance"]["custom_template_banner"],
     "registry_ip_address" => registry_endpoint["host"],
     "registry_port" => registry_endpoint["port"],
     "use_syslog" => node["glance"]["syslog"]["use"],
@@ -171,6 +179,7 @@ template "/etc/glance/glance-scrubber.conf" do
   group "root"
   mode "0644"
   variables(
+    "custom_template_banner" => node["glance"]["custom_template_banner"],
     "registry_ip_address" => registry_endpoint["host"],
     "registry_port" => registry_endpoint["port"]
     )
@@ -198,10 +207,10 @@ end
 
 # Register Image Service
 keystone_register "Register Image Service" do
-  auth_host ks_admin_endpoint["host"]
-  auth_port ks_admin_endpoint["port"]
-  auth_protocol ks_admin_endpoint["scheme"]
-  api_ver ks_admin_endpoint["path"]
+  auth_host identity_admin_endpoint["host"]
+  auth_port identity_admin_endpoint["port"]
+  auth_protocol identity_admin_endpoint["scheme"]
+  api_ver identity_admin_endpoint["path"]
   auth_token keystone["admin_token"]
   service_name "glance"
   service_type "image"
@@ -211,10 +220,10 @@ end
 
 # Register Image Endpoint
 keystone_register "Register Image Endpoint" do
-  auth_host ks_admin_endpoint["host"]
-  auth_port ks_admin_endpoint["port"]
-  auth_protocol ks_admin_endpoint["scheme"]
-  api_ver ks_admin_endpoint["path"]
+  auth_host identity_admin_endpoint["host"]
+  auth_port identity_admin_endpoint["port"]
+  auth_protocol identity_admin_endpoint["scheme"]
+  api_ver identity_admin_endpoint["path"]
   auth_token keystone["admin_token"]
   service_type "image"
   endpoint_region "RegionOne"
@@ -238,7 +247,7 @@ if node["glance"]["image_upload"]
       environment ({"OS_USERNAME" => keystone_admin_user,
           "OS_PASSWORD" => keystone_admin_password,
 		      "OS_TENANT_NAME" => keystone_tenant,
-		      "OS_AUTH_URL" => ks_admin_endpoint["uri"]})
+		      "OS_AUTH_URL" => identity_admin_endpoint["uri"]})
       case File.extname(node["glance"]["image"][img.to_sym])
       when ".gz", ".tgz"
         code <<-EOH
@@ -273,7 +282,7 @@ if node["glance"]["image_upload"]
 	        glance --silent-upload add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
             EOH
       end
-      not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{ks_admin_endpoint["uri"]} index | grep #{img.to_s}-image"
+      not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint["uri"]} index | grep #{img.to_s}-image"
     end
   end
 end
