@@ -74,8 +74,11 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
-* mysql
 * keystone
+* mysql
+* openssl
+* openstack-common
+* openstack-utils
 * osops-utils
 
 Recipes
