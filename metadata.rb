@@ -15,6 +15,7 @@ end
 depends           "database"
 depends           "keystone"
 depends           "mysql"
+depends           "openssl"
 depends           "openstack-common"
 depends           "openstack-utils"
 depends           "osops-utils"
