@@ -63,7 +63,8 @@ template "/etc/glance/policy.json" do
   end
 end
 
-rabbit_info = get_settings_by_role("rabbitmq-server", "rabbitmq") # FIXME: access
+rabbit_server_role = node["glance"]["rabbit_server_chef_role"]
+rabbit_info = get_settings_by_role(rabbit_server_role, "queue")
 
 keystone_service_role = node["glance"]["keystone_service_chef_role"]
 keystone = get_settings_by_role(keystone_service_role, "keystone")
