@@ -143,9 +143,8 @@ template "/etc/glance/glance-api-paste.ini" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :keystone_api_ipaddress => identity_admin_endpoint.host,
-    :keystone_service_port => identity_endpoint.port,
-    :keystone_admin_port => identity_admin_endpoint.port,
+    :identity_admin_endpoint => identity_admin_endpoint,
+    :identity_endpoint => identity_endpoint,
     :keystone_admin_token => keystone["admin_token"],
     :service_tenant_name => node["glance"]["service_tenant_name"],
     :service_user => node["glance"]["service_user"],
