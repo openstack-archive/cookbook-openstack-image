@@ -109,6 +109,8 @@ Attributes
 * `glance["verbose"]` - Enables/disables verbose output for glance services.
 * `glance["debug"]` - Enables/disables debug output for glance services.
 * `glance["keystone_service_chef_role"]` - The name of the Chef role that installs the Keystone Service API
+* `glance["user"] - User glance runs as
+* `glance["group"] - Group glance runs as
 * `glance["glance_api_chef_role"]` - The name of the Chef role that installs the Glance API service
 * `glance["db"]["name"]` - Name of glance database
 * `glance["db"]["user"]` - Username for glance database access
