@@ -31,16 +31,15 @@ package "python-keystone" do
   action :install
 end
 
-identity_admin_endpoint = endpoint('identity-admin')
-identity_endpoint = endpoint('identity-api')
+identity_admin_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity-api"
+
 db_user = node["glance"]["db"]["username"]
 db_pass = node["glance"]["db"]["password"]
 
-sql_connection = db_uri("image", db_user, db_pass)
+keystone = get_settings_by_role node["glance"]["keystone_service_chef_role"], "keystone"
 
-keystone = get_settings_by_role(node["glance"]["keystone_service_chef_role"], "keystone")
-
-registry_endpoint = endpoint("image-registry")
+registry_endpoint = endpoint "image-registry"
 
 package "curl" do
   action :install
@@ -61,12 +60,15 @@ end
 service "glance-registry" do
   service_name platform_options["glance_registry_service"]
   supports :status => true, :restart => true
+
   action :enable
 end
 
 execute "glance-manage db_sync" do
   command "sudo -u glance glance-manage db_sync"
+
   action :nothing
+
   notifies :restart, resources(:service => "glance-registry"), :immediately
 end
 
@@ -74,10 +76,12 @@ end
 # https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
 execute "glance-manage version_control" do
   command "sudo -u glance glance-manage version_control 0"
-  action :nothing
-  not_if "sudo -u glance glance-manage db_version"
+
   notifies :run, resources(:execute => "glance-manage db_sync"), :immediately
+  not_if "sudo -u glance glance-manage db_version"
   only_if { platform?(%w{ubuntu debian}) }
+
+  action :nothing
 end
 
 file "/var/lib/glance/glance.sqlite" do
@@ -94,6 +98,7 @@ keystone_register "Register Service Tenant" do
   tenant_name node["glance"]["service_tenant_name"]
   tenant_description "Service Tenant"
   tenant_enabled "true" # Not required as this is the default
+
   action :create_tenant
 end
 
@@ -108,6 +113,7 @@ keystone_register "Register Service User" do
   user_name node["glance"]["service_user"]
   user_pass node["glance"]["service_pass"]
   user_enabled "true" # Not required as this is the default
+
   action :create_user
 end
 
@@ -121,45 +127,49 @@ keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
   tenant_name node["glance"]["service_tenant_name"]
   user_name node["glance"]["service_user"]
   role_name node["glance"]["service_role"]
+
   action :grant_role
 end
 
 directory "/etc/glance" do
-  action :create
   group "glance"
   owner "glance"
-  mode "0700"
+  mode  00700
+
+  action :create
 end
 
 template "/etc/glance/glance-registry.conf" do
   source "glance-registry.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "registry_bind_address" => registry_endpoint["host"],
-    "registry_port" => registry_endpoint["port"],
-    "sql_connection" => sql_connection,
-    "use_syslog" => node["glance"]["syslog"]["use"],
-    "log_facility" => node["glance"]["syslog"]["facility"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :registry_bind_address => registry_endpoint["host"],
+    :registry_port => registry_endpoint["port"],
+    :sql_connection => db_uri("image", db_user, db_pass),
+    :use_syslog => node["glance"]["syslog"]["use"],
+    :log_facility => node["glance"]["syslog"]["facility"]
+  )
+
   notifies :run, resources(:execute => "glance-manage version_control"), :immediately
 end
 
 template "/etc/glance/glance-registry-paste.ini" do
   source "glance-registry-paste.ini.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "keystone_api_ipaddress" => identity_admin_endpoint["host"],
-    "keystone_service_port" => identity_endpoint["port"],
-    "keystone_admin_port" => identity_admin_endpoint["port"],
-    "service_tenant_name" => node["glance"]["service_tenant_name"],
-    "service_user" => node["glance"]["service_user"],
-    "service_pass" => node["glance"]["service_pass"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :keystone_api_ipaddress => identity_admin_endpoint["host"],
+    :keystone_service_port => identity_endpoint["port"],
+    :keystone_admin_port => identity_admin_endpoint["port"],
+    :service_tenant_name => node["glance"]["service_tenant_name"],
+    :service_user => node["glance"]["service_user"],
+    :service_pass => node["glance"]["service_pass"]
+  )
+
   notifies :restart, resources(:service => "glance-registry"), :immediately
 end

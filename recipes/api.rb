@@ -223,6 +223,7 @@ keystone_register "Register Image Service" do
   service_name "glance"
   service_type "image"
   service_description "Glance Image Service"
+
   action :create_service
 end
 
@@ -238,6 +239,7 @@ keystone_register "Register Image Endpoint" do
   endpoint_adminurl api_endpoint["uri"]
   endpoint_internalurl api_endpoint["uri"]
   endpoint_publicurl api_endpoint["uri"]
+
   action :create_endpoint
 end
 

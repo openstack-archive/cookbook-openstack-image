@@ -38,5 +38,6 @@ else
 end
 
 db_create_with_user("image",
-                    node["glance"]["db"]["username"],
-                    node["glance"]["db"]["password"])
+  node["glance"]["db"]["username"],
+  node["glance"]["db"]["password"]
+)
