@@ -75,8 +75,8 @@ identity_endpoint = endpoint_uri "identity-api"
 
 glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
 
-registry_endpoint = endpoint("image-registry")
-api_endpoint = endpoint("image-api")
+registry_endpoint = endpoint "image-registry"
+api_endpoint = endpoint "image-api"
 
 # Possible combinations of options here
 # - default_store=file
