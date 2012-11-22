@@ -31,8 +31,8 @@ package "python-keystone" do
   action :install
 end
 
-identity_admin_endpoint = endpoint "identity-admin"
-identity_endpoint = endpoint "identity-api"
+identity_admin_endpoint = endpoint_uri "identity-admin"
+identity_endpoint = endpoint_uri "identity-api"
 
 db_user = node["glance"]["db"]["username"]
 db_pass = node["glance"]["db"]["password"]
@@ -90,10 +90,10 @@ end
 
 # Register Service Tenant
 keystone_register "Register Service Tenant" do
-  auth_host identity_admin_endpoint["host"]
-  auth_port identity_admin_endpoint["port"]
-  auth_protocol identity_admin_endpoint["scheme"]
-  api_ver identity_admin_endpoint["path"]
+  auth_host identity_admin_endpoint.host
+  auth_port identity_admin_endpoint.port.to_s
+  auth_protocol identity_admin_endpoint.scheme
+  api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
   tenant_name node["glance"]["service_tenant_name"]
   tenant_description "Service Tenant"
@@ -104,10 +104,10 @@ end
 
 # Register Service User
 keystone_register "Register Service User" do
-  auth_host identity_admin_endpoint["host"]
-  auth_port identity_admin_endpoint["port"]
-  auth_protocol identity_admin_endpoint["scheme"]
-  api_ver identity_admin_endpoint["path"]
+  auth_host identity_admin_endpoint.host
+  auth_port identity_admin_endpoint.port.to_s
+  auth_protocol identity_admin_endpoint.scheme
+  api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
   tenant_name node["glance"]["service_tenant_name"]
   user_name node["glance"]["service_user"]
@@ -119,10 +119,10 @@ end
 
 ## Grant Admin role to Service User for Service Tenant ##
 keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
-  auth_host identity_admin_endpoint["host"]
-  auth_port identity_admin_endpoint["port"]
-  auth_protocol identity_admin_endpoint["scheme"]
-  api_ver identity_admin_endpoint["path"]
+  auth_host identity_admin_endpoint.host
+  auth_port identity_admin_endpoint.port.to_s
+  auth_protocol identity_admin_endpoint.scheme
+  api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
   tenant_name node["glance"]["service_tenant_name"]
   user_name node["glance"]["service_user"]
@@ -163,9 +163,9 @@ template "/etc/glance/glance-registry-paste.ini" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :keystone_api_ipaddress => identity_admin_endpoint["host"],
-    :keystone_service_port => identity_endpoint["port"],
-    :keystone_admin_port => identity_admin_endpoint["port"],
+    :keystone_api_ipaddress => identity_admin_endpoint.host,
+    :keystone_service_port => identity_endpoint.port,
+    :keystone_admin_port => identity_admin_endpoint.port,
     :service_tenant_name => node["glance"]["service_tenant_name"],
     :service_user => node["glance"]["service_user"],
     :service_pass => node["glance"]["service_pass"]

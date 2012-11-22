@@ -216,7 +216,7 @@ end
 # Register Image Service
 keystone_register "Register Image Service" do
   auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port
+  auth_port identity_admin_endpoint.port.to_s
   auth_protocol identity_admin_endpoint.scheme
   api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
@@ -230,7 +230,7 @@ end
 # Register Image Endpoint
 keystone_register "Register Image Endpoint" do
   auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port
+  auth_port identity_admin_endpoint.port.to_s
   auth_protocol identity_admin_endpoint.scheme
   api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
