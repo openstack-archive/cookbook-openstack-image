@@ -90,7 +90,7 @@ api_endpoint = endpoint("image-api")
 #           to the swift compatible API service running elsewhere - possibly
 #           Rackspace Cloud Files.
 if glance["api"]["swift_store_auth_address"].nil?
-  swift_store_auth_address="http://#{identity_admin_endpoint.host}:#{identity_admin_endpoint.port}/v2.0"
+  swift_store_auth_address=identity_admin_endpoint.to_s
   swift_store_user="#{glance["service_tenant_name"]}:#{glance["service_user"]}"
   swift_store_key=glance["service_pass"]
   swift_store_auth_version=2
