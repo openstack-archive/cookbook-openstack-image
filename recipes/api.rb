@@ -41,36 +41,39 @@ end
 service "glance-api" do
   service_name platform_options["glance_api_service"]
   supports :status => true, :restart => true
+
   action :enable
 end
 
 directory "/etc/glance" do
-  action :create
   group "glance"
   owner "glance"
-  mode "0700"
+  mode  00700
+
+  action :create
 end
 
 # FIXME: seems like misfeature
 template "/etc/glance/policy.json" do
   source "policy.json.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
+
   notifies :restart, resources(:service => "glance-api"), :immediately
-  not_if do
-    File.exists?("/etc/glance/policy.json")
-  end
+
+  not_if { File.exists? "/etc/glance/policy.json" }
 end
 
 rabbit_server_role = node["glance"]["rabbit_server_chef_role"]
-rabbit_info = get_settings_by_role(rabbit_server_role, "queue")
+rabbit_info = get_settings_by_role rabbit_server_role, "queue"
 
 keystone_service_role = node["glance"]["keystone_service_chef_role"]
-keystone = get_settings_by_role(keystone_service_role, "keystone")
-identity_admin_endpoint = endpoint('identity-admin')
-identity_endpoint = endpoint('identity-api')
-glance = get_settings_by_role(node["glance"]["glance_api_chef_role"], "glance")
+keystone = get_settings_by_role keystone_service_role, "keystone"
+identity_admin_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity-api"
+
+glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
 
 registry_endpoint = endpoint("image-registry")
 api_endpoint = endpoint("image-api")
@@ -107,83 +110,87 @@ end
 
 template "/etc/glance/glance-api.conf" do
   source "glance-api.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "api_bind_address" => api_endpoint["host"],
-    "api_bind_port" => api_endpoint["port"],
-    "registry_ip_address" => registry_endpoint["host"],
-    "registry_port" => registry_endpoint["port"],
-    "use_syslog" => node["glance"]["syslog"]["use"],
-    "log_facility" => node["glance"]["syslog"]["facility"],
-    "rabbit_ipaddress" => rabbit_info["ipaddress"],    #FIXME!
-    "default_store" => glance["api"]["default_store"],
-    "glance_flavor" => glance_flavor,
-    "swift_store_key" => swift_store_key,
-    "swift_store_user" => swift_store_user,
-    "swift_store_auth_address" => swift_store_auth_address,
-    "swift_store_auth_version" => swift_store_auth_version,
-    "swift_large_object_size" => glance["api"]["swift"]["store_large_object_size"],
-    "swift_large_object_chunk_size" => glance["api"]["swift"]["store_large_object_chunk_size"],
-    "swift_store_container" => glance["api"]["swift"]["store_container"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :api_bind_address => api_endpoint["host"],
+    :api_bind_port => api_endpoint["port"],
+    :registry_ip_address => registry_endpoint["host"],
+    :registry_port => registry_endpoint["port"],
+    :use_syslog => node["glance"]["syslog"]["use"],
+    :log_facility => node["glance"]["syslog"]["facility"],
+    :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!
+    :default_store => glance["api"]["default_store"],
+    :glance_flavor => glance_flavor,
+    :swift_store_key => swift_store_key,
+    :swift_store_user => swift_store_user,
+    :swift_store_auth_address => swift_store_auth_address,
+    :swift_store_auth_version => swift_store_auth_version,
+    :swift_large_object_size => glance["api"]["swift"]["store_large_object_size"],
+    :swift_large_object_chunk_size => glance["api"]["swift"]["store_large_object_chunk_size"],
+    :swift_store_container => glance["api"]["swift"]["store_container"]
+  )
+
   notifies :restart, resources(:service => "glance-api"), :immediately
 end
 
 template "/etc/glance/glance-api-paste.ini" do
   source "glance-api-paste.ini.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "keystone_api_ipaddress" => identity_admin_endpoint["host"],
-    "keystone_service_port" => identity_endpoint["port"],
-    "keystone_admin_port" => identity_admin_endpoint["port"],
-    "keystone_admin_token" => keystone["admin_token"],
-    "service_tenant_name" => node["glance"]["service_tenant_name"],
-    "service_user" => node["glance"]["service_user"],
-    "service_pass" => node["glance"]["service_pass"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :keystone_api_ipaddress => identity_admin_endpoint["host"],
+    :keystone_service_port => identity_endpoint["port"],
+    :keystone_admin_port => identity_admin_endpoint["port"],
+    :keystone_admin_token => keystone["admin_token"],
+    :service_tenant_name => node["glance"]["service_tenant_name"],
+    :service_user => node["glance"]["service_user"],
+    :service_pass => node["glance"]["service_pass"]
+  )
+
   notifies :restart, resources(:service => "glance-api"), :immediately
 end
 
 template "/etc/glance/glance-cache.conf" do
   source "glance-cache.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "registry_ip_address" => registry_endpoint["host"],
-    "registry_port" => registry_endpoint["port"],
-    "use_syslog" => node["glance"]["syslog"]["use"],
-    "log_facility" => node["glance"]["syslog"]["facility"],
-    "image_cache_max_size" => node["glance"]["api"]["cache"]["image_cache_max_size"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :registry_ip_address => registry_endpoint["host"],
+    :registry_port => registry_endpoint["port"],
+    :use_syslog => node["glance"]["syslog"]["use"],
+    :log_facility => node["glance"]["syslog"]["facility"],
+    :image_cache_max_size => node["glance"]["api"]["cache"]["image_cache_max_size"]
+  )
+
   notifies :restart, resources(:service => "glance-api"), :delayed
 end
 
 template "/etc/glance/glance-cache-paste.ini" do
   source "glance-cache-paste.ini.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
+
   notifies :restart, resources(:service => "glance-api"), :delayed
 end
 
 template "/etc/glance/glance-scrubber.conf" do
   source "glance-scrubber.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
   variables(
-    "custom_template_banner" => node["glance"]["custom_template_banner"],
-    "registry_ip_address" => registry_endpoint["host"],
-    "registry_port" => registry_endpoint["port"]
-    )
+    :custom_template_banner => node["glance"]["custom_template_banner"],
+    :registry_ip_address => registry_endpoint["host"],
+    :registry_port => registry_endpoint["port"]
+  )
 end
 
 # Configure glance-cache-pruner to run every 30 minutes
@@ -194,16 +201,16 @@ end
 
 # Configure glance-cache-cleaner to run at 00:01 everyday
 cron "glance-cache-cleaner" do
-  minute "01"
-  hour "00"
+  minute  "01"
+  hour    "00"
   command "/usr/bin/glance-cache-cleaner"
 end
 
 template "/etc/glance/glance-scrubber-paste.ini" do
   source "glance-scrubber-paste.ini.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner  "root"
+  group  "root"
+  mode   00644
 end
 
 # Register Image Service
@@ -247,8 +254,8 @@ if node["glance"]["image_upload"]
       user "root"
       environment ({"OS_USERNAME" => keystone_admin_user,
           "OS_PASSWORD" => keystone_admin_password,
-		      "OS_TENANT_NAME" => keystone_tenant,
-		      "OS_AUTH_URL" => identity_admin_endpoint["uri"]})
+          "OS_TENANT_NAME" => keystone_tenant,
+          "OS_AUTH_URL" => identity_admin_endpoint["uri"]})
       case File.extname(node["glance"]["image"][img.to_sym])
       when ".gz", ".tgz"
         code <<-EOH
@@ -280,7 +287,7 @@ if node["glance"]["image_upload"]
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-	        glance --silent-upload add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
+          glance --silent-upload add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
             EOH
       end
       not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint["uri"]} index | grep #{img.to_s}-image"
