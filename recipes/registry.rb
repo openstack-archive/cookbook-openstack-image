@@ -132,8 +132,8 @@ keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
 end
 
 directory "/etc/glance" do
-  group "glance"
-  owner "glance"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode  00700
 
   action :create
