@@ -40,7 +40,7 @@ sql_connection = db_uri("image", db_user, db_pass)
 
 keystone = get_settings_by_role node["glance"]["keystone_service_chef_role"], "keystone"
 
-registry_endpoint = endpoint "image-registry"
+registry_endpoint = endpoint_uri "image-registry"
 
 package "curl" do
   action :install
@@ -147,8 +147,8 @@ template "/etc/glance/glance-registry.conf" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :registry_bind_address => registry_endpoint["host"],
-    :registry_port => registry_endpoint["port"],
+    :registry_bind_address => registry_endpoint.host,
+    :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
     :use_syslog => node["glance"]["syslog"]["use"],
     :log_facility => node["glance"]["syslog"]["facility"]

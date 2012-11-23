@@ -75,8 +75,8 @@ identity_endpoint = endpoint_uri "identity-api"
 
 glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
 
-registry_endpoint = endpoint "image-registry"
-api_endpoint = endpoint "image-api"
+registry_endpoint = endpoint_uri "image-registry"
+api_endpoint = endpoint_uri "image-api"
 
 # Possible combinations of options here
 # - default_store=file
@@ -115,10 +115,10 @@ template "/etc/glance/glance-api.conf" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :api_bind_address => api_endpoint["host"],
-    :api_bind_port => api_endpoint["port"],
-    :registry_ip_address => registry_endpoint["host"],
-    :registry_port => registry_endpoint["port"],
+    :api_bind_address => api_endpoint.host,
+    :api_bind_port => api_endpoint.port,
+    :registry_ip_address => registry_endpoint.host,
+    :registry_port => registry_endpoint.port,
     :use_syslog => node["glance"]["syslog"]["use"],
     :log_facility => node["glance"]["syslog"]["facility"],
     :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!
@@ -161,8 +161,8 @@ template "/etc/glance/glance-cache.conf" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :registry_ip_address => registry_endpoint["host"],
-    :registry_port => registry_endpoint["port"],
+    :registry_ip_address => registry_endpoint.host,
+    :registry_port => registry_endpoint.port,
     :use_syslog => node["glance"]["syslog"]["use"],
     :log_facility => node["glance"]["syslog"]["facility"],
     :image_cache_max_size => node["glance"]["api"]["cache"]["image_cache_max_size"]
@@ -187,8 +187,8 @@ template "/etc/glance/glance-scrubber.conf" do
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
-    :registry_ip_address => registry_endpoint["host"],
-    :registry_port => registry_endpoint["port"]
+    :registry_ip_address => registry_endpoint.host,
+    :registry_port => registry_endpoint.port
   )
 end
 
@@ -235,9 +235,9 @@ keystone_register "Register Image Endpoint" do
   auth_token keystone["admin_token"]
   service_type "image"
   endpoint_region "RegionOne"
-  endpoint_adminurl api_endpoint["uri"]
-  endpoint_internalurl api_endpoint["uri"]
-  endpoint_publicurl api_endpoint["uri"]
+  endpoint_adminurl api_endpoint.to_s
+  endpoint_internalurl api_endpoint.to_s
+  endpoint_publicurl api_endpoint.to_s
 
   action :create_endpoint
 end
