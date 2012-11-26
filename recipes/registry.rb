@@ -31,8 +31,8 @@ package "python-keystone" do
   action :install
 end
 
-identity_admin_endpoint = endpoint_uri "identity-admin"
-identity_endpoint = endpoint_uri "identity-api"
+identity_admin_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity-api"
 
 db_user = node["glance"]["db"]["username"]
 db_pass = node["glance"]["db"]["password"]
@@ -40,7 +40,7 @@ sql_connection = db_uri("image", db_user, db_pass)
 
 keystone = get_settings_by_role node["glance"]["keystone_service_chef_role"], "keystone"
 
-registry_endpoint = endpoint_uri "image-registry"
+registry_endpoint = endpoint "image-registry"
 
 package "curl" do
   action :install

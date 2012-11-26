@@ -70,13 +70,13 @@ rabbit_info = get_settings_by_role rabbit_server_role, "queue"
 
 keystone_service_role = node["glance"]["keystone_service_chef_role"]
 keystone = get_settings_by_role keystone_service_role, "keystone"
-identity_admin_endpoint = endpoint_uri "identity-admin"
-identity_endpoint = endpoint_uri "identity-api"
+identity_admin_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity-api"
 
 glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
 
-registry_endpoint = endpoint_uri "image-registry"
-api_endpoint = endpoint_uri "image-api"
+registry_endpoint = endpoint "image-registry"
+api_endpoint = endpoint "image-api"
 
 # Possible combinations of options here
 # - default_store=file
