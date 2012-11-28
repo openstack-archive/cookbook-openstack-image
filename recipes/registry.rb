@@ -155,6 +155,7 @@ template "/etc/glance/glance-registry.conf" do
   )
 
   notifies :run, resources(:execute => "glance-manage version_control"), :immediately
+  notifies :restart, resources(:service => "glance-registry"), :immediately
 end
 
 template "/etc/glance/glance-registry-paste.ini" do
