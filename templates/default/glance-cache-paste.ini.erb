@@ -1,4 +1,5 @@
-<%= @custom_template_banner %>
+<%= default["glance"]["custom_template_banner"] %>
+
 [app:glance-pruner]
 paste.app_factory = glance.common.wsgi:app_factory
 glance.app_factory = glance.image_cache.pruner:Pruner

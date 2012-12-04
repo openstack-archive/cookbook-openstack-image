@@ -146,12 +146,9 @@ template "/etc/glance/glance-registry.conf" do
   group  "root"
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :registry_bind_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
-    :sql_connection => sql_connection,
-    :use_syslog => node["glance"]["syslog"]["use"],
-    :log_facility => node["glance"]["syslog"]["facility"]
+    :sql_connection => sql_connection
   )
 
   notifies :run, resources(:execute => "glance-manage version_control"), :immediately
@@ -164,12 +161,8 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :identity_admin_endpoint => identity_admin_endpoint,
-    :identity_endpoint => identity_endpoint,
-    :service_tenant_name => node["glance"]["service_tenant_name"],
-    :service_user => node["glance"]["service_user"],
-    :service_pass => node["glance"]["service_pass"]
+    :identity_endpoint => identity_endpoint
   )
 
   notifies :restart, resources(:service => "glance-registry"), :immediately
