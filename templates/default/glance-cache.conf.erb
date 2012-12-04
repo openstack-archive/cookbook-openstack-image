@@ -29,16 +29,16 @@ image_cache_stall_time = 86400
 image_cache_invalid_entry_grace_period = 3600
 
 # Max cache size in bytes
-image_cache_max_size = <% @image_cache_max_size %>
+image_cache_max_size = <% node["glance"]["api"]["cache"]["image_cache_max_size"] %>
 
 # ================= Syslog Options ============================
 
 # Send logs to syslog (/dev/log) instead of to file specified by `log_file`
-use_syslog = <%= @use_syslog %>
+use_syslog = <%= node["glance"]["syslog"]["use"] %>
 
-<% if @use_syslog == true %>
+<% if node["glance"]["syslog"]["use"] == true %>
 # Facility to use. If unset defaults to LOG_USER.
-syslog_log_facility = <%= @log_facility %>
+syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
 <% else %>
 # syslog_log_facility = LOG_USER
 <% end %>

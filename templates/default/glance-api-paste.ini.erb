@@ -63,6 +63,6 @@ auth_host = <%= @identity_admin_endpoint.host %>
 auth_port = <%= @identity_admin_endpoint.port %>
 auth_protocol = <%= @identity_admin_endpoint.scheme %>
 auth_uri = <%= @identity_admin_endpoint.to_s %>
-admin_tenant_name = <%= @service_tenant_name %>
-admin_user = <%= @service_user %>
-admin_password = <%= @service_pass %>
+admin_tenant_name = <%= node["glance"]["service_tenant_name"] %>
+admin_user = <%= node["glance"]["service_user"] %>
+admin_password = <%= node["glance"]["service_pass"] %>

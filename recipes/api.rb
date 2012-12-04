@@ -118,14 +118,11 @@ template "/etc/glance/glance-api.conf" do
   group  "root"
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :api_bind_address => api_endpoint.host,
     :api_bind_port => api_endpoint.port,
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
-    :use_syslog => node["glance"]["syslog"]["use"],
-    :log_facility => node["glance"]["syslog"]["facility"],
     :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!
     :default_store => glance["api"]["default_store"],
     :glance_flavor => glance_flavor,
@@ -147,13 +144,9 @@ template "/etc/glance/glance-api-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :identity_admin_endpoint => identity_admin_endpoint,
     :identity_endpoint => identity_endpoint,
-    :keystone_admin_token => keystone["admin_token"],
-    :service_tenant_name => node["glance"]["service_tenant_name"],
-    :service_user => node["glance"]["service_user"],
-    :service_pass => node["glance"]["service_pass"]
+    :keystone_admin_token => keystone["admin_token"]
   )
 
   notifies :restart, resources(:service => "glance-api"), :immediately
@@ -165,12 +158,9 @@ template "/etc/glance/glance-cache.conf" do
   group  "root"
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
-    :use_syslog => node["glance"]["syslog"]["use"],
-    :log_facility => node["glance"]["syslog"]["facility"],
-    :image_cache_max_size => node["glance"]["api"]["cache"]["image_cache_max_size"]
+    :log_facility => node["glance"]["syslog"]["facility"]
   )
 
   notifies :restart, resources(:service => "glance-api"), :delayed
