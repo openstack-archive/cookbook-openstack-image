@@ -1,5 +1,6 @@
-<%= @custom_template_banner %>
-# Use this pipeline for no auth or image caching - DEFAULT
+<%= default["glance"]["custom_template_banner"] %>
+
+# Default minimal pipeline
 [pipeline:glance-api]
 pipeline = versionnegotiation unauthenticated-context rootapp
 
