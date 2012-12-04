@@ -75,6 +75,10 @@ identity_endpoint = endpoint "identity-api"
 
 glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
 
+db_user = node["glance"]["db"]["username"]
+db_pass = node["glance"]["db"]["password"]
+sql_connection = db_uri("image", db_user, db_pass)
+
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
 
@@ -119,6 +123,7 @@ template "/etc/glance/glance-api.conf" do
     :api_bind_port => api_endpoint.port,
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
+    :sql_connection => sql_connection,
     :use_syslog => node["glance"]["syslog"]["use"],
     :log_facility => node["glance"]["syslog"]["facility"],
     :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!

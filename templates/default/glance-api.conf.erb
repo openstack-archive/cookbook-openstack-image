@@ -31,6 +31,11 @@ backlog = 4096
 # this value to the number of CPUs present on your machine.
 workers = 0
 
+# SQLAlchemy connection string for the reference implementation
+# registry server. Any valid SQLAlchemy connection string is fine.
+# See: http://www.sqlalchemy.org/docs/05/reference/sqlalchemy/connections.html#sqlalchemy.create_engine
+sql_connection = <%= @sql_connection %>
+
 # Role used to identify an authenticated user as administrator
 #admin_role = admin
 
