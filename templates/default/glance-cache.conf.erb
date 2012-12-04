@@ -36,7 +36,7 @@ image_cache_max_size = <% node["glance"]["api"]["cache"]["image_cache_max_size"]
 # Send logs to syslog (/dev/log) instead of to file specified by `log_file`
 use_syslog = <%= node["glance"]["syslog"]["use"] %>
 
-<% if node["glance"]["syslog"]["use"] == true %>
+<% if node["glance"]["syslog"]["use"] %>
 # Facility to use. If unset defaults to LOG_USER.
 syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
 <% else %>

@@ -46,7 +46,7 @@ sql_connection = <%= @sql_connection %>
 # by `log_file`
 use_syslog = <%= node["glance"]["syslog"]["use"] %>
 
-<% if node["glance"]["syslog"]["use"] == true %>
+<% if node["glance"]["syslog"]["use"] %>
 # Facility to use. If unset defaults to LOG_USER.
 syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
 <% else %>
