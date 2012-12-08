@@ -277,13 +277,13 @@ if node["glance"]["image_upload"]
 
                 kernel=$(ls *.img | head -n1)
 
-                kid=$(glance add name="${image_name}-kernel" is_public=true disk_format=aki container_format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-                rid=$(glance add name="${image_name}-initrd" is_public=true disk_format=ari container_format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
-                glance add name="#{img.to_s}-image" is_public=true disk_format=ami container_format=ami kernel_id=$kid ramdisk_id=$rid < ${kernel}
+                kid=$(glance image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
+                rid=$(glance image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+                glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-          glance add name="#{img.to_s}-image" is_public=true container_format=bare disk_format=qcow2 location="#{node["glance"]["image"][img]}"
+          glance image-create --name="#{img.to_s}-image" --is-public --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
             EOH
       end
       not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s} index | grep #{img.to_s}-image"
