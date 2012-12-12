@@ -279,11 +279,11 @@ if node["glance"]["image_upload"]
 
                 kid=$(glance image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
                 rid=$(glance image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
-                glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}
+                glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}0
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-          glance image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
+          glance image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
       not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s} index | grep #{img.to_s}-image"
