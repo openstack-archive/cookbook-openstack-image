@@ -244,6 +244,7 @@ if node["glance"]["image_upload"]
     keystone_admin_user = keystone["admin_user"]
     keystone_admin_password = keystone["users"][keystone_admin_user]["password"]
     keystone_tenant = keystone["users"][keystone_admin_user]["default_tenant"]
+    glance_cmd = "glance -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s}"
 
     bash "default image setup for #{img.to_s}" do
       cwd "/tmp"
@@ -277,16 +278,16 @@ if node["glance"]["image_upload"]
 
                 kernel=$(ls *.img | head -n1)
 
-                kid=$(glance image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-                rid=$(glance image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+                kid=$(#{glance_cmd} image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
+                rid=$(#{glance_cmd} image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
                 glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}0
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-          glance image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
+          #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
-      not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s} index | grep #{img.to_s}-image"
+      not_if "#{glance_cmd} image-list | grep #{img.to_s}-image"
     end
   end
 end
