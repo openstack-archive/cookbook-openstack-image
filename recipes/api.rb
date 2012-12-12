@@ -283,7 +283,7 @@ if node["glance"]["image_upload"]
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-          glance image-create --name="#{img.to_s}-image" --is-public --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
+          glance image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
             EOH
       end
       not_if "glance -f -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s} index | grep #{img.to_s}-image"
