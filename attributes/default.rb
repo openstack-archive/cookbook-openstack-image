@@ -37,6 +37,9 @@ default["glance"]["keystone_service_chef_role"] = "keystone"
 default["glance"]["user"] = "glance"
 default["glance"]["group"] = "glance"
 
+# Gets set in the Image Endpoint when registering with Keystone
+default["glance"]["region"] = "RegionOne"
+
 # The name of the Chef role that knows about the message queue server
 # that Glance uses
 default["glance"]["rabbit_server_chef_role"] = "rabbitmq-server"
