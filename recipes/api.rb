@@ -229,7 +229,7 @@ keystone_register "Register Image Endpoint" do
   api_ver identity_admin_endpoint.path
   auth_token keystone["admin_token"]
   service_type "image"
-  endpoint_region "RegionOne"
+  endpoint_region node["glance"]["region"]
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
   endpoint_publicurl api_endpoint.to_s
