@@ -17,11 +17,6 @@
 # limitations under the License.
 #
 
-########################################################################
-# Toggles - These can be overridden at the environment level
-default["developer_mode"] = false  # we want secure passwords by default
-########################################################################
-
 # Set to some text value if you want templated config files
 # to contain a custom banner at the top of the written file
 default["glance"]["custom_template_banner"] = "
@@ -44,12 +39,8 @@ default["glance"]["region"] = "RegionOne"
 # that Glance uses
 default["glance"]["rabbit_server_chef_role"] = "rabbitmq-server"
 
-# This is the name of the Chef role that will install the Glance API service
-default["glance"]["glance_api_chef_role"] = "glance-api"
-
 default["glance"]["db"]["username"] = "glance" # node_attribute
 
-# TODO: These may need to be glance-registry specific.. and looked up by glance-api
 default["glance"]["service_tenant_name"] = "service"                        # node_attribute
 default["glance"]["service_user"] = "glance"                                # node_attribute
 default["glance"]["service_role"] = "admin"                                 # node_attribute

@@ -24,9 +24,6 @@ end
 
 platform_options = node["glance"]["platform"]
 
-# Set a secure keystone service password
-node.set_unless['glance']['service_pass'] = secure_password
-
 package "python-keystone" do
   action :install
 end
@@ -35,10 +32,18 @@ identity_admin_endpoint = endpoint "identity-admin"
 identity_endpoint = endpoint "identity-api"
 
 db_user = node["glance"]["db"]["username"]
-db_pass = node["glance"]["db"]["password"]
+db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
 keystone = get_settings_by_role node["glance"]["keystone_service_chef_role"], "keystone"
+
+# Instead of the search to find the keystone service, put this
+# into openstack-common as a common attribute?
+ksadmin_user = keystone["admin_user"]
+ksadmin_tenant_name = keystone["admin_tenant_name"]
+ksadmin_pass = user_password ksadmin_user
+auth_uri = ::URI.decode identity_admin_endpoint.to_s
+service_pass = service_password "glance"
 
 registry_endpoint = endpoint "image-registry"
 
@@ -91,11 +96,10 @@ end
 
 # Register Service Tenant
 keystone_register "Register Service Tenant" do
-  auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port.to_s
-  auth_protocol identity_admin_endpoint.scheme
-  api_ver identity_admin_endpoint.path
-  auth_token keystone["admin_token"]
+  auth_host auth_uri
+  admin_user ksadmin_user
+  admin_tenant_name ksadmin_tenant_name
+  admin_password ksadmin_pass
   tenant_name node["glance"]["service_tenant_name"]
   tenant_description "Service Tenant"
   tenant_enabled "true" # Not required as this is the default
@@ -105,11 +109,10 @@ end
 
 # Register Service User
 keystone_register "Register Service User" do
-  auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port.to_s
-  auth_protocol identity_admin_endpoint.scheme
-  api_ver identity_admin_endpoint.path
-  auth_token keystone["admin_token"]
+  auth_host auth_uri
+  admin_user ksadmin_user
+  admin_tenant_name ksadmin_tenant_name
+  admin_password ksadmin_pass
   tenant_name node["glance"]["service_tenant_name"]
   user_name node["glance"]["service_user"]
   user_pass node["glance"]["service_pass"]
@@ -120,11 +123,10 @@ end
 
 ## Grant Admin role to Service User for Service Tenant ##
 keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
-  auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port.to_s
-  auth_protocol identity_admin_endpoint.scheme
-  api_ver identity_admin_endpoint.path
-  auth_token keystone["admin_token"]
+  auth_host auth_uri
+  admin_user ksadmin_user
+  admin_tenant_name ksadmin_tenant_name
+  admin_password ksadmin_pass
   tenant_name node["glance"]["service_tenant_name"]
   user_name node["glance"]["service_user"]
   role_name node["glance"]["service_role"]
@@ -161,8 +163,8 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    :identity_admin_endpoint => identity_admin_endpoint,
-    :identity_endpoint => identity_endpoint
+    "auth_uri" => auth_uri
+    "service_password" => service_pass
   )
 
   notifies :restart, resources(:service => "glance-registry"), :immediately

@@ -10,7 +10,7 @@ debug = <%= node["glance"]["debug"] %>
 # Which backend store should Glance use by default is not specified
 # in a request to add a new image to Glance? Default: 'file'
 # Available choices are 'file', 'swift', and 's3'
-default_store = <%= @default_store %>
+default_store = <%= node["glance"]["api"]["default_store"] %>
 
 # Address to bind the API server
 bind_host = <%= @api_bind_address %>
@@ -46,12 +46,8 @@ sql_connection = <%= @sql_connection %>
 # by `log_file`
 use_syslog = <%= node["glance"]["syslog"]["use"] %>
 
-<% if node["glance"]["syslog"]["use"] %>
-# Facility to use. If unset defaults to LOG_USER.
+# Facility to use. If unset defaults to LOG_LOCAL2.
 syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
-<% else %>
-# syslog_log_facility = LOG_USER
-<% end %>
 
 # ================= SSL Options ===============================
 
@@ -163,7 +159,7 @@ swift_store_key = <%= @swift_store_key %>
 
 # Container within the account that the account should use
 # for storing images in Swift
-swift_store_container = <%= @swift_store_container %>
+swift_store_container = <%= node["glance"]["api"]["swift"]["store_container"] %>
 
 # Do we create the container if it does not exist?
 swift_store_create_container_on_put = True
@@ -171,13 +167,13 @@ swift_store_create_container_on_put = True
 # What size, in MB, should Glance start chunking image files
 # and do a large object manifest in Swift? By default, this is
 # the maximum object size in Swift, which is 5GB
-swift_store_large_object_size = <%= @swift_large_object_size %>
+swift_store_large_object_size = <%= node["glance"]["api"]["swift"]["large_object_size"] %>
 
 # When doing a large object manifest, what size, in MB, should
 # Glance write chunks to Swift? This amount of data is written
 # to a temporary disk buffer during the process of chunking
 # the image file, and the default is 200MB
-swift_store_large_object_chunk_size = <%= @swift_large_object_chunk_size %>
+swift_store_large_object_chunk_size = <%= node["glance"]["api"]["swift"]["large_object_chunk_size"] %>
 
 # Whether to use ServiceNET to communicate with the Swift storage servers.
 # (If you aren't RACKSPACE, leave this False!)
