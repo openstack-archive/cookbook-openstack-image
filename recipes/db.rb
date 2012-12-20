@@ -22,7 +22,6 @@
 
 class ::Chef::Recipe
   include ::Openstack
-  include ::Opscode::OpenSSL::Password
 end
 
 # TODO(jaypipes): This is retarded, but nothing runs without this. The
@@ -30,14 +29,9 @@ end
 include_recipe "mysql::client"
 include_recipe "mysql::ruby"
 
-# Allow for using a well known db password
-if node["developer_mode"]
-  node.set_unless["glance"]["db"]["password"] = "glance"
-else
-  node.set_unless["glance"]["db"]["password"] = secure_password
-end
+db_pass = secret "passwords", "glance"
 
 db_create_with_user("image",
   node["glance"]["db"]["username"],
-  node["glance"]["db"]["password"]
+  db_pass
 )

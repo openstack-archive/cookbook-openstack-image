@@ -56,13 +56,7 @@ paste.filter_factory = glance.api.middleware.context:UnauthenticatedContextMiddl
 
 [filter:authtoken]
 paste.filter_factory = keystone.middleware.auth_token:filter_factory
-service_protocol = <%= @identity_endpoint.scheme %>
-service_host = <%= @identity_endpoint.host %>
-service_port = <%= @identity_endpoint.port %>
-auth_host = <%= @identity_admin_endpoint.host %>
-auth_port = <%= @identity_admin_endpoint.port %>
-auth_protocol = <%= @identity_admin_endpoint.scheme %>
-auth_uri = <%= @identity_admin_endpoint.to_s %>
+auth_uri = <%= @auth_uri %>
 admin_tenant_name = <%= node["glance"]["service_tenant_name"] %>
 admin_user = <%= node["glance"]["service_user"] %>
-admin_password = <%= node["glance"]["service_pass"] %>
+admin_password = <%= @service_pass %>

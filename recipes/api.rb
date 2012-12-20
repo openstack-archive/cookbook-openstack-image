@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+include "uri"
+
 class ::Chef::Recipe
   include ::Openstack
 end
@@ -53,34 +55,40 @@ directory "/etc/glance" do
   action :create
 end
 
-# FIXME: seems like misfeature
 template "/etc/glance/policy.json" do
   source "policy.json.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
 
   notifies :restart, resources(:service => "glance-api"), :immediately
 
+  #TODO(jaypipes): This shouldn't be necessary... not sure why it's here.
   not_if { File.exists? "/etc/glance/policy.json" }
 end
 
-rabbit_server_role = node["glance"]["rabbit_server_chef_role"]
-rabbit_info = get_settings_by_role rabbit_server_role, "queue"
+glance = node["glance"]
+rabbit_server_role = glance["rabbit_server_chef_role"]
+rabbit_info = config_by_role rabbit_server_role, "queue"
 
-keystone_service_role = node["glance"]["keystone_service_chef_role"]
-keystone = get_settings_by_role keystone_service_role, "keystone"
+keystone_service_role = glance["keystone_service_chef_role"]
+keystone = config_by_role keystone_service_role, "keystone"
 identity_admin_endpoint = endpoint "identity-admin"
-identity_endpoint = endpoint "identity-api"
 
-glance = get_settings_by_role node["glance"]["glance_api_chef_role"], "glance"
+# Instead of the search to find the keystone service, put this
+# into openstack-common as a common attribute?
+ksadmin_user = keystone["admin_user"]
+ksadmin_tenant_name = keystone["admin_tenant_name"]
+ksadmin_pass = user_password ksadmin_user
+auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 db_user = node["glance"]["db"]["username"]
-db_pass = node["glance"]["db"]["password"]
+db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
+service_pass = service_password "glance"
 
 # Possible combinations of options here
 # - default_store=file
@@ -94,9 +102,9 @@ api_endpoint = endpoint "image-api"
 #           to the swift compatible API service running elsewhere - possibly
 #           Rackspace Cloud Files.
 if glance["api"]["swift_store_auth_address"].nil?
-  swift_store_auth_address=identity_admin_endpoint.to_s
+  swift_store_auth_address = auth_uri
   swift_store_user="#{glance["service_tenant_name"]}:#{glance["service_user"]}"
-  swift_store_key=glance["service_pass"]
+  swift_store_key = service_pass
   swift_store_auth_version=2
 else
   swift_store_auth_address=glance["api"]["swift_store_auth_address"]
@@ -114,8 +122,8 @@ end
 
 template "/etc/glance/glance-api.conf" do
   source "glance-api.conf.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
   variables(
     :api_bind_address => api_endpoint.host,
@@ -124,15 +132,11 @@ template "/etc/glance/glance-api.conf" do
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
     :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!
-    :default_store => glance["api"]["default_store"],
     :glance_flavor => glance_flavor,
     :swift_store_key => swift_store_key,
     :swift_store_user => swift_store_user,
     :swift_store_auth_address => swift_store_auth_address,
-    :swift_store_auth_version => swift_store_auth_version,
-    :swift_large_object_size => glance["api"]["swift"]["store_large_object_size"],
-    :swift_large_object_chunk_size => glance["api"]["swift"]["store_large_object_chunk_size"],
-    :swift_store_container => glance["api"]["swift"]["store_container"]
+    :swift_store_auth_version => swift_store_auth_version
   )
 
   notifies :restart, resources(:service => "glance-api"), :immediately
@@ -140,13 +144,12 @@ end
 
 template "/etc/glance/glance-api-paste.ini" do
   source "glance-api-paste.ini.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
   variables(
-    :identity_admin_endpoint => identity_admin_endpoint,
-    :identity_endpoint => identity_endpoint,
-    :keystone_admin_token => keystone["admin_token"]
+    "auth_uri" => auth_uri
+    "service_password" => service_pass
   )
 
   notifies :restart, resources(:service => "glance-api"), :immediately
@@ -154,8 +157,8 @@ end
 
 template "/etc/glance/glance-cache.conf" do
   source "glance-cache.conf.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
   variables(
     :registry_ip_address => registry_endpoint.host,
@@ -166,10 +169,12 @@ template "/etc/glance/glance-cache.conf" do
   notifies :restart, resources(:service => "glance-api"), :delayed
 end
 
+#TODO(jaypipes) I don't think this even exists or at least isn't
+# used, since the Glance cache middleware goes in the api-paste.ini...
 template "/etc/glance/glance-cache-paste.ini" do
   source "glance-cache-paste.ini.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
 
   notifies :restart, resources(:service => "glance-api"), :delayed
@@ -177,8 +182,8 @@ end
 
 template "/etc/glance/glance-scrubber.conf" do
   source "glance-scrubber.conf.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
   variables(
     :custom_template_banner => node["glance"]["custom_template_banner"],
@@ -202,18 +207,17 @@ end
 
 template "/etc/glance/glance-scrubber-paste.ini" do
   source "glance-scrubber-paste.ini.erb"
-  owner  "root"
-  group  "root"
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
   mode   00644
 end
 
 # Register Image Service
 keystone_register "Register Image Service" do
-  auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port.to_s
-  auth_protocol identity_admin_endpoint.scheme
-  api_ver identity_admin_endpoint.path
-  auth_token keystone["admin_token"]
+  auth_host auth_uri
+  admin_user ksadmin_user
+  admin_tenant_name ksadmin_tenant_name
+  admin_password ksadmin_pass
   service_name "glance"
   service_type "image"
   service_description "Glance Image Service"
@@ -223,11 +227,10 @@ end
 
 # Register Image Endpoint
 keystone_register "Register Image Endpoint" do
-  auth_host identity_admin_endpoint.host
-  auth_port identity_admin_endpoint.port.to_s
-  auth_protocol identity_admin_endpoint.scheme
-  api_ver identity_admin_endpoint.path
-  auth_token keystone["admin_token"]
+  auth_host auth_uri
+  admin_user ksadmin_user
+  admin_tenant_name ksadmin_tenant_name
+  admin_password ksadmin_pass
   service_type "image"
   endpoint_region node["glance"]["region"]
   endpoint_adminurl api_endpoint.to_s
@@ -241,18 +244,15 @@ if node["glance"]["image_upload"]
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
-    keystone_admin_user = keystone["admin_user"]
-    keystone_admin_password = keystone["users"][keystone_admin_user]["password"]
-    keystone_tenant = keystone["users"][keystone_admin_user]["default_tenant"]
-    glance_cmd = "glance -I #{keystone_admin_user} -K #{keystone_admin_password} -T #{keystone_tenant} -N #{identity_admin_endpoint.to_s}"
+    glance_cmd = "glance -I #{ksadmin_user} -K #{ksadmin_pass} -T #{ksadmin_tenant_name} -N #{auth_uri}"
 
     bash "default image setup for #{img.to_s}" do
       cwd "/tmp"
       user "root"
-      environment ({"OS_USERNAME" => keystone_admin_user,
-          "OS_PASSWORD" => keystone_admin_password,
-          "OS_TENANT_NAME" => keystone_tenant,
-          "OS_AUTH_URL" => identity_admin_endpoint.to_s})
+      environment ({"OS_USERNAME" => ksadmin_user,
+          "OS_PASSWORD" => ksadmin_password,
+          "OS_TENANT_NAME" => ksadmin_tenant_name,
+          "OS_AUTH_URL" => auth_uri})
       case File.extname(node["glance"]["image"][img.to_sym])
       when ".gz", ".tgz"
         code <<-EOH
