@@ -29,7 +29,7 @@ end
 include_recipe "mysql::client"
 include_recipe "mysql::ruby"
 
-db_pass = secret "passwords", "glance"
+db_pass = db_password "glance"
 
 db_create_with_user("image",
   node["glance"]["db"]["username"],
