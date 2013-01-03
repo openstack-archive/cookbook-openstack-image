@@ -148,7 +148,7 @@ template "/etc/glance/glance-api-paste.ini" do
   group node["glance"]["group"]
   mode   00644
   variables(
-    "auth_uri" => auth_uri
+    "auth_uri" => auth_uri,
     "service_password" => service_pass
   )
 
