@@ -163,7 +163,7 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    "auth_uri" => auth_uri
+    "auth_uri" => auth_uri,
     "service_password" => service_pass
   )
 
