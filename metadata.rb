@@ -15,5 +15,5 @@ end
 depends           "database"
 depends           "keystone"
 depends           "mysql"
-depends           "openstack-common", ">=0.1.5"
+depends           "openstack-common", ">= 0.1.5"
 depends           "openstack-utils"
