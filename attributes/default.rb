@@ -66,6 +66,8 @@ default["glance"]["syslog"]["config_facility"] = "local2"   # node_attribute
 
 # platform-specific settings
 case platform
+# FC024: Probably won't be running this on Amazon.
+# when "centos", "redhat", "amazon", "scientific"
 when "fedora", "redhat", "centos"
   default["glance"]["platform"] = {
     "mysql_python_packages" => [ "MySQL-python" ],                  # node_attribute

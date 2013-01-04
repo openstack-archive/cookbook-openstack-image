@@ -61,7 +61,7 @@ template "/etc/glance/policy.json" do
   group node["glance"]["group"]
   mode   00644
 
-  notifies :restart, resources(:service => "glance-api"), :immediately
+  notifies :restart, service['glance-api'], :immediately
 
   #TODO(jaypipes): This shouldn't be necessary... not sure why it's here.
   not_if { File.exists? "/etc/glance/policy.json" }
@@ -139,7 +139,7 @@ template "/etc/glance/glance-api.conf" do
     :swift_store_auth_version => swift_store_auth_version
   )
 
-  notifies :restart, resources(:service => "glance-api"), :immediately
+  notifies :restart, service['glance-api'], :immediately
 end
 
 template "/etc/glance/glance-api-paste.ini" do
@@ -152,7 +152,7 @@ template "/etc/glance/glance-api-paste.ini" do
     "service_password" => service_pass
   )
 
-  notifies :restart, resources(:service => "glance-api"), :immediately
+  notifies :restart, service['glance-api'], :immediately
 end
 
 template "/etc/glance/glance-cache.conf" do
@@ -162,11 +162,10 @@ template "/etc/glance/glance-cache.conf" do
   mode   00644
   variables(
     :registry_ip_address => registry_endpoint.host,
-    :registry_port => registry_endpoint.port,
-    :log_facility => node["glance"]["syslog"]["facility"]
+    :registry_port => registry_endpoint.port
   )
 
-  notifies :restart, resources(:service => "glance-api"), :delayed
+  notifies :restart, service['glance-api']
 end
 
 #TODO(jaypipes) I don't think this even exists or at least isn't
@@ -177,7 +176,7 @@ template "/etc/glance/glance-cache-paste.ini" do
   group node["glance"]["group"]
   mode   00644
 
-  notifies :restart, resources(:service => "glance-api"), :delayed
+  notifies :restart, service['glance-api']
 end
 
 template "/etc/glance/glance-scrubber.conf" do
@@ -186,7 +185,6 @@ template "/etc/glance/glance-scrubber.conf" do
   group node["glance"]["group"]
   mode   00644
   variables(
-    :custom_template_banner => node["glance"]["custom_template_banner"],
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port
   )
