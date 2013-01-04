@@ -35,7 +35,7 @@ db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
-keystone = get_settings_by_role node["glance"]["keystone_service_chef_role"], "keystone"
+keystone = config_by_role node["glance"]["keystone_service_chef_role"], "keystone"
 
 # Instead of the search to find the keystone service, put this
 # into openstack-common as a common attribute?
