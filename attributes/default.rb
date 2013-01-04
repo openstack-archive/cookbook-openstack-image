@@ -66,9 +66,7 @@ default["glance"]["syslog"]["config_facility"] = "local2"   # node_attribute
 
 # platform-specific settings
 case platform
-# FC024: Probably won't be running this on Amazon.
-# when "centos", "redhat", "amazon", "scientific"
-when "fedora", "redhat", "centos"
+when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["glance"]["platform"] = {
     "mysql_python_packages" => [ "MySQL-python" ],                  # node_attribute
     "glance_packages" => [ "openstack-glance", "openstack-swift", "cronie" ], # node_attribute
