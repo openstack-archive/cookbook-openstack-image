@@ -83,7 +83,6 @@ The following cookbooks are dependencies:
 * openssl
 * openstack-common
 * openstack-utils
-* osops-utils
 
 =======
 
