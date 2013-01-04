@@ -123,7 +123,7 @@ end
 
 ## Grant Admin role to Service User for Service Tenant ##
 keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
-  auth_host auth_uri
+  auth_uri auth_uri
   admin_user ksadmin_user
   admin_tenant_name ksadmin_tenant_name
   admin_password ksadmin_pass

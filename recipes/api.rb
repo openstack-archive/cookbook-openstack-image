@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-include "uri"
+require "uri"
 
 class ::Chef::Recipe
   include ::Openstack
@@ -214,7 +214,7 @@ end
 
 # Register Image Service
 keystone_register "Register Image Service" do
-  auth_host auth_uri
+  auth_uri auth_uri
   admin_user ksadmin_user
   admin_tenant_name ksadmin_tenant_name
   admin_password ksadmin_pass
@@ -227,7 +227,7 @@ end
 
 # Register Image Endpoint
 keystone_register "Register Image Endpoint" do
-  auth_host auth_uri
+  auth_uri auth_uri
   admin_user ksadmin_user
   admin_tenant_name ksadmin_tenant_name
   admin_password ksadmin_pass
@@ -250,7 +250,7 @@ if node["glance"]["image_upload"]
       cwd "/tmp"
       user "root"
       environment ({"OS_USERNAME" => ksadmin_user,
-          "OS_PASSWORD" => ksadmin_password,
+          "OS_PASSWORD" => ksadmin_pass,
           "OS_TENANT_NAME" => ksadmin_tenant_name,
           "OS_AUTH_URL" => auth_uri})
       case File.extname(node["glance"]["image"][img.to_sym])
