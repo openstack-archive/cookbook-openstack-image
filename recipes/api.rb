@@ -149,7 +149,7 @@ template "/etc/glance/glance-api-paste.ini" do
   mode   00644
   variables(
     "auth_uri" => auth_uri,
-    "service_password" => service_pass
+    "service_pass" => service_pass
   )
 
   notifies :restart, resources(:service => "glance-api"), :immediately
