@@ -159,7 +159,7 @@ swift_store_key = <%= @swift_store_key %>
 
 # Container within the account that the account should use
 # for storing images in Swift
-swift_store_container = <%= node["glance"]["api"]["swift"]["store_container"] %>
+swift_store_container = <%= node["glance"]["api"]["swift"]["container"] %>
 
 # Do we create the container if it does not exist?
 swift_store_create_container_on_put = True
