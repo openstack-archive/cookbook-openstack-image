@@ -44,6 +44,9 @@ ksadmin_tenant_name = keystone["admin_tenant_name"]
 ksadmin_pass = user_password ksadmin_user
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 service_pass = service_password "glance"
+service_tenant_name = node["glance"]["service_tenant_name"]
+service_user = node["glance"]["service_user"]
+service_role = node["glance"]["service_role"]
 
 registry_endpoint = endpoint "image-registry"
 
@@ -108,28 +111,28 @@ keystone_register "Register Service Tenant" do
 end
 
 # Register Service User
-keystone_register "Register Service User" do
+keystone_register "Register #{service_user} User" do
   auth_uri auth_uri
   admin_user ksadmin_user
   admin_tenant_name ksadmin_tenant_name
   admin_password ksadmin_pass
   tenant_name node["glance"]["service_tenant_name"]
-  user_name node["glance"]["service_user"]
-  user_pass node["glance"]["service_pass"]
+  user_name service_user
+  user_pass service_pass
   user_enabled "true" # Not required as this is the default
 
   action :create_user
 end
 
 ## Grant Admin role to Service User for Service Tenant ##
-keystone_register "Grant 'admin' Role to Service User for Service Tenant" do
+keystone_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
   auth_uri auth_uri
   admin_user ksadmin_user
   admin_tenant_name ksadmin_tenant_name
   admin_password ksadmin_pass
-  tenant_name node["glance"]["service_tenant_name"]
-  user_name node["glance"]["service_user"]
-  role_name node["glance"]["service_role"]
+  tenant_name service_tenant_name
+  user_name service_user
+  role_name service_role
 
   action :grant_role
 end
@@ -164,7 +167,7 @@ template "/etc/glance/glance-registry-paste.ini" do
   mode   00644
   variables(
     "auth_uri" => auth_uri,
-    "service_password" => service_pass
+    "service_pass" => service_pass
   )
 
   notifies :restart, resources(:service => "glance-registry"), :immediately
