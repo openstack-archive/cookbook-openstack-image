@@ -89,6 +89,9 @@ sql_connection = db_uri("image", db_user, db_pass)
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
 service_pass = service_password "glance"
+service_tenant_name = node["glance"]["service_tenant_name"]
+service_user = node["glance"]["service_user"]
+service_role = node["glance"]["service_role"]
 
 # Possible combinations of options here
 # - default_store=file
@@ -103,7 +106,7 @@ service_pass = service_password "glance"
 #           Rackspace Cloud Files.
 if glance["api"]["swift_store_auth_address"].nil?
   swift_store_auth_address = auth_uri
-  swift_store_user="#{glance["service_tenant_name"]}:#{glance["service_user"]}"
+  swift_store_user="#{service_tenant_name}:#{service_user}"
   swift_store_key = service_pass
   swift_store_auth_version=2
 else
@@ -148,7 +151,7 @@ template "/etc/glance/glance-api-paste.ini" do
   group node["glance"]["group"]
   mode   00644
   variables(
-    "auth_uri" => auth_uri,
+    "identity_endpoint" => identity_admin_endpoint,
     "service_pass" => service_pass
   )
 
@@ -240,18 +243,19 @@ keystone_register "Register Image Endpoint" do
   action :create_endpoint
 end
 
+# TODO(jaypipes) Turn the below into an LWRP
 if node["glance"]["image_upload"]
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
-    glance_cmd = "glance -I #{ksadmin_user} -K #{ksadmin_pass} -T #{ksadmin_tenant_name} -N #{auth_uri}"
+    glance_cmd = "glance"
 
     bash "default image setup for #{img.to_s}" do
       cwd "/tmp"
       user "root"
-      environment ({"OS_USERNAME" => ksadmin_user,
-          "OS_PASSWORD" => ksadmin_pass,
-          "OS_TENANT_NAME" => ksadmin_tenant_name,
+      environment ({"OS_USERNAME" => service_user,
+          "OS_PASSWORD" => service_pass,
+          "OS_TENANT_NAME" => service_tenant_name,
           "OS_AUTH_URL" => auth_uri})
       case File.extname(node["glance"]["image"][img.to_sym])
       when ".gz", ".tgz"

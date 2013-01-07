@@ -29,7 +29,6 @@ package "python-keystone" do
 end
 
 identity_admin_endpoint = endpoint "identity-admin"
-identity_endpoint = endpoint "identity-api"
 
 db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
@@ -166,7 +165,7 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    "auth_uri" => auth_uri,
+    "identity_endpoint" => identity_admin_endpoint,
     "service_pass" => service_pass
   )
 
