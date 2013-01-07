@@ -45,9 +45,9 @@ default["glance"]["service_tenant_name"] = "service"                        # no
 default["glance"]["service_user"] = "glance"                                # node_attribute
 default["glance"]["service_role"] = "admin"                                 # node_attribute
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
-default["glance"]["api"]["swift"]["store_container"] = "glance"             # node_attribute
-default["glance"]["api"]["swift"]["store_large_object_size"] = "200"        # node_attribute
-default["glance"]["api"]["swift"]["store_large_object_chunk_size"] = "200"  # node_attribute
+default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
+default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute
+default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"  # node_attribute
 default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"   # node_attribute
 
 
