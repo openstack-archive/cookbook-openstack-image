@@ -77,7 +77,7 @@ execute "glance-manage db_sync" do
 
   action :nothing
 
-  notifies :restart, resources(:service => "glance-registry"), :immediately
+  notifies :restart, "service[glance-registry]", :immediately
 end
 
 # Having to manually version the database because of Ubuntu bug
@@ -85,7 +85,7 @@ end
 execute "glance-manage version_control" do
   command "sudo -u glance glance-manage version_control 0"
 
-  notifies :run, resources(:execute => "glance-manage db_sync"), :immediately
+  notifies :run, "execute[glance-manage db_sync]", :immediatelyj
   not_if "sudo -u glance glance-manage db_version"
   only_if { platform?(%w{ubuntu debian}) }
 
@@ -155,8 +155,8 @@ template "/etc/glance/glance-registry.conf" do
     :sql_connection => sql_connection
   )
 
-  notifies :run, resources(:execute => "glance-manage version_control"), :immediately
-  notifies :restart, resources(:service => "glance-registry"), :immediately
+  notifies :run, "execute[glance-manage version_control]", :immediatelyj
+  notifies :restart, "service[glance-registry]", :immediately
 end
 
 template "/etc/glance/glance-registry-paste.ini" do
@@ -169,5 +169,5 @@ template "/etc/glance/glance-registry-paste.ini" do
     "service_pass" => service_pass
   )
 
-  notifies :restart, resources(:service => "glance-registry"), :immediately
+  notifies :restart, service['glance-registry'], :immediately
 end
