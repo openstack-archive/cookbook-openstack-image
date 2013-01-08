@@ -85,7 +85,7 @@ end
 execute "glance-manage version_control" do
   command "sudo -u glance glance-manage version_control 0"
 
-  notifies :run, "execute[glance-manage db_sync]", :immediatelyj
+  notifies :run, "execute[glance-manage db_sync]", :immediately
   not_if "sudo -u glance glance-manage db_version"
   only_if { platform?(%w{ubuntu debian}) }
 
@@ -155,7 +155,7 @@ template "/etc/glance/glance-registry.conf" do
     :sql_connection => sql_connection
   )
 
-  notifies :run, "execute[glance-manage version_control]", :immediatelyj
+  notifies :run, "execute[glance-manage version_control]", :immediately
   notifies :restart, "service[glance-registry]", :immediately
 end
 
