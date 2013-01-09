@@ -169,5 +169,5 @@ template "/etc/glance/glance-registry-paste.ini" do
     "service_pass" => service_pass
   )
 
-  notifies :restart, service['glance-registry'], :immediately
+  notifies :restart, "service[glance-registry]", :immediately
 end
