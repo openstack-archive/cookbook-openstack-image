@@ -44,6 +44,8 @@ default["glance"]["db"]["username"] = "glance" # node_attribute
 default["glance"]["service_tenant_name"] = "service"                        # node_attribute
 default["glance"]["service_user"] = "glance"                                # node_attribute
 default["glance"]["service_role"] = "admin"                                 # node_attribute
+default["glance"]["signing_dir"] = "/tmp/glance-signing-dir"
+
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
 default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
 default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute

@@ -111,22 +111,14 @@ Attributes
 * `glance["user"] - User glance runs as
 * `glance["group"] - Group glance runs as
 * `glance["glance_api_chef_role"]` - The name of the Chef role that installs the Glance API service
-* `glance["db"]["name"]` - Name of glance database
-* `glance["db"]["user"]` - Username for glance database access
-* `glance["db"]["password"]` - Password for glance database access
-* `glance["api"]["ip_address"]` - IP address to use for communicating with the glance API
-* `glance["api"]["bind_address"]` - IP address for the glance API to bind to
-* `glance["api"]["port"]` - Port for the glance API to bind to
+* `glance["db"]["username"]` - Username for glance database access
 * `glance["api"]["adminURL"]` - Used when registering image endpoint with keystone
 * `glance["api"]["internalURL"]` - Used when registering image endpoint with keystone
 * `glance["api"]["publicURL"]` - Used when registering image endpoint with keystone
-* `glance["registry"]["ip_address"]` - IP address to use for communicating with the glance registry
-* `glance["registry"]["bind_address"]` - IP address for the glance registry to bind to
-* `glance["registry"]["port"]` - IP address for the glance port to bind to
 * `glance["service_tenant_name"]` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
-* `glance["service_pass"]` - User password used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `glance["signing_dir"]` - Directory that the `auth_token` middleware writes to if using PKI
 * `glance["image_upload"]` - Toggles whether to automatically upload images in the `glance["images"]` array
 * `glance["images"]` - Default list of images to upload to the glance repository as part of the install
 * `glance["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
