@@ -27,3 +27,7 @@ auth_protocol = <%= @identity_endpoint.scheme %>
 admin_tenant_name = <%= node["glance"]["service_tenant_name"] %>
 admin_user = <%= node["glance"]["service_user"] %>
 admin_password = <%= @service_pass %>
+delay_auth_decision = true
+<% if node["glance"]["pki"]["enabled"] %>
+signing_dir = <%= node["glance"]["pki"]["signing_dir"] %>
+<% end %>

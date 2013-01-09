@@ -44,6 +44,13 @@ default["glance"]["db"]["username"] = "glance" # node_attribute
 default["glance"]["service_tenant_name"] = "service"                        # node_attribute
 default["glance"]["service_user"] = "glance"                                # node_attribute
 default["glance"]["service_role"] = "admin"                                 # node_attribute
+
+# Controls for the PKI options in the auth_token middleware
+# that is in the paste INI files.
+default["glance"]["pki"]["enabled"] = false
+default["glance"]["pki"]["signing_dir"] = "/tmp/glance-signing-dir"
+
+
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
 default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
 default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute
