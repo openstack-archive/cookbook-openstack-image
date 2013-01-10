@@ -47,16 +47,13 @@ default["glance"]["service_role"] = "admin"                                 # no
 
 # Controls for the PKI options in the auth_token middleware
 # that is in the paste INI files.
-default["glance"]["pki"]["enabled"] = false
 default["glance"]["pki"]["signing_dir"] = "/tmp/glance-signing-dir"
-
 
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
 default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
 default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute
 default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"  # node_attribute
 default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"   # node_attribute
-
 
 # Default Image Locations
 default["glance"]["image_upload"] = false                                                                                           # node_attribute
