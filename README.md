@@ -119,7 +119,6 @@ Attributes
 * `glance["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
 
-* `default["glance"]["pki"]["enabled"]` - Defaults to false. Set to true to enable PKI in `auth_token` middleware
 * `default["glance"]["pki"]["signing_dir"]` - Defaults to `/tmp/glance-signing-dir`. Directory where `auth_token` middleware writes certificate
 
 * `glance["image_upload"]` - Toggles whether to automatically upload images in the `glance["images"]` array
