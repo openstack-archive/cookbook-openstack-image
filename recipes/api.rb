@@ -55,6 +55,15 @@ directory "/etc/glance" do
   action :create
 end
 
+directory node["glance"]["api"]["auth"]["cache_dir"] do
+  owner node["glance"]["user"]
+  group node["glance"]["group"]
+  mode 00700
+
+  action :create
+  only_if { node["openstack"]["auth"]["strategy"] == "pki" }
+end
+
 template "/etc/glance/policy.json" do
   source "policy.json.erb"
   owner node["glance"]["user"]

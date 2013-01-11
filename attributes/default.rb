@@ -45,9 +45,10 @@ default["glance"]["service_tenant_name"] = "service"                        # no
 default["glance"]["service_user"] = "glance"                                # node_attribute
 default["glance"]["service_role"] = "admin"                                 # node_attribute
 
-# Controls for the PKI options in the auth_token middleware
-# that is in the paste INI files.
-default["glance"]["pki"]["signing_dir"] = "/tmp/glance-signing-dir"
+# Keystone PKI signing directory. Only written to the filter:authtoken section
+# of the api-paste.ini when node["openstack"]["auth"]["strategy"] == "pki"
+default["glance"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"
+default["glance"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
 default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
