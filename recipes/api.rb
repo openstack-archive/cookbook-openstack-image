@@ -299,7 +299,7 @@ if node["glance"]["image_upload"]
           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
+      not_if "#{glance_cmd} image-list | grep #{img.to_s}-image"
     end
-    not_if "#{glance_cmd} image-list | grep #{img.to_s}-image"
   end
 end
