@@ -51,16 +51,13 @@ directory "/etc/glance" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode  00700
-
-  action :create
 end
 
-directory node["glance"]["api"]["auth"]["cache_dir"] do
+directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
 
-  action :create
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
@@ -255,7 +252,7 @@ if node["glance"]["image_upload"]
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
-    insecure = node["openstack"]["auth"]["validate_certs"] ? " --insecure" : ""
+    insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
     glance_cmd = "glance#{insecure}"
 
     bash "default image setup for #{img.to_s}" do
@@ -299,7 +296,7 @@ if node["glance"]["image_upload"]
           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
+      not_if "#{glance_cmd} image-list --name #{img}-image"
     end
-    not_if "#{glance_cmd} image-list | grep #{img.to_s}-image"
   end
 end

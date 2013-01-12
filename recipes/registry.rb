@@ -65,12 +65,11 @@ platform_options["glance_packages"].each do |pkg|
   end
 end
 
-directory node["glance"]["registry"]["auth"]["cache_dir"] do
+directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
 
-  action :create
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
@@ -81,24 +80,13 @@ service "glance-registry" do
   action :enable
 end
 
-execute "glance-manage db_sync" do
-  command "sudo -u glance glance-manage db_sync"
-
-  action :nothing
-
-  notifies :restart, "service[glance-registry]", :immediately
-end
+execute "glance-manage db_sync"
 
 # Having to manually version the database because of Ubuntu bug
 # https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
-execute "glance-manage version_control" do
-  command "sudo -u glance glance-manage version_control 0"
-
-  notifies :run, "execute[glance-manage db_sync]", :immediately
-  not_if "sudo -u glance glance-manage db_version"
+execute "glance-manage version_control 0" do
+  not_if "glance-manage db_version"
   only_if { platform?(%w{ubuntu debian}) }
-
-  action :nothing
 end
 
 file "/var/lib/glance/glance.sqlite" do
@@ -149,8 +137,6 @@ directory "/etc/glance" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode  00700
-
-  action :create
 end
 
 template "/etc/glance/glance-registry.conf" do
@@ -164,7 +150,6 @@ template "/etc/glance/glance-registry.conf" do
     :sql_connection => sql_connection
   )
 
-  notifies :run, "execute[glance-manage version_control]", :immediately
   notifies :restart, "service[glance-registry]", :immediately
 end
 
