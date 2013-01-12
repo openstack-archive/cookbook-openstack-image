@@ -64,5 +64,5 @@ admin_user = <%= node["glance"]["service_user"] %>
 admin_password = <%= @service_pass %>
 delay_auth_decision = true
 <% if node["openstack"]["auth"]["strategy"] == "pki" -%>
-signing_dir = <%= node["glance"]["pki"]["signing_dir"] %>
+signing_dir = <%= node["glance"]["api"]["auth"]["cache_dir"] %>
 <% end -%>
