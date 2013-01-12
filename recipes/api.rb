@@ -255,7 +255,7 @@ if node["glance"]["image_upload"]
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
-    insecure = node["openstack"]["auth"]["validate_certs"] ? " --insecure" : ""
+    insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
     glance_cmd = "glance#{insecure}"
 
     bash "default image setup for #{img.to_s}" do
