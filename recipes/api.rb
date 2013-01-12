@@ -55,7 +55,7 @@ directory "/etc/glance" do
   action :create
 end
 
-directory node["glance"]["api"]["auth"]["cache_dir"] do
+directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700

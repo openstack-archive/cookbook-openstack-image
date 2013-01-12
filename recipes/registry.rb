@@ -65,7 +65,7 @@ platform_options["glance_packages"].each do |pkg|
   end
 end
 
-directory node["glance"]["registry"]["auth"]["cache_dir"] do
+directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
