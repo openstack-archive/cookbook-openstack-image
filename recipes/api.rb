@@ -51,8 +51,6 @@ directory "/etc/glance" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode  00700
-
-  action :create
 end
 
 directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
@@ -60,7 +58,6 @@ directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
   group node["glance"]["group"]
   mode 00700
 
-  action :create
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 

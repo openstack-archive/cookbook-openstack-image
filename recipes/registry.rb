@@ -70,7 +70,6 @@ directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
   group node["glance"]["group"]
   mode 00700
 
-  action :create
   only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
@@ -138,8 +137,6 @@ directory "/etc/glance" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode  00700
-
-  action :create
 end
 
 template "/etc/glance/glance-registry.conf" do
