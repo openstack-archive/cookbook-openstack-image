@@ -82,7 +82,6 @@ The following cookbooks are dependencies:
 * mysql
 * openssl
 * openstack-common
-* openstack-utils
 
 =======
 
