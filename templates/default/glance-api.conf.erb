@@ -151,7 +151,7 @@ swift_store_auth_version = <%= @swift_store_auth_version %>
 # If you use Swift authentication service, set it to 'account':'user'
 # where 'account' is a Swift storage account and 'user'
 # is a user in that account
-swift_store_user = <%= @swift_store_user %>
+swift_store_user = <%= @swift_user_tenant %>:<%= @swift_store_user %>
 
 # Auth key for the user authenticating against the
 # Swift authentication service
