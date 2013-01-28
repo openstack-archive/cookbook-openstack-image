@@ -267,12 +267,11 @@ if node["glance"]["image_upload"]
         code <<-EOH
                 set -e
                 set -x
-                image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
-                #{glance_cmd} image-list | grep ${image_name} && exit 0
                 mkdir -p images/#{img.to_s}
                 cd images/#{img.to_s}
 
                 curl -L #{node["glance"]["image"][img.to_sym]} | tar -zx
+                image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
 
                 image_name=${image_name%-multinic}
 
@@ -294,11 +293,10 @@ if node["glance"]["image_upload"]
             EOH
       when ".img", ".qcow2"
         code <<-EOH
-          #{glance_cmd} image-list |grep "#{img.to_s}-image" && exit 0
           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
-      not_if "#{glance_cmd} image-list --name #{img}-image"
+      not_if "#{glance_cmd} image-list --name #{img}-image |grep #{img}-image" # grep necessary for proper exit code
     end
   end
 end
