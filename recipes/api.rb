@@ -75,7 +75,7 @@ end
 
 glance = node["glance"]
 rabbit_server_role = glance["rabbit_server_chef_role"]
-rabbit_info = config_by_role rabbit_server_role
+rabbit_info = config_by_role rabbit_server_role, "queue"
 
 keystone_service_role = glance["keystone_service_chef_role"]
 keystone = config_by_role keystone_service_role, "keystone"
@@ -140,7 +140,7 @@ template "/etc/glance/glance-api.conf" do
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
-    :rabbit_ipaddress => rabbit_info["ipaddress"],    #FIXME!
+    :rabbit_ipaddress => rabbit_info["host"],    #FIXME!
     :glance_flavor => glance_flavor,
     :swift_store_key => swift_store_key,
     :swift_store_user => swift_store_user,
