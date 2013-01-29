@@ -256,15 +256,11 @@ if node["glance"]["image_upload"]
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
     insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
-    glance_cmd = "glance#{insecure}"
+    glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
 
     bash "default image setup for #{img.to_s}" do
       cwd "/tmp"
       user "root"
-      environment ({"OS_USERNAME" => service_user,
-          "OS_PASSWORD" => service_pass,
-          "OS_TENANT_NAME" => service_tenant_name,
-          "OS_AUTH_URL" => auth_uri})
       case File.extname(node["glance"]["image"][img.to_sym])
       when ".gz", ".tgz"
         code <<-EOH
