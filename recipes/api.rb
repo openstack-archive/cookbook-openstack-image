@@ -113,10 +113,12 @@ service_role = node["glance"]["service_role"]
 if glance["api"]["swift_store_auth_address"].nil?
   swift_store_auth_address = auth_uri
   swift_store_user="#{service_tenant_name}:#{service_user}"
+  swift_user_tenant = nil
   swift_store_key = service_pass
   swift_store_auth_version=2
 else
   swift_store_auth_address=glance["api"]["swift_store_auth_address"]
+  swift_user_tenant = glance["api"]["swift_user_tenant"]
   swift_store_user=glance["api"]["swift_store_user"]
   swift_store_key = service_password "#{swift_store_user}"
   swift_store_auth_version=glance["api"]["swift_store_auth_version"]
@@ -143,6 +145,7 @@ template "/etc/glance/glance-api.conf" do
     :rabbit_ipaddress => rabbit_info["host"],    #FIXME!
     :glance_flavor => glance_flavor,
     :swift_store_key => swift_store_key,
+    :swift_user_tenant => swift_user_tenant,
     :swift_store_user => swift_store_user,
     :swift_store_auth_address => swift_store_auth_address,
     :swift_store_auth_version => swift_store_auth_version
