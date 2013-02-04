@@ -51,10 +51,17 @@ default["glance"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"
 default["glance"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
 default["glance"]["api"]["default_store"] = "file"                          # node_attribute
+# If set, glance API service will bind to the address on this interface,
+# otherwise it will bind to the API endpoint's host.
+default["glance"]["api"]["bind_interface"] = nil
 default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
 default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute
 default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"  # node_attribute
 default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"   # node_attribute
+
+# If set, glance registry service will bind to the address on this interface,
+# otherwise it will bind to the API endpoint's host.
+default["glance"]["registry"]["bind_interface"] = nil
 
 # Default Image Locations
 default["glance"]["image_upload"] = false                                                                                           # node_attribute
