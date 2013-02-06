@@ -70,6 +70,8 @@ default["glance"]["image"]["precise"] = "http://cloud-images.ubuntu.com/precise/
 default["glance"]["image"]["oneiric"] = "http://cloud-images.ubuntu.com/oneiric/current/oneiric-server-cloudimg-amd64-disk1.img"    # node_attribute
 default["glance"]["image"]["natty"] = "http://cloud-images.ubuntu.com/natty/current/natty-server-cloudimg-amd64-disk1.img"          # node_attribute
 default["glance"]["image"]["cirros"] = "https://launchpadlibrarian.net/83305348/cirros-0.3.0-x86_64-disk.img"                       # node_attribute
+# more images available at https://github.com/rackerjoe/oz-image-build
+default["glance"]["image"]["centos"] = "http://c250663.r63.cf1.rackcdn.com/centos60_x86_64.qcow2"
 
 # logging attribute
 default["glance"]["syslog"]["use"] = false                  # node_attribute

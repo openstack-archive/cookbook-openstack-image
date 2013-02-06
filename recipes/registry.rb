@@ -80,8 +80,6 @@ service "glance-registry" do
   action :enable
 end
 
-execute "glance-manage db_sync"
-
 # Having to manually version the database because of Ubuntu bug
 # https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
 execute "glance-manage version_control 0" do
@@ -158,6 +156,9 @@ template "/etc/glance/glance-registry.conf" do
 
   notifies :restart, "service[glance-registry]", :immediately
 end
+
+#sync db after config file is generated
+execute "glance-manage db_sync"
 
 template "/etc/glance/glance-registry-paste.ini" do
   source "glance-registry-paste.ini.erb"
