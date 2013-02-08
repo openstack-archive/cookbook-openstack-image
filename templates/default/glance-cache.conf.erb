@@ -29,7 +29,7 @@ image_cache_stall_time = 86400
 image_cache_invalid_entry_grace_period = 3600
 
 # Max cache size in bytes
-image_cache_max_size = <% node["glance"]["api"]["cache"]["image_cache_max_size"] %>
+image_cache_max_size = <%= node["glance"]["api"]["cache"]["image_cache_max_size"] %>
 
 # ================= Syslog Options ============================
 
