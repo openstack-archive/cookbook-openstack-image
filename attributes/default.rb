@@ -39,25 +39,25 @@ default["glance"]["region"] = "RegionOne"
 # that Glance uses
 default["glance"]["rabbit_server_chef_role"] = "rabbitmq-server"
 
-default["glance"]["db"]["username"] = "glance" # node_attribute
+default["glance"]["db"]["username"] = "glance"
 
-default["glance"]["service_tenant_name"] = "service"                        # node_attribute
-default["glance"]["service_user"] = "glance"                                # node_attribute
-default["glance"]["service_role"] = "admin"                                 # node_attribute
+default["glance"]["service_tenant_name"] = "service"
+default["glance"]["service_user"] = "glance"
+default["glance"]["service_role"] = "admin"
 
 # Keystone PKI signing directory. Only written to the filter:authtoken section
 # of the api-paste.ini when node["openstack"]["auth"]["strategy"] == "pki"
 default["glance"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"
 default["glance"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
-default["glance"]["api"]["default_store"] = "file"                          # node_attribute
+default["glance"]["api"]["default_store"] = "file"
 # If set, glance API service will bind to the address on this interface,
 # otherwise it will bind to the API endpoint's host.
 default["glance"]["api"]["bind_interface"] = nil
-default["glance"]["api"]["swift"]["container"] = "glance"             # node_attribute
-default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_attribute
-default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"  # node_attribute
-default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"   # node_attribute
+default["glance"]["api"]["swift"]["container"] = "glance"
+default["glance"]["api"]["swift"]["large_object_size"] = "200"
+default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"
+default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"
 
 # Ceph Options
 default["glance"]["api"]["rbd"]["rbd_store_ceph_conf"] = "/etc/ceph/ceph.conf"
@@ -71,38 +71,38 @@ default["glance"]["api"]["rbd"]["rbd_store_chunk_size"] = "8"
 default["glance"]["registry"]["bind_interface"] = nil
 
 # Default Image Locations
-default["glance"]["image_upload"] = false                                                                                           # node_attribute
-default["glance"]["images"] = [ "cirros" ]                                                                                          # node_attribute
-default["glance"]["image"]["precise"] = "http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img"    # node_attribute
-default["glance"]["image"]["oneiric"] = "http://cloud-images.ubuntu.com/oneiric/current/oneiric-server-cloudimg-amd64-disk1.img"    # node_attribute
-default["glance"]["image"]["natty"] = "http://cloud-images.ubuntu.com/natty/current/natty-server-cloudimg-amd64-disk1.img"          # node_attribute
-default["glance"]["image"]["cirros"] = "https://launchpadlibrarian.net/83305348/cirros-0.3.0-x86_64-disk.img"                       # node_attribute
+default["glance"]["image_upload"] = false
+default["glance"]["images"] = [ "cirros" ]
+default["glance"]["image"]["precise"] = "http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img"
+default["glance"]["image"]["oneiric"] = "http://cloud-images.ubuntu.com/oneiric/current/oneiric-server-cloudimg-amd64-disk1.img"
+default["glance"]["image"]["natty"] = "http://cloud-images.ubuntu.com/natty/current/natty-server-cloudimg-amd64-disk1.img"
+default["glance"]["image"]["cirros"] = "https://launchpadlibrarian.net/83305348/cirros-0.3.0-x86_64-disk.img"
 # more images available at https://github.com/rackerjoe/oz-image-build
 default["glance"]["image"]["centos"] = "http://c250663.r63.cf1.rackcdn.com/centos60_x86_64.qcow2"
 
 # logging attribute
-default["glance"]["syslog"]["use"] = false                  # node_attribute
-default["glance"]["syslog"]["facility"] = "LOG_LOCAL2"      # node_attribute
-default["glance"]["syslog"]["config_facility"] = "local2"   # node_attribute
+default["glance"]["syslog"]["use"] = false
+default["glance"]["syslog"]["facility"] = "LOG_LOCAL2"
+default["glance"]["syslog"]["config_facility"] = "local2"
 
 # platform-specific settings
 case platform
 when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["glance"]["platform"] = {
-    "mysql_python_packages" => [ "MySQL-python" ],                  # node_attribute
-    "glance_packages" => [ "openstack-glance", "openstack-swift", "cronie" ], # node_attribute
-    "glance_api_service" => "openstack-glance-api",                 # node_attribute
-    "glance_registry_service" => "openstack-glance-registry",       # node_attribute
-    "glance_api_process_name" => "glance-api",                      # node_attribute
-    "package_overrides" => ""                                       # node_attribute
+    "mysql_python_packages" => [ "MySQL-python" ],
+    "glance_packages" => [ "openstack-glance", "openstack-swift", "cronie" ],
+    "glance_api_service" => "openstack-glance-api",
+    "glance_registry_service" => "openstack-glance-registry",
+    "glance_api_process_name" => "glance-api",
+    "package_overrides" => ""
   }
 when "ubuntu"
   default["glance"]["platform"] = {
-    "mysql_python_packages" => [ "python-mysqldb" ],                # node_attribute
-    "glance_packages" => [ "glance", "python-swift" ],              # node_attribute
-    "glance_api_service" => "glance-api",                           # node_attribute
-    "glance_registry_service" => "glance-registry",                 # node_attribute
-    "glance_registry_process_name" => "glance-registry",            # node_attribute
-    "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'" # node_attribute
+    "mysql_python_packages" => [ "python-mysqldb" ],
+    "glance_packages" => [ "glance", "python-swift" ],
+    "glance_api_service" => "glance-api",
+    "glance_registry_service" => "glance-registry",
+    "glance_registry_process_name" => "glance-registry",
+    "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end
