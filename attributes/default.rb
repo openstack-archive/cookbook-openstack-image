@@ -29,9 +29,6 @@ default["glance"]["debug"] = "False"
 # This is the name of the Chef role that will install the Keystone Service API
 default["glance"]["keystone_service_chef_role"] = "keystone"
 
-default["glance"]["user"] = "glance"
-default["glance"]["group"] = "glance"
-
 # Gets set in the Image Endpoint when registering with Keystone
 default["glance"]["region"] = "RegionOne"
 
@@ -88,6 +85,8 @@ default["glance"]["syslog"]["config_facility"] = "local2"
 # platform-specific settings
 case platform
 when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
+  default["glance"]["user"] = "glance"
+  default["glance"]["group"] = "glance"
   default["glance"]["platform"] = {
     "mysql_python_packages" => [ "MySQL-python" ],
     "glance_packages" => [ "openstack-glance", "openstack-swift", "cronie" ],
@@ -96,7 +95,20 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
     "glance_api_process_name" => "glance-api",
     "package_overrides" => ""
   }
+when "suse"
+  default["glance"]["user"] = "openstack-glance"
+  default["glance"]["group"] = "openstack-glance"
+  default["glance"]["platform"] = {
+    "mysql_python_packages" => [ "python-mysql" ],
+    "glance_packages" => [ "openstack-glance", "openstack-swift" ],
+    "glance_api_service" => "openstack-glance-api",
+    "glance_registry_service" => "openstack-glance-registry",
+    "glance_api_process_name" => "glance-api",
+    "package_overrides" => ""
+  }
 when "ubuntu"
+  default["glance"]["user"] = "glance"
+  default["glance"]["group"] = "glance"
   default["glance"]["platform"] = {
     "mysql_python_packages" => [ "python-mysqldb" ],
     "glance_packages" => [ "glance", "python-swift" ],

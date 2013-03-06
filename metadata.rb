@@ -9,7 +9,7 @@ recipe            "glance::registry", "Installs packages required for a glance r
 recipe            "glance::db", "Creates the Glance registry database"
 recipe            "glance::keystone_registration", "Registers Glance endpoints and service with Keystone"
 
-%w{ ubuntu fedora redhat centos }.each do |os|
+%w{ ubuntu fedora redhat centos suse }.each do |os|
   supports os
 end
 
