@@ -13,10 +13,6 @@ bind_host = <%= @registry_bind_address %>
 # Port the bind the registry server to
 bind_port = <%= @registry_port %>
 
-# Log to this file. Make sure you do not set the same log
-# file for both the API and registry servers!
-log_file = /var/log/glance/registry.log
-
 # Backlog requests when creating socket
 backlog = 4096
 
@@ -44,15 +40,12 @@ limit_param_default = 25
 
 # ================= Syslog Options ============================
 
-# Send logs to syslog (/dev/log) instead of to file specified
-# by `log_file`
-use_syslog = <%= node["glance"]["syslog"]["use"] %>
-
 <% if node["glance"]["syslog"]["use"] %>
-# Facility to use. If unset defaults to LOG_USER.
-syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
+log_config = /etc/openstack/logging.conf
 <% else %>
-# syslog_log_facility = LOG_USER
+# Log to this file. Make sure you do not set the same log
+# file for both the API and registry servers!
+log_file = /var/log/glance/registry.log
 <% end %>
 
 # ================= SSL Options ===============================
