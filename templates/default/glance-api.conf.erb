@@ -246,5 +246,16 @@ scrubber_datadir = /var/lib/glance/scrubber
 # Base directory that the Image Cache uses
 image_cache_dir = /var/lib/glance/image-cache/
 
+[keystone_authtoken]
+auth_host = <%= @identity_endpoint.host %>
+auth_port = <%= @identity_endpoint.port %>
+auth_protocol = <%= @identity_endpoint.scheme %>
+admin_tenant_name = <%= node["glance"]["service_tenant_name"] %>
+admin_user = <%= node["glance"]["service_user"] %>
+admin_password = <%= @service_pass %>
+<% if node["openstack"]["auth"]["strategy"] == "pki" -%>
+signing_dir = <%= node["glance"]["api"]["auth"]["cache_dir"] %>
+<% end -%>
+
 [paste_deploy]
 flavor = <%= @glance_flavor %>
