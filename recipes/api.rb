@@ -296,7 +296,7 @@ if node["glance"]["image_upload"]
           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --copy-from="#{node["glance"]["image"][img]}"
             EOH
       end
-      not_if "#{glance_cmd} image-list --name #{img}-image |grep #{img}-image" # grep necessary for proper exit code
+      not_if "#{glance_cmd} image-list --name #{img.to_s}-image |grep #{img.to_s}-image" # grep necessary for proper exit code
     end
   end
 end
