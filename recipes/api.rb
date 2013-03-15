@@ -62,8 +62,6 @@ directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
-
-  only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
 template "/etc/glance/policy.json" do

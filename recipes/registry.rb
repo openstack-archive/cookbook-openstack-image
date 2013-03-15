@@ -59,8 +59,6 @@ directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
-
-  only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
 service "glance-registry" do
