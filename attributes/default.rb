@@ -42,8 +42,8 @@ default["glance"]["service_tenant_name"] = "service"
 default["glance"]["service_user"] = "glance"
 default["glance"]["service_role"] = "admin"
 
-# Keystone PKI signing directory. Only written to the filter:authtoken section
-# of the api-paste.ini when node["openstack"]["auth"]["strategy"] == "pki"
+# Keystone PKI signing directories
+# XXX keystoneclient wants these dirs to exist even if it doesn't use them
 default["glance"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"
 default["glance"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
