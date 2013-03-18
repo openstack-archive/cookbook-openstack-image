@@ -100,7 +100,7 @@ when "suse"
   default["glance"]["group"] = "openstack-glance"
   default["glance"]["platform"] = {
     "mysql_python_packages" => [ "python-mysql" ],
-    "glance_packages" => [ "openstack-glance", "openstack-swift" ],
+    "glance_packages" => [ "openstack-glance", "openstack-swift", "python-glanceclient" ],
     "glance_api_service" => "openstack-glance-api",
     "glance_registry_service" => "openstack-glance-registry",
     "glance_api_process_name" => "glance-api",
