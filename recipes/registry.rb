@@ -36,12 +36,9 @@ sql_connection = db_uri("image", db_user, db_pass)
 
 keystone = config_by_role node["glance"]["keystone_service_chef_role"], "keystone"
 
-# Instead of the search to find the keystone service, put this
-# into openstack-common as a common attribute?
-ksadmin_user = keystone["admin_user"]
-ksadmin_tenant_name = keystone["admin_tenant_name"]
-ksadmin_pass = user_password ksadmin_user
+bootstrap_token = secret "secrets", "keystone_bootstrap_token"
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
+
 service_pass = service_password "glance"
 service_tenant_name = node["glance"]["service_tenant_name"]
 service_user = node["glance"]["service_user"]
@@ -94,9 +91,7 @@ end
 # Register Service Tenant
 keystone_register "Register Service Tenant" do
   auth_uri auth_uri
-  admin_user ksadmin_user
-  admin_tenant_name ksadmin_tenant_name
-  admin_password ksadmin_pass
+  bootstrap_token bootstrap_token
   tenant_name node["glance"]["service_tenant_name"]
   tenant_description "Service Tenant"
   tenant_enabled "true" # Not required as this is the default
@@ -107,9 +102,7 @@ end
 # Register Service User
 keystone_register "Register #{service_user} User" do
   auth_uri auth_uri
-  admin_user ksadmin_user
-  admin_tenant_name ksadmin_tenant_name
-  admin_password ksadmin_pass
+  bootstrap_token bootstrap_token
   tenant_name node["glance"]["service_tenant_name"]
   user_name service_user
   user_pass service_pass
@@ -121,9 +114,7 @@ end
 ## Grant Admin role to Service User for Service Tenant ##
 keystone_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
   auth_uri auth_uri
-  admin_user ksadmin_user
-  admin_tenant_name ksadmin_tenant_name
-  admin_password ksadmin_pass
+  bootstrap_token bootstrap_token
   tenant_name service_tenant_name
   user_name service_user
   role_name service_role

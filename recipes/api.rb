@@ -81,11 +81,7 @@ keystone_service_role = glance["keystone_service_chef_role"]
 keystone = config_by_role keystone_service_role, "keystone"
 identity_admin_endpoint = endpoint "identity-admin"
 
-# Instead of the search to find the keystone service, put this
-# into openstack-common as a common attribute?
-ksadmin_user = keystone["admin_user"]
-ksadmin_tenant_name = keystone["admin_tenant_name"]
-ksadmin_pass = user_password ksadmin_user
+bootstrap_token = secret "secrets", "keystone_bootstrap_token"
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 db_user = node["glance"]["db"]["username"]
@@ -231,9 +227,7 @@ end
 # Register Image Service
 keystone_register "Register Image Service" do
   auth_uri auth_uri
-  admin_user ksadmin_user
-  admin_tenant_name ksadmin_tenant_name
-  admin_password ksadmin_pass
+  bootstrap_token bootstrap_token
   service_name "glance"
   service_type "image"
   service_description "Glance Image Service"
@@ -244,9 +238,7 @@ end
 # Register Image Endpoint
 keystone_register "Register Image Endpoint" do
   auth_uri auth_uri
-  admin_user ksadmin_user
-  admin_tenant_name ksadmin_tenant_name
-  admin_password ksadmin_pass
+  bootstrap_token bootstrap_token
   service_type "image"
   endpoint_region node["glance"]["region"]
   endpoint_adminurl api_endpoint.to_s
