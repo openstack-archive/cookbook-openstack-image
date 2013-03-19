@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require "uri"
-
 class ::Chef::Recipe
   include ::Openstack
 end
@@ -33,15 +31,7 @@ db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
-identity_endpoint = endpoint "identity"
-auth_uri = ::URI.decode identity_endpoint.to_s
-
-service_pass = service_password "glance"
-service_tenant_name = node["glance"]["service_tenant_name"]
-service_user = node["glance"]["service_user"]
-service_role = node["glance"]["service_role"]
-
-registry_endpoint = endpoint "image-registry"
+identity_endpoint = endpoint "identity-api"
 
 package "curl" do
   action :install
