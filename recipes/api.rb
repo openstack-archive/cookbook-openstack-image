@@ -89,7 +89,6 @@ api_endpoint = endpoint "image-api"
 service_pass = service_password "glance"
 service_tenant_name = node["glance"]["service_tenant_name"]
 service_user = node["glance"]["service_user"]
-service_role = node["glance"]["service_role"]
 
 # Possible combinations of options here
 # - default_store=file
