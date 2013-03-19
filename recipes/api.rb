@@ -77,7 +77,7 @@ glance = node["glance"]
 rabbit_server_role = glance["rabbit_server_chef_role"]
 rabbit_info = config_by_role rabbit_server_role, "queue"
 
-identity_endpoint = endpoint "identity-api"
+identity_endpoint = endpoint "identity-admin"
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node["glance"]["db"]["username"]
