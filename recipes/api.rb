@@ -77,12 +77,8 @@ glance = node["glance"]
 rabbit_server_role = glance["rabbit_server_chef_role"]
 rabbit_info = config_by_role rabbit_server_role, "queue"
 
-keystone_service_role = glance["keystone_service_chef_role"]
-keystone = config_by_role keystone_service_role, "keystone"
-identity_admin_endpoint = endpoint "identity-admin"
-
-bootstrap_token = secret "secrets", "keystone_bootstrap_token"
-auth_uri = ::URI.decode identity_admin_endpoint.to_s
+identity_endpoint = endpoint "identity-admin"
+auth_uri = ::URI.decode identity_endpoint.to_s
 
 db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
@@ -93,7 +89,6 @@ api_endpoint = endpoint "image-api"
 service_pass = service_password "glance"
 service_tenant_name = node["glance"]["service_tenant_name"]
 service_user = node["glance"]["service_user"]
-service_role = node["glance"]["service_role"]
 
 # Possible combinations of options here
 # - default_store=file
@@ -162,7 +157,7 @@ template "/etc/glance/glance-api-paste.ini" do
   group node["glance"]["group"]
   mode   00644
   variables(
-    "identity_endpoint" => identity_admin_endpoint,
+    "identity_endpoint" => identity_endpoint,
     "service_pass" => service_pass
   )
 
@@ -222,30 +217,6 @@ template "/etc/glance/glance-scrubber-paste.ini" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode   00644
-end
-
-# Register Image Service
-keystone_register "Register Image Service" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  service_name "glance"
-  service_type "image"
-  service_description "Glance Image Service"
-
-  action :create_service
-end
-
-# Register Image Endpoint
-keystone_register "Register Image Endpoint" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  service_type "image"
-  endpoint_region node["glance"]["region"]
-  endpoint_adminurl api_endpoint.to_s
-  endpoint_internalurl api_endpoint.to_s
-  endpoint_publicurl api_endpoint.to_s
-
-  action :create_endpoint
 end
 
 # TODO(jaypipes) Turn the below into an LWRP
