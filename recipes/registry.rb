@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
+require "uri"
+
 class ::Chef::Recipe
   include ::Openstack
-  include ::Opscode::OpenSSL::Password
 end
 
 platform_options = node["glance"]["platform"]
@@ -28,12 +29,11 @@ package "python-keystone" do
   action :install
 end
 
-identity_endpoint = endpoint "identity"
-
 db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
+identity_endpoint = endpoint "identity"
 auth_uri = ::URI.decode identity_endpoint.to_s
 
 service_pass = service_password "glance"
