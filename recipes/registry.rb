@@ -28,16 +28,13 @@ package "python-keystone" do
   action :install
 end
 
-identity_admin_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity"
 
 db_user = node["glance"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
-keystone = config_by_role node["glance"]["keystone_service_chef_role"], "keystone"
-
-bootstrap_token = secret "secrets", "keystone_bootstrap_token"
-auth_uri = ::URI.decode identity_admin_endpoint.to_s
+auth_uri = ::URI.decode identity_endpoint.to_s
 
 service_pass = service_password "glance"
 service_tenant_name = node["glance"]["service_tenant_name"]
@@ -88,40 +85,6 @@ file "/var/lib/glance/glance.sqlite" do
   action :delete
 end
 
-# Register Service Tenant
-keystone_register "Register Service Tenant" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name node["glance"]["service_tenant_name"]
-  tenant_description "Service Tenant"
-  tenant_enabled "true" # Not required as this is the default
-
-  action :create_tenant
-end
-
-# Register Service User
-keystone_register "Register #{service_user} User" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name node["glance"]["service_tenant_name"]
-  user_name service_user
-  user_pass service_pass
-  user_enabled "true" # Not required as this is the default
-
-  action :create_user
-end
-
-## Grant Admin role to Service User for Service Tenant ##
-keystone_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
-  tenant_name service_tenant_name
-  user_name service_user
-  role_name service_role
-
-  action :grant_role
-end
-
 directory "/etc/glance" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
@@ -157,7 +120,7 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
   variables(
-    "identity_endpoint" => identity_admin_endpoint,
+    "identity_endpoint" => identity_endpoint,
     "service_pass" => service_pass
   )
 
