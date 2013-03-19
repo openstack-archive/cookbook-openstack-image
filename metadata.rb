@@ -13,6 +13,6 @@ recipe            "glance::db", "Creates the Glance registry database"
 end
 
 depends           "database"
-depends           "keystone"
+depends           "keystone", ">= 2012.2.1"
 depends           "mysql"
 depends           "openstack-common", ">= 0.1.7"
