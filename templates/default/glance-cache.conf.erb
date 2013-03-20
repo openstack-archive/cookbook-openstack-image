@@ -7,8 +7,6 @@ verbose = <%= node["glance"]["verbose"] %>
 # Show debugging output in logs (sets DEBUG log level output)
 debug = <%= node["glance"]["debug"] %>
 
-log_file = /var/log/glance/image-cache.log
-
 # =============== Image Cache Options =============================
 
 # Directory that the Image Cache writes data to
@@ -33,14 +31,10 @@ image_cache_max_size = <%= node["glance"]["api"]["cache"]["image_cache_max_size"
 
 # ================= Syslog Options ============================
 
-# Send logs to syslog (/dev/log) instead of to file specified by `log_file`
-use_syslog = <%= node["glance"]["syslog"]["use"] %>
-
 <% if node["glance"]["syslog"]["use"] %>
-# Facility to use. If unset defaults to LOG_USER.
-syslog_log_facility = <%= node["glance"]["syslog"]["facility"] %>
+log_config = /etc/openstack/logging.conf
 <% else %>
-# syslog_log_facility = LOG_USER
+log_file = /var/log/glance/image-cache.log
 <% end %>
 
 # ============ Registry Options ===============================

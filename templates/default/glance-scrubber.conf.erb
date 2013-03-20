@@ -7,12 +7,13 @@ verbose = <%= node["glance"]["verbose"] %>
 # Show debugging output in logs (sets DEBUG log level output)
 debug = <%= node["glance"]["debug"] %>
 
+<% if node["glance"]["syslog"]["use"] %>
+log_config = /etc/openstack/logging.conf
+<% else %>
 # Log to this file. Make sure you do not set the same log
 # file for both the API and registry servers!
 log_file = /var/log/glance/scrubber.log
-
-# Send logs to syslog (/dev/log) instead of to file specified by `log_file`
-use_syslog = False
+<% end %>
 
 # Should we run our own loop or rely on cron/scheduler to run us
 daemon = False

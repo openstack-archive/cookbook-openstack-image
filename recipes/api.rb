@@ -24,6 +24,10 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
+if node["glance"]["syslog"]["use"]
+  include_recipe = "openstack-common::logging"
+end
+
 platform_options = node["glance"]["platform"]
 
 package "curl" do
