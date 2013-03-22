@@ -88,6 +88,7 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["glance"]["user"] = "glance"
   default["glance"]["group"] = "glance"
   default["glance"]["platform"] = {
+    "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "MySQL-python" ],
     "glance_packages" => [ "openstack-glance", "openstack-swift", "cronie" ],
     "glance_api_service" => "openstack-glance-api",
@@ -99,6 +100,7 @@ when "suse"
   default["glance"]["user"] = "openstack-glance"
   default["glance"]["group"] = "openstack-glance"
   default["glance"]["platform"] = {
+    "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysql" ],
     "glance_packages" => [ "openstack-glance", "openstack-swift", "python-glanceclient" ],
     "glance_api_service" => "openstack-glance-api",
@@ -110,6 +112,7 @@ when "ubuntu"
   default["glance"]["user"] = "glance"
   default["glance"]["group"] = "glance"
   default["glance"]["platform"] = {
+    "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysqldb" ],
     "glance_packages" => [ "glance", "python-swift" ],
     "glance_api_service" => "glance-api",
