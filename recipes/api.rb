@@ -19,6 +19,7 @@
 #
 
 require "uri"
+require "chef/shell_out"
 
 class ::Chef::Recipe
   include ::Openstack
@@ -225,50 +226,56 @@ end
 
 # TODO(jaypipes) Turn the below into an LWRP
 if node["glance"]["image_upload"]
+
+  insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
+  glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
+  current_images = Chef::ShellOut.new("#{glance_cmd} image-list | grep active | awk '{print $4}'").run_command
+  image_list = current_images.stdout.split( /\n/ )
+  Chef::Log.info("Current images in glance are #{images_list.join(', ')}")
+
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
 
-    insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
-    glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
+    if !image_list.include? "#{img.to_s}-image"
+      Chef::Log.info("Adding #{img.to_s}-image to glance")
+      bash "default image setup for #{img.to_s}" do
+       cwd "/tmp"
+       user "root"
+       case File.extname(node["glance"]["image"][img.to_sym])
+       when ".gz", ".tgz"
+         code <<-EOH
+                 set -e
+                 set -x
+                 mkdir -p images/#{img.to_s}
+                 cd images/#{img.to_s}
 
-    bash "default image setup for #{img.to_s}" do
-      cwd "/tmp"
-      user "root"
-      case File.extname(node["glance"]["image"][img.to_sym])
-      when ".gz", ".tgz"
-        code <<-EOH
-                set -e
-                set -x
-                mkdir -p images/#{img.to_s}
-                cd images/#{img.to_s}
+                 curl -L #{node["glance"]["image"][img.to_sym]} | tar -zx
+                 image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
+  
+                 image_name=${image_name%-multinic}
 
-                curl -L #{node["glance"]["image"][img.to_sym]} | tar -zx
-                image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
+                 kernel_file=$(ls *vmlinuz-virtual | head -n1)
+                 if [ ${#kernel_file} -eq 0 ]; then
+                    kernel_file=$(ls *vmlinuz | head -n1)
+                 fi
 
-                image_name=${image_name%-multinic}
+                 ramdisk=$(ls *-initrd | head -n1)
+                 if [ ${#ramdisk} -eq 0 ]; then
+                     ramdisk=$(ls *-loader | head -n1)
+                 fi
 
-                kernel_file=$(ls *vmlinuz-virtual | head -n1)
-                if [ ${#kernel_file} -eq 0 ]; then
-                   kernel_file=$(ls *vmlinuz | head -n1)
-                fi
+                 kernel=$(ls *.img | head -n1)
 
-                ramdisk=$(ls *-initrd | head -n1)
-                if [ ${#ramdisk} -eq 0 ]; then
-                    ramdisk=$(ls *-loader | head -n1)
-                fi
-
-                kernel=$(ls *.img | head -n1)
-
-                kid=$(#{glance_cmd} image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-                rid=$(#{glance_cmd} image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
-                glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}0
-            EOH
-      when ".img", ".qcow2"
-        code <<-EOH
-          #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
-            EOH
+                 kid=$(#{glance_cmd} image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
+                 rid=$(#{glance_cmd} image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+                 glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}0
+             EOH
+       when ".img", ".qcow2"
+         code <<-EOH
+           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
+             EOH
+       end
       end
-      not_if "#{glance_cmd} image-list --name #{img.to_s}-image |grep #{img.to_s}-image" # grep necessary for proper exit code
     end
   end
 end
