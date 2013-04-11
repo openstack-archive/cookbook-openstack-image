@@ -231,7 +231,7 @@ if node["glance"]["image_upload"]
   glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
   current_images = Chef::ShellOut.new("#{glance_cmd} image-list | grep active | awk '{print $4}'").run_command
   image_list = current_images.stdout.split( /\n/ )
-  Chef::Log.info("Current images in glance are #{images_list.join(', ')}")
+  Chef::Log.info("Current images in glance are #{image_list.join(', ')}")
 
   node["glance"]["images"].each do |img|
     Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
