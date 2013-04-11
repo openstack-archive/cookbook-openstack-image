@@ -19,7 +19,7 @@
 #
 
 require "uri"
-require "chef/shell_out"
+require "chef/mixin/shell_out"
 
 class ::Chef::Recipe
   include ::Openstack
@@ -229,7 +229,7 @@ if node["glance"]["image_upload"]
 
   insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
   glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
-  current_images = Chef::ShellOut.new("#{glance_cmd} image-list | grep active | awk '{print $4}'").run_command
+  current_images = Chef::Mixin::ShellOut.new("#{glance_cmd} image-list | grep active | awk '{print $4}'").run_command
   image_list = current_images.stdout.split( /\n/ )
   Chef::Log.info("Current images in glance are #{image_list.join(', ')}")
 
