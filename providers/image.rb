@@ -22,7 +22,6 @@ action :upload do
   @pass = new_resource.keystone_pass
   @tenant = new_resource.keystone_tenant
   @ks_uri = new_resource.keystone_uri
-  @glance_cmd = "glance --insecure -I #{@user} -K #{@pass} -T #{@tenant} -N #{@ks_uri}"
 
   name = new_resource.image_name
   url = new_resource.image_url
@@ -57,6 +56,7 @@ end
 
 private
 def _upload_qcow(name, url)
+  glance_cmd = "glance --insecure -I #{@user} -K #{@pass} -T #{@tenant} -N #{@ks_uri}"
   c_fmt = "--container-format bare"
   d_fmt = "--disk-format qcow2"
 
@@ -64,14 +64,15 @@ def _upload_qcow(name, url)
     cwd "/tmp"
     user "root"
     code <<-EOH
-        #{@glance_cmd} image-create --name "#{name}" --is-public true #{c_fmt} #{d_fmt} --location "#{url}"
+        #{glance_cmd} image-create --name "#{name}" --is-public true #{c_fmt} #{d_fmt} --location "#{url}"
     EOH
-    not_if "#{@glance_cmd} image-list | grep #{name.to_s}"
+    not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end
 end
 
 private
 def _upload_ami(name, url)
+  glance_cmd = "glance --insecure -I #{@user} -K #{@pass} -T #{@tenant} -N #{@ks_uri}"
   aki_fmt = "--container-format aki --disk-format aki"
   ari_fmt = "--container-format ari --disk-format ari"
   ami_fmt = "--container-format ami --disk-format ami"
@@ -101,10 +102,10 @@ def _upload_ami(name, url)
 
         kernel=$(ls *.img | head -n1)
 
-        kid=$(#{@glance_cmd} image-create --name "${image_name}-kernel" --is-public true #{aki_fmt} < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-        rid=$(#{@glance_cmd} image-create --name "${image_name}-initrd" --is-public true #{ari_fmt} < ${ramdisk} | cut -d: -f2 | sed 's/ //')
-        #{@glance_cmd} image-create --name "#{name}" --is-public true #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
+        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public true #{aki_fmt} < ${kernel_file} | cut -d: -f2 | sed 's/ //')
+        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public true #{ari_fmt} < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+        #{glance_cmd} image-create --name "#{name}" --is-public true #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
-    not_if "#{@glance_cmd} image-list | grep #{name.to_s}"
+    not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end
 end
