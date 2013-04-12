@@ -40,27 +40,6 @@ Swift
       "image_upload": true
     }
 
-
-Cloud Files
------------
-    "glance": {
-      "api": {
-        "default_store": "swift",
-        "swift_store_user": "<Cloud Files Tenant ID>:<Rackspace Cloud Files Username>",
-        "swift_store_key": "<Rackspace Cloud Password>",
-        "swift_store_auth_version": "2",
-        "swift_store_auth_address": "https://identity.api.rackspacecloud.com/v2.0"
-      },
-      "images": [
-        "cirros"
-      ],
-      "image_upload": true
-    }
-
-To obtain your Cloud Files Tenant ID use the following:
-    
-    curl -s -X POST https://identity.api.rackspacecloud.com/v2.0/tokens -d '{"auth": {"passwordCredentials": {"username": "<Rackspace Cloud User Name>", "password": "<Rackspace Cloud Password"}}}' -H "Content-type: application/json" | python -mjson.tool | grep "tenantId.*Mosso" | head -1
-
 Requirements
 ============
 
@@ -69,8 +48,8 @@ Chef 0.10.0 or higher required (for Chef environment use)
 Platform
 --------
 
-* Ubuntu-12.04
-* Fedora-17
+* Ubuntu-12.04+
+* Fedora-17+
 
 Cookbooks
 ---------
@@ -80,17 +59,23 @@ The following cookbooks are dependencies:
 * database
 * keystone
 * mysql
-* openssl
 * openstack-common
 
-=======
+Providers
+=========
+
+`image` (`:action` `:upload`
+
+- `:image_url`: Location of the image to be loaded into Glance.
+- `:image_name`: A name for the image.
+- `:image_type`: `qcow2` or `ami`. Defaults to `qcow2`.
+- `:keystone_user`: Username of the Keystone admin user.
+- `:keystone_pass`: Password for the Keystone admin user.
+- `:keystone_tenant`: Name of the Keystone admin user's tenant.
+- `:keystone_uri`: URI of the Identity API endpoint.
 
 Recipes
 =======
-
-default
--------
--Includes recipes `api`, `registry`
 
 api
 ------
@@ -98,8 +83,15 @@ api
 
 registry
 --------
--Includes recipe `mysql:client`
 -Installs the glance-registry server
+
+keystone-registration
+---------------------
+- Registers the API endpoint and glance service Keystone user
+
+db
+--
+- Creates the Glance registry database
 
 Attributes
 ==========

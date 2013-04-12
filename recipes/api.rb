@@ -4,6 +4,7 @@
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012, Opscode, Inc.
+# Copyright 2013, AT&T
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@
 #
 
 require "uri"
-require "chef/mixin/shell_out"
 
 class ::Chef::Recipe
   include ::Openstack
@@ -224,58 +224,16 @@ template "/etc/glance/glance-scrubber-paste.ini" do
   mode   00644
 end
 
-# TODO(jaypipes) Turn the below into an LWRP
 if node["glance"]["image_upload"]
-
-  insecure = node["openstack"]["auth"]["validate_certs"] ? "" : " --insecure"
-  glance_cmd = "glance#{insecure} -I #{service_user} -K #{service_pass} -T #{service_tenant_name} -N #{auth_uri}"
-  current_images = Chef::Mixin::ShellOut.new("#{glance_cmd} image-list | grep active | awk '{print $4}'").run_command
-  image_list = current_images.stdout.split( /\n/ )
-  Chef::Log.info("Current images in glance are #{image_list.join(', ')}")
-
   node["glance"]["images"].each do |img|
-    Chef::Log.info("Checking to see if #{img.to_s}-image should be uploaded.")
-
-    if !image_list.include? "#{img.to_s}-image"
-      Chef::Log.info("Adding #{img.to_s}-image to glance")
-      bash "default image setup for #{img.to_s}" do
-       cwd "/tmp"
-       user "root"
-       case File.extname(node["glance"]["image"][img.to_sym])
-       when ".gz", ".tgz"
-         code <<-EOH
-                 set -e
-                 set -x
-                 mkdir -p images/#{img.to_s}
-                 cd images/#{img.to_s}
-
-                 curl -L #{node["glance"]["image"][img.to_sym]} | tar -zx
-                 image_name=$(basename #{node["glance"]["image"][img]} .tar.gz)
-  
-                 image_name=${image_name%-multinic}
-
-                 kernel_file=$(ls *vmlinuz-virtual | head -n1)
-                 if [ ${#kernel_file} -eq 0 ]; then
-                    kernel_file=$(ls *vmlinuz | head -n1)
-                 fi
-
-                 ramdisk=$(ls *-initrd | head -n1)
-                 if [ ${#ramdisk} -eq 0 ]; then
-                     ramdisk=$(ls *-loader | head -n1)
-                 fi
-
-                 kernel=$(ls *.img | head -n1)
-
-                 kid=$(#{glance_cmd} image-create --name="${image_name}-kernel" --is-public=true --disk-format=aki --container-format=aki < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-                 rid=$(#{glance_cmd} image-create --name="${image_name}-initrd" --is-public=true --disk-format=ari --container-format=ari < ${ramdisk} | cut -d: -f2 | sed 's/ //')
-                 glance image-create --name="#{img.to_s}-image" --is-public=true --disk-format=ami --container-format=ami --property kernel_id=$kid --property ramdisk_id=$rid < ${kernel}0
-             EOH
-       when ".img", ".qcow2"
-         code <<-EOH
-           #{glance_cmd} image-create --name="#{img.to_s}-image" --is-public=true --container-format=bare --disk-format=qcow2 --location="#{node["glance"]["image"][img]}"
-             EOH
-       end
-      end
+    glance_image "Image setup for #{img.to_s}" do
+      image_url node["glance"]["image"][img.to_sym]
+      image_name img
+      keystone_user service_user
+      keystone_pass service_pass
+      keystone_tenant service_tenant_name
+      keystone_uri auth_uri
+      action :upload
     end
   end
 end
