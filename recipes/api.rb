@@ -26,7 +26,7 @@ class ::Chef::Recipe
 end
 
 if node["glance"]["syslog"]["use"]
-  include_recipe = "openstack-common::logging"
+  include_recipe "openstack-common::logging"
 end
 
 platform_options = node["glance"]["platform"]
