@@ -59,6 +59,13 @@ default["glance"]["api"]["swift"]["large_object_size"] = "200"        # node_att
 default["glance"]["api"]["swift"]["large_object_chunk_size"] = "200"  # node_attribute
 default["glance"]["api"]["cache"]["image_cache_max_size"] = "10737418240"   # node_attribute
 
+# Ceph Options
+default["glance"]["api"]["rbd"]["rbd_store_ceph_conf"] = "/etc/ceph/ceph.conf"
+default["glance"]["api"]["rbd"]["rbd_store_user"] = "glance"
+default["glance"]["api"]["rbd"]["rbd_store_pool"] = "images"
+default["glance"]["api"]["rbd"]["rbd_store_chunk_size"] = "8"
+
+
 # If set, glance registry service will bind to the address on this interface,
 # otherwise it will bind to the API endpoint's host.
 default["glance"]["registry"]["bind_interface"] = nil
