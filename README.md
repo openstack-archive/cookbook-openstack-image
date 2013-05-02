@@ -117,9 +117,13 @@ Attributes
 * `glance["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `glance["image]["natty"]` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
 * `glance["api"]["default_store"]` - Toggles the backend storage type.  Currently supported is "file" and "swift"
-* `glance["api"]["swift"]["store_container"] - Set the container used by glance to store images and snapshots.  Defaults to "glance"
-* `glance["api"]["swift"]["store_large_object_size"] - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
-* `glance["api"]["swift"]["store_large_object_chunk_size"] - Set the chunk size for glance.  Defaults to "200" MB
+* `glance["api"]["swift"]["store_container"]` - Set the container used by glance to store images and snapshots.  Defaults to "glance"
+* `glance["api"]["swift"]["store_large_object_size"]` - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
+* `glance["api"]["swift"]["store_large_object_chunk_size"]` - Set the chunk size for glance.  Defaults to "200" MB
+* `glance["api"]["rbd"]["rbd_store_ceph_conf"]` - Default location of ceph.conf
+* `glance["api"]["rbd"]["rbd_store_user"]` - User for connecting to ceph store
+* `glance["api"]["rbd"]["rbd_store_pool"]` - RADOS pool for images
+* `glance["api"]["rbd"]["rbd_store_chunk_size"]` - Size in MB of chunks for RADOS Store, should be a power of 2
 
 Templates
 =========
