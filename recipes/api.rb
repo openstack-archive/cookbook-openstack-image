@@ -31,11 +31,11 @@ end
 
 platform_options = node["glance"]["platform"]
 
-package "curl" do
-  action :upgrade
+package "python-keystone" do
+  action :install
 end
 
-package "python-keystone" do
+package "curl" do
   action :install
 end
 
