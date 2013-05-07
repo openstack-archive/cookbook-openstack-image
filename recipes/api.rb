@@ -116,7 +116,7 @@ else
   swift_store_auth_address=glance["api"]["swift_store_auth_address"]
   swift_user_tenant = glance["api"]["swift_user_tenant"]
   swift_store_user=glance["api"]["swift_store_user"]
-  swift_store_key = service_password "#{swift_store_user}"
+  swift_store_key = service_password swift_store_user
   swift_store_auth_version=glance["api"]["swift_store_auth_version"]
 end
 
