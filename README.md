@@ -8,48 +8,10 @@ Glance is installed from packages, optionally populating the repository with def
 
 http://glance.openstack.org/
 
-Usage
-=====
-
-The Glance cookbook currently supports file, swift, and Rackspace Cloud Files (swift API compliant) backing stores.  NOTE: changing the storage location from cloudfiles to swift (and vice versa) requires that you manually export and import your stored images.
-
-To enable these features set the following in the default attributes section in your environment:
-
-Files
------
-    "glance": {
-      "api": {
-        "default_store": "file"
-      },
-      "images": [
-        "cirros"
-      ],
-      "image_upload": true
-    }
-
-
-Swift
------
-    "glance": {
-      "api": {
-        "default_store": "swift"
-      },
-      "images": [
-        "cirros"
-      ],
-      "image_upload": true
-    }
-
 Requirements
 ============
 
-Chef 0.10.0 or higher required (for Chef environment use)
-
-Platform
---------
-
-* Ubuntu-12.04+
-* Fedora-17+
+Chef 0.10.0 or higher required (for Chef environment use).
 
 Cookbooks
 ---------
@@ -57,25 +19,12 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
-* keystone
+* keystone">= 2012.2.1"
 * mysql
-* openstack-common
+* openstack-common >= 0.1.7
 
-Providers
-=========
-
-`image` (`:action` `:upload`
-
-- `:image_url`: Location of the image to be loaded into Glance.
-- `:image_name`: A name for the image.
-- `:image_type`: `qcow2` or `ami`. Defaults to `qcow2`.
-- `:keystone_user`: Username of the Keystone admin user.
-- `:keystone_pass`: Password for the Keystone admin user.
-- `:keystone_tenant`: Name of the Keystone admin user's tenant.
-- `:keystone_uri`: URI of the Identity API endpoint.
-
-Recipes
-=======
+Usage
+=====
 
 api
 ------
@@ -93,6 +42,53 @@ db
 --
 - Creates the Glance registry database
 
+The Glance cookbook currently supports file, swift, and Rackspace Cloud Files (swift API compliant) backing stores.  NOTE: changing the storage location from cloudfiles to swift (and vice versa) requires that you manually export and import your stored images.
+
+To enable these features set the following in the default attributes section in your environment:
+
+Files
+-----
+
+```json
+"glance": {
+    "api": {
+        "default_store": "file"
+    },
+    "images": [
+        "cirros"
+    ],
+    "image_upload": true
+}
+```
+
+Swift
+-----
+
+```json
+"glance": {
+    "api": {
+        "default_store": "swift"
+    },
+    "images": [
+        "cirros"
+    ],
+    "image_upload": true
+}
+```
+
+Providers
+=========
+
+`image` (`:action` `:upload`
+
+- `:image_url`: Location of the image to be loaded into Glance.
+- `:image_name`: A name for the image.
+- `:image_type`: `qcow2` or `ami`. Defaults to `qcow2`.
+- `:keystone_user`: Username of the Keystone admin user.
+- `:keystone_pass`: Password for the Keystone admin user.
+- `:keystone_tenant`: Name of the Keystone admin user's tenant.
+- `:keystone_uri`: URI of the Identity API endpoint.
+
 Attributes
 ==========
 
@@ -109,9 +105,7 @@ Attributes
 * `glance["service_tenant_name"]` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `glance["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
-
 * `default["glance"]["pki"]["signing_dir"]` - Defaults to `/tmp/glance-signing-dir`. Directory where `auth_token` middleware writes certificate
-
 * `glance["image_upload"]` - Toggles whether to automatically upload images in the `glance["images"]` array
 * `glance["images"]` - Default list of images to upload to the glance repository as part of the install
 * `glance["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
@@ -125,15 +119,14 @@ Attributes
 * `glance["api"]["rbd"]["rbd_store_pool"]` - RADOS pool for images
 * `glance["api"]["rbd"]["rbd_store_chunk_size"]` - Size in MB of chunks for RADOS Store, should be a power of 2
 
-Templates
-=========
+Testing
+=====
 
-* `glance-api-paste.ini.erb` - Paste config for glance-api middleware
-* `glance-api.conf.erb` - Config file for glance-api server
-* `glance-registry-paste.ini.erb` - Paste config for glance-registry middleware
-* `glance-registry.conf.erb` - Config file for glance-registry server
-* `glance-scrubber.conf.erb` - Config file for glance image scrubber service
-* `policy.json.erb` - Configuration of ACLs for glance API server
+This cookbook is using [ChefSpec](https://github.com/acrmp/chefspec) for
+testing. Run the following before commiting. It will run your tests,
+and check for lint errors.
+
+    $ ./run_tests.bash
 
 License and Author
 ==================
@@ -146,9 +139,12 @@ Author:: William Kelly (<william.kelly@rackspace.com>)
 Author:: Darren Birkett (<darren.birkett@rackspace.co.uk>)
 Author:: Evan Callicoat (<evan.callicoat@rackspace.com>)
 Author:: Matt Ray (<matt@opscode.com>)
+Author:: Jay Pipes (<jaypipes@att.com>)
+Author:: John Dewey (<jdewey@att.com>)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012, Opscode, Inc.
+Copyright 2012-2013, AT&T Services, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
