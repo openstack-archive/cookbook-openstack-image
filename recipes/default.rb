@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: glance
-# Recipe:: db
+# Recipe:: default
 #
 # Copyright 2012-2013, AT&T Services, Inc.
 #
@@ -16,22 +16,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# This recipe should be placed in the run_list of the node that
-# runs the database server that houses the Nova main database
-
-class ::Chef::Recipe
-  include ::Openstack
-end
-
-# TODO(jaypipes): This is retarded, but nothing runs without this. The
-# database cookbook should handle this crap, but it doesn't. :(
-include_recipe "mysql::client"
-include_recipe "mysql::ruby"
-
-db_pass = db_password "glance"
-
-db_create_with_user("image",
-  node["glance"]["db"]["username"],
-  db_pass
-)

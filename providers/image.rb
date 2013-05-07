@@ -60,12 +60,9 @@ def _upload_qcow(name, url)
   c_fmt = "--container-format bare"
   d_fmt = "--disk-format qcow2"
 
-  bash "Uploading QCOW2 image #{name}" do
+  execute "Uploading QCOW2 image #{name}" do
     cwd "/tmp"
-    user "root"
-    code <<-EOH
-        #{glance_cmd} image-create --name "#{name}" --is-public true #{c_fmt} #{d_fmt} --location "#{url}"
-    EOH
+    command "#{glance_cmd} image-create --name #{name} --is-public true #{c_fmt} #{d_fmt} --location #{url}"
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end
 end

@@ -4,7 +4,7 @@
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012, Opscode, Inc.
-# Copyright 2013, AT&T
+# Copyright 2012-2013, AT&T Services, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ end
 
 platform_options = node["glance"]["platform"]
 
-package "curl" do
-  action :upgrade
+package "python-keystone" do
+  action :install
 end
 
-package "python-keystone" do
+package "curl" do
   action :install
 end
 
@@ -116,7 +116,7 @@ else
   swift_store_auth_address=glance["api"]["swift_store_auth_address"]
   swift_user_tenant = glance["api"]["swift_user_tenant"]
   swift_store_user=glance["api"]["swift_store_user"]
-  swift_store_key = service_password "#{swift_store_user}"
+  swift_store_key = service_password swift_store_user
   swift_store_auth_version=glance["api"]["swift_store_auth_version"]
 end
 
