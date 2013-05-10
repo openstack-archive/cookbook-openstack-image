@@ -12,6 +12,13 @@ describe "glance::api" do
 
     expect_runs_openstack_common_logging_recipe
 
+    it "doesn't run logging recipe" do
+      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      chef_run.converge "glance::api"
+
+      expect(chef_run).not_to include_recipe "openstack-common::logging"
+    end
+
     expect_installs_python_keystone
 
     expect_installs_curl
