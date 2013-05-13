@@ -62,8 +62,6 @@ directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
-
-  only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
 template "/etc/glance/policy.json" do
@@ -146,6 +144,8 @@ template "/etc/glance/glance-api.conf" do
     :sql_connection => sql_connection,
     :rabbit_ipaddress => rabbit_info["host"],    #FIXME!
     :glance_flavor => glance_flavor,
+    "identity_endpoint" => identity_endpoint,
+    "service_pass" => service_pass,
     :swift_store_key => swift_store_key,
     :swift_user_tenant => swift_user_tenant,
     :swift_store_user => swift_store_user,
@@ -161,10 +161,6 @@ template "/etc/glance/glance-api-paste.ini" do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode   00644
-  variables(
-    "identity_endpoint" => identity_endpoint,
-    "service_pass" => service_pass
-  )
 
   notifies :restart, "service[glance-api]", :immediately
 end

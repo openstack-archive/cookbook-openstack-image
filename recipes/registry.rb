@@ -43,7 +43,8 @@ package "curl" do
   action :install
 end
 
-platform_options["mysql_python_packages"].each do |pkg|
+db_type = node['openstack']['db']['identity']['db_type']
+platform_options["#{db_type}_python_packages"].each do |pkg|
   package pkg do
     action :install
   end
@@ -59,8 +60,6 @@ directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
   owner node["glance"]["user"]
   group node["glance"]["group"]
   mode 00700
-
-  only_if { node["openstack"]["auth"]["strategy"] == "pki" }
 end
 
 service "glance-registry" do
@@ -101,7 +100,9 @@ template "/etc/glance/glance-registry.conf" do
   variables(
     :registry_bind_address => bind_address,
     :registry_port => registry_endpoint.port,
-    :sql_connection => sql_connection
+    :sql_connection => sql_connection,
+    "identity_endpoint" => identity_endpoint,
+    "service_pass" => service_pass
   )
 
   notifies :restart, "service[glance-registry]", :immediately
@@ -115,10 +116,6 @@ template "/etc/glance/glance-registry-paste.ini" do
   owner  "root"
   group  "root"
   mode   00644
-  variables(
-    "identity_endpoint" => identity_endpoint,
-    "service_pass" => service_pass
-  )
 
   notifies :restart, "service[glance-registry]", :immediately
 end
