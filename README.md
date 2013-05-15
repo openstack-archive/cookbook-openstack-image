@@ -19,20 +19,20 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
-* keystone">= 2012.2.1"
+* openstack-identity">= 2012.2.1"
 * mysql
-* openstack-common >= 0.1.7
+* openstack-common >= 0.2.0
 
 Usage
 =====
 
 api
 ------
--Installs the glance-api server
+-Installs the image-api server
 
 registry
 --------
--Installs the glance-registry server
+-Installs the image-registry server
 
 keystone-registration
 ---------------------
@@ -50,7 +50,7 @@ Files
 -----
 
 ```json
-"glance": {
+"openstack-image": {
     "api": {
         "default_store": "file"
     },
@@ -65,7 +65,7 @@ Swift
 -----
 
 ```json
-"glance": {
+"openstack-image": {
     "api": {
         "default_store": "swift"
     },
@@ -84,41 +84,41 @@ Providers
 - `:image_url`: Location of the image to be loaded into Glance.
 - `:image_name`: A name for the image.
 - `:image_type`: `qcow2` or `ami`. Defaults to `qcow2`.
-- `:keystone_user`: Username of the Keystone admin user.
-- `:keystone_pass`: Password for the Keystone admin user.
-- `:keystone_tenant`: Name of the Keystone admin user's tenant.
-- `:keystone_uri`: URI of the Identity API endpoint.
+- `:identity_user`: Username of the Keystone admin user.
+- `:identity_pass`: Password for the Keystone admin user.
+- `:identity_tenant`: Name of the Keystone admin user's tenant.
+- `:identity_uri`: URI of the Identity API endpoint.
 
 Attributes
 ==========
 
-* `glance["verbose"]` - Enables/disables verbose output for glance services.
-* `glance["debug"]` - Enables/disables debug output for glance services.
-* `glance["keystone_service_chef_role"]` - The name of the Chef role that installs the Keystone Service API
-* `glance["user"] - User glance runs as
-* `glance["group"] - Group glance runs as
-* `glance["glance_api_chef_role"]` - The name of the Chef role that installs the Glance API service
-* `glance["db"]["username"]` - Username for glance database access
-* `glance["api"]["adminURL"]` - Used when registering image endpoint with keystone
-* `glance["api"]["internalURL"]` - Used when registering image endpoint with keystone
-* `glance["api"]["publicURL"]` - Used when registering image endpoint with keystone
-* `glance["service_tenant_name"]` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
-* `glance["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
-* `glance["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
-* `default["glance"]["api"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
-* `default["glance"]["registry"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
-* `glance["image_upload"]` - Toggles whether to automatically upload images in the `glance["images"]` array
-* `glance["images"]` - Default list of images to upload to the glance repository as part of the install
-* `glance["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
---- example `glance["image]["natty"]` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
-* `glance["api"]["default_store"]` - Toggles the backend storage type.  Currently supported is "file" and "swift"
-* `glance["api"]["swift"]["store_container"]` - Set the container used by glance to store images and snapshots.  Defaults to "glance"
-* `glance["api"]["swift"]["store_large_object_size"]` - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
-* `glance["api"]["swift"]["store_large_object_chunk_size"]` - Set the chunk size for glance.  Defaults to "200" MB
-* `glance["api"]["rbd"]["rbd_store_ceph_conf"]` - Default location of ceph.conf
-* `glance["api"]["rbd"]["rbd_store_user"]` - User for connecting to ceph store
-* `glance["api"]["rbd"]["rbd_store_pool"]` - RADOS pool for images
-* `glance["api"]["rbd"]["rbd_store_chunk_size"]` - Size in MB of chunks for RADOS Store, should be a power of 2
+* `openstack-image["verbose"]` - Enables/disables verbose output for glance services.
+* `openstack-image["debug"]` - Enables/disables debug output for glance services.
+* `openstack-image["identity_service_chef_role"]` - The name of the Chef role that installs the Keystone Service API
+* `openstack-image["user"] - User glance runs as
+* `openstack-image["group"] - Group glance runs as
+* `openstack-image["glance_api_chef_role"]` - The name of the Chef role that installs the Glance API service
+* `openstack-image["db"]["username"]` - Username for glance database access
+* `openstack-image["api"]["adminURL"]` - Used when registering image endpoint with keystone
+* `openstack-image["api"]["internalURL"]` - Used when registering image endpoint with keystone
+* `openstack-image["api"]["publicURL"]` - Used when registering image endpoint with keystone
+* `openstack-image["service_tenant_name"]` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `openstack-image["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `openstack-image["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `default["openstack-image"]["api"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
+* `default["openstack-image"]["registry"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
+* `openstack-image["image_upload"]` - Toggles whether to automatically upload images in the `openstack-image["images"]` array
+* `openstack-image["images"]` - Default list of images to upload to the glance repository as part of the install
+* `openstack-image["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
+--- example `openstack-image["image]["natty"]` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
+* `openstack-image["api"]["default_store"]` - Toggles the backend storage type.  Currently supported is "file" and "swift"
+* `openstack-image["api"]["swift"]["store_container"]` - Set the container used by glance to store images and snapshots.  Defaults to "glance"
+* `openstack-image["api"]["swift"]["store_large_object_size"]` - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
+* `openstack-image["api"]["swift"]["store_large_object_chunk_size"]` - Set the chunk size for glance.  Defaults to "200" MB
+* `openstack-image["api"]["rbd"]["rbd_store_ceph_conf"]` - Default location of ceph.conf
+* `openstack-image["api"]["rbd"]["rbd_store_user"]` - User for connecting to ceph store
+* `openstack-image["api"]["rbd"]["rbd_store_pool"]` - RADOS pool for images
+* `openstack-image["api"]["rbd"]["rbd_store_chunk_size"]` - Size in MB of chunks for RADOS Store, should be a power of 2
 
 Testing
 =====
@@ -142,10 +142,12 @@ Author:: Evan Callicoat (<evan.callicoat@rackspace.com>)
 Author:: Matt Ray (<matt@opscode.com>)
 Author:: Jay Pipes (<jaypipes@att.com>)
 Author:: John Dewey (<jdewey@att.com>)
+Author:: Craig Tracey (<craigtracey@gmail.com>)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012, Opscode, Inc.
 Copyright 2012-2013, AT&T Services, Inc.
+Copyright 2013, Craig Tracey <craigtracey@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

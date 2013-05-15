@@ -1,8 +1,9 @@
 #
-# Cookbook Name:: glance
+# Cookbook Name:: openstack-image
 # Recipe:: db
 #
 # Copyright 2012-2013, AT&T Services, Inc.
+# Copyright 2013, Craig Tracey <craigtracey@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +26,6 @@ class ::Chef::Recipe
 end
 
 db_create_with_user("image",
-  node["glance"]["db"]["username"],
+  node["openstack-image"]["db"]["username"],
   db_password("glance")
 )

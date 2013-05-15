@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: glance
+# Cookbook Name:: openstack-image
 # Recipe:: default
 #
 # Copyright 2012-2013, AT&T Services, Inc.

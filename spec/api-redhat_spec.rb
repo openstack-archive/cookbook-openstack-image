@@ -1,11 +1,11 @@
 require "spec_helper"
 
-describe "glance::api" do
+describe "openstack-image::api" do
   describe "redhat" do
     before do
-      glance_stubs
+      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
-      @chef_run.converge "glance::api"
+      @chef_run.converge "openstack-image::api"
     end
 
     it "starts glance api on boot" do

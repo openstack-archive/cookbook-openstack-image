@@ -1,20 +1,20 @@
 require "spec_helper"
 
-describe "glance::api" do
+describe "openstack-image::api" do
   describe "ubuntu" do
     before do
-      glance_stubs
+      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       @node = @chef_run.node
-      @node.set["glance"]["syslog"]["use"] = true
-      @chef_run.converge "glance::api"
+      @node.set["openstack-image"]["syslog"]["use"] = true
+      @chef_run.converge "openstack-image::api"
     end
 
     expect_runs_openstack_common_logging_recipe
 
     it "doesn't run logging recipe" do
       chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-      chef_run.converge "glance::api"
+      chef_run.converge "openstack-image::api"
 
       expect(chef_run).not_to include_recipe "openstack-common::logging"
     end
@@ -51,7 +51,7 @@ describe "glance::api" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-api]", :restart
+        expect(@file).to notify "service[image-api]", :restart
       end
     end
 
@@ -73,7 +73,7 @@ describe "glance::api" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-api]", :restart
+        expect(@file).to notify "service[image-api]", :restart
       end
     end
 
@@ -95,7 +95,7 @@ describe "glance::api" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-api]", :restart
+        expect(@file).to notify "service[image-api]", :restart
       end
     end
 
@@ -117,7 +117,7 @@ describe "glance::api" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-api]", :restart
+        expect(@file).to notify "service[image-api]", :restart
       end
     end
 
@@ -139,7 +139,7 @@ describe "glance::api" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-api]", :restart
+        expect(@file).to notify "service[image-api]", :restart
       end
     end
 
@@ -193,13 +193,13 @@ describe "glance::api" do
     end
 
     it "uploads qcow images" do
-      glance_stubs
+      image_stubs
       opts = {
-        :step_into => ["glance_image"]
+        :step_into => ["openstack-image_image"]
       }
       chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS.merge(opts)
       node = chef_run.node
-      node.set["glance"] = {
+      node.set["openstack-image"] = {
         "image_upload" => true,
         "images" => [
           "image1"
@@ -208,7 +208,7 @@ describe "glance::api" do
           "image1" => "http://example.com/image.qcow2"
         }
       }
-      chef_run.converge "glance::api"
+      chef_run.converge "openstack-image::api"
       cmd = "glance --insecure " \
             "-I glance " \
             "-K glance-pass " \

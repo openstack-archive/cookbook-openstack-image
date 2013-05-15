@@ -1,11 +1,11 @@
 require "spec_helper"
 
-describe "glance::registry" do
+describe "openstack-image::registry" do
   describe "redhat" do
     before do
-      glance_stubs
+      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
-      @chef_run.converge "glance::registry"
+      @chef_run.converge "openstack-image::registry"
     end
 
     it "installs mysql python packages" do

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "glance::db" do
+describe "openstack-image::db" do
   it "installs mysql packages" do
     @chef_run = converge
 
@@ -19,6 +19,6 @@ describe "glance::db" do
     ::Chef::Recipe.any_instance.stub(:db_password).with("glance").
       and_return "test-pass"
 
-    ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS).converge "glance::db"
+    ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS).converge "openstack-image::db"
   end
 end

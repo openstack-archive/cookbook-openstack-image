@@ -1,8 +1,9 @@
 #
-# Cookbook Name:: glance
-# Recipe:: keystone_registration
+# Cookbook Name:: openstack-image
+# Recipe:: identity_registration
 #
 # Copyright 2013, AT&T Services, Inc.
+# Copyright 2013, Craig Tracey <craigtracey@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,19 +26,19 @@ end
 
 identity_admin_endpoint = endpoint "identity-admin"
 
-bootstrap_token = secret "secrets", "keystone_bootstrap_token"
+bootstrap_token = secret "secrets", "openstack_identity_bootstrap_token"
 auth_uri = ::URI.decode identity_admin_endpoint.to_s
 
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
 
 service_pass = service_password "glance"
-service_tenant_name = node["glance"]["service_tenant_name"]
-service_user = node["glance"]["service_user"]
-service_role = node["glance"]["service_role"]
+service_tenant_name = node["openstack-image"]["service_tenant_name"]
+service_user = node["openstack-image"]["service_user"]
+service_role = node["openstack-image"]["service_role"]
 
 # Register Image Service
-keystone_register "Register Image Service" do
+openstack_identity_register "Register Image Service" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   service_name "glance"
@@ -48,11 +49,11 @@ keystone_register "Register Image Service" do
 end
 
 # Register Image Endpoint
-keystone_register "Register Image Endpoint" do
+openstack_identity_register "Register Image Endpoint" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   service_type "image"
-  endpoint_region node["glance"]["region"]
+  endpoint_region node["openstack-image"]["region"]
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
   endpoint_publicurl api_endpoint.to_s
@@ -61,7 +62,7 @@ keystone_register "Register Image Endpoint" do
 end
 
 # Register Service Tenant
-keystone_register "Register Service Tenant" do
+openstack_identity_register "Register Service Tenant" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name
@@ -72,7 +73,7 @@ keystone_register "Register Service Tenant" do
 end
 
 # Register Service User
-keystone_register "Register #{service_user} User" do
+openstack_identity_register "Register #{service_user} User" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name
@@ -84,7 +85,7 @@ keystone_register "Register #{service_user} User" do
 end
 
 ## Grant Admin role to Service User for Service Tenant ##
-keystone_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
+openstack_identity_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   tenant_name service_tenant_name

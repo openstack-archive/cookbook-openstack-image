@@ -1,11 +1,11 @@
-<%= node["glance"]["custom_template_banner"] %>
+<%= node["openstack-image"]["custom_template_banner"] %>
 
 [DEFAULT]
 # Show more verbose log output (sets INFO log level output)
-verbose = <%= node["glance"]["verbose"] %>
+verbose = <%= node["openstack-image"]["verbose"] %>
 
 # Show debugging output in logs (sets DEBUG log level output)
-debug = <%= node["glance"]["debug"] %>
+debug = <%= node["openstack-image"]["debug"] %>
 
 # Address to bind the registry server
 bind_host = <%= @registry_bind_address %>
@@ -40,7 +40,7 @@ limit_param_default = 25
 
 # ================= Syslog Options ============================
 
-<% if node["glance"]["syslog"]["use"] %>
+<% if node["openstack-image"]["syslog"]["use"] %>
 log_config = /etc/openstack/logging.conf
 <% else %>
 # Log to this file. Make sure you do not set the same log
@@ -61,10 +61,10 @@ log_file = /var/log/glance/registry.log
 auth_host = <%= @identity_endpoint.host %>
 auth_port = <%= @identity_endpoint.port %>
 auth_protocol = <%= @identity_endpoint.scheme %>
-admin_tenant_name = <%= node["glance"]["service_tenant_name"] %>
-admin_user = <%= node["glance"]["service_user"] %>
+admin_tenant_name = <%= node["openstack-image"]["service_tenant_name"] %>
+admin_user = <%= node["openstack-image"]["service_user"] %>
 admin_password = <%= @service_pass %>
-signing_dir = <%= node["glance"]["registry"]["auth"]["cache_dir"] %>
+signing_dir = <%= node["openstack-image"]["registry"]["auth"]["cache_dir"] %>
 
 [paste_deploy]
 flavor = keystone

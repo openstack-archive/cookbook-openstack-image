@@ -1,20 +1,20 @@
 require "spec_helper"
 
-describe "glance::registry" do
+describe "openstack-image::registry" do
   describe "ubuntu" do
     before do
-      glance_stubs
+      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       @node = @chef_run.node
-      @node.set["glance"]["syslog"]["use"] = true
-      @chef_run.converge "glance::registry"
+      @node.set["openstack-image"]["syslog"]["use"] = true
+      @chef_run.converge "openstack-image::registry"
     end
 
     expect_runs_openstack_common_logging_recipe
 
     it "doesn't run logging recipe" do
       chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-      chef_run.converge "glance::registry"
+      chef_run.converge "openstack-image::registry"
 
       expect(chef_run).not_to include_recipe "openstack-common::logging"
     end
@@ -64,7 +64,7 @@ describe "glance::registry" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-registry]", :restart
+        expect(@file).to notify "service[image-registry]", :restart
       end
     end
 
@@ -91,7 +91,7 @@ describe "glance::registry" do
       end
 
       it "notifies nova-api-ec2 restart" do
-        expect(@file).to notify "service[glance-registry]", :restart
+        expect(@file).to notify "service[image-registry]", :restart
       end
     end
   end

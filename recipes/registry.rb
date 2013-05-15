@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: glance
+# Cookbook Name:: openstack-image
 # Recipe:: registry
 #
 # Copyright 2012, Rackspace US, Inc.
@@ -21,17 +21,17 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-if node["glance"]["syslog"]["use"]
+if node["openstack-image"]["syslog"]["use"]
   include_recipe "openstack-common::logging"
 end
 
-platform_options = node["glance"]["platform"]
+platform_options = node["openstack-image"]["platform"]
 
 package "python-keystone" do
   action :install
 end
 
-db_user = node["glance"]["db"]["username"]
+db_user = node["openstack-image"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
@@ -50,20 +50,20 @@ platform_options["#{db_type}_python_packages"].each do |pkg|
   end
 end
 
-platform_options["glance_packages"].each do |pkg|
+platform_options["image_packages"].each do |pkg|
   package pkg do
     action :upgrade
   end
 end
 
-directory ::File.dirname(node["glance"]["registry"]["auth"]["cache_dir"]) do
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+directory ::File.dirname(node["openstack-image"]["registry"]["auth"]["cache_dir"]) do
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode 00700
 end
 
-service "glance-registry" do
-  service_name platform_options["glance_registry_service"]
+service "image-registry" do
+  service_name platform_options["image_registry_service"]
   supports :status => true, :restart => true
 
   action :enable
@@ -81,15 +81,15 @@ file "/var/lib/glance/glance.sqlite" do
 end
 
 directory "/etc/glance" do
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode  00700
 end
 
-if node["glance"]["registry"]["bind_interface"].nil?
+if node["openstack-image"]["registry"]["bind_interface"].nil?
   bind_address = registry_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["glance"]["registry"]["bind_interface"]}"]
+  bind_address = node["network"]["ipaddress_#{node["openstack-image"]["registry"]["bind_interface"]}"]
 end
 
 template "/etc/glance/glance-registry.conf" do
@@ -105,7 +105,7 @@ template "/etc/glance/glance-registry.conf" do
     "service_pass" => service_pass
   )
 
-  notifies :restart, "service[glance-registry]", :immediately
+  notifies :restart, "service[image-registry]", :immediately
 end
 
 #sync db after config file is generated
@@ -117,5 +117,5 @@ template "/etc/glance/glance-registry-paste.ini" do
   group  "root"
   mode   00644
 
-  notifies :restart, "service[glance-registry]", :immediately
+  notifies :restart, "service[image-registry]", :immediately
 end

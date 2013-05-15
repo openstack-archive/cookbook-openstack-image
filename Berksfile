@@ -1,6 +1,6 @@
 metadata
 
-cookbook "keystone",
-  git: "git@github.com:att-cloud/cookbook-keystone.git"
+cookbook "openstack-identity",
+  git: "git://github.com/stackforge/cookbook-openstack-identity.git"
 cookbook "openstack-common",
-  git: "git@github.com:att-cloud/cookbook-openstack-common.git"
+  git: "git://github.com/stackforge/cookbook-openstack-common.git"

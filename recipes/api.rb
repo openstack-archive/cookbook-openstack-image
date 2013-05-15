@@ -1,10 +1,11 @@
 #
-# Cookbook Name:: glance
+# Cookbook Name:: openstack-image
 # Recipe:: api
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012, Opscode, Inc.
 # Copyright 2012-2013, AT&T Services, Inc.
+# Copyright 2013, Craig Tracey <craigtracey@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,11 +26,11 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-if node["glance"]["syslog"]["use"]
+if node["openstack-image"]["syslog"]["use"]
   include_recipe "openstack-common::logging"
 end
 
-platform_options = node["glance"]["platform"]
+platform_options = node["openstack-image"]["platform"]
 
 package "python-keystone" do
   action :install
@@ -39,59 +40,59 @@ package "curl" do
   action :install
 end
 
-platform_options["glance_packages"].each do |pkg|
+platform_options["image_packages"].each do |pkg|
   package pkg do
     action :upgrade
   end
 end
 
-service "glance-api" do
-  service_name platform_options["glance_api_service"]
+service "image-api" do
+  service_name platform_options["image_api_service"]
   supports :status => true, :restart => true
 
   action :enable
 end
 
 directory "/etc/glance" do
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode  00700
 end
 
-directory ::File.dirname node["glance"]["api"]["auth"]["cache_dir"] do
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+directory ::File.dirname node["openstack-image"]["api"]["auth"]["cache_dir"] do
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode 00700
 end
 
 template "/etc/glance/policy.json" do
   source "policy.json.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
 
-  notifies :restart, "service[glance-api]", :immediately
+  notifies :restart, "service[image-api]", :immediately
 
   #TODO(jaypipes): This shouldn't be necessary... not sure why it's here.
   not_if { File.exists? "/etc/glance/policy.json" }
 end
 
-glance = node["glance"]
+glance = node["openstack-image"]
 rabbit_server_role = glance["rabbit_server_chef_role"]
 rabbit_info = config_by_role rabbit_server_role, "queue"
 
 identity_endpoint = endpoint "identity-admin"
 auth_uri = ::URI.decode identity_endpoint.to_s
 
-db_user = node["glance"]["db"]["username"]
+db_user = node["openstack-image"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
 service_pass = service_password "glance"
-service_tenant_name = node["glance"]["service_tenant_name"]
-service_user = node["glance"]["service_user"]
+service_tenant_name = node["openstack-image"]["service_tenant_name"]
+service_user = node["openstack-image"]["service_user"]
 
 # Possible combinations of options here
 # - default_store=file
@@ -125,16 +126,16 @@ else
   glance_flavor="keystone+cachemanagement"
 end
 
-if node["glance"]["api"]["bind_interface"].nil?
+if node["openstack-image"]["api"]["bind_interface"].nil?
   bind_address = api_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["glance"]["api"]["bind_interface"]}"]
+  bind_address = node["network"]["ipaddress_#{node["openstack-image"]["api"]["bind_interface"]}"]
 end
 
 template "/etc/glance/glance-api.conf" do
   source "glance-api.conf.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
   variables(
     :api_bind_address => bind_address,
@@ -153,46 +154,46 @@ template "/etc/glance/glance-api.conf" do
     :swift_store_auth_version => swift_store_auth_version
   )
 
-  notifies :restart, "service[glance-api]", :immediately
+  notifies :restart, "service[image-api]", :immediately
 end
 
 template "/etc/glance/glance-api-paste.ini" do
   source "glance-api-paste.ini.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
 
-  notifies :restart, "service[glance-api]", :immediately
+  notifies :restart, "service[image-api]", :immediately
 end
 
 template "/etc/glance/glance-cache.conf" do
   source "glance-cache.conf.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
   variables(
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port
   )
 
-  notifies :restart, "service[glance-api]"
+  notifies :restart, "service[image-api]"
 end
 
 #TODO(jaypipes) I don't think this even exists or at least isn't
 # used, since the Glance cache middleware goes in the api-paste.ini...
 template "/etc/glance/glance-cache-paste.ini" do
   source "glance-cache-paste.ini.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
 
-  notifies :restart, "service[glance-api]"
+  notifies :restart, "service[image-api]"
 end
 
 template "/etc/glance/glance-scrubber.conf" do
   source "glance-scrubber.conf.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
   variables(
     :registry_ip_address => registry_endpoint.host,
@@ -215,20 +216,20 @@ end
 
 template "/etc/glance/glance-scrubber-paste.ini" do
   source "glance-scrubber-paste.ini.erb"
-  owner node["glance"]["user"]
-  group node["glance"]["group"]
+  owner node["openstack-image"]["user"]
+  group node["openstack-image"]["group"]
   mode   00644
 end
 
-if node["glance"]["image_upload"]
-  node["glance"]["images"].each do |img|
-    glance_image "Image setup for #{img.to_s}" do
-      image_url node["glance"]["image"][img.to_sym]
+if node["openstack-image"]["image_upload"]
+  node["openstack-image"]["images"].each do |img|
+    openstack_image_image "Image setup for #{img.to_s}" do
+      image_url node["openstack-image"]["image"][img.to_sym]
       image_name img
-      keystone_user service_user
-      keystone_pass service_pass
-      keystone_tenant service_tenant_name
-      keystone_uri auth_uri
+      identity_user service_user
+      identity_pass service_pass
+      identity_tenant service_tenant_name
+      identity_uri auth_uri
       action :upload
     end
   end

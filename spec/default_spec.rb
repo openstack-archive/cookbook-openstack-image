@@ -1,4 +1,4 @@
 require "spec_helper"
 
-describe "horizon::default" do
+describe "openstack-dashboard::default" do
 end

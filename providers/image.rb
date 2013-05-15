@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: glance
+# Cookbook Name:: openstack-image
 # Provider:: image
 #
 # Copyright 2012, Rackspace US, Inc.
@@ -18,10 +18,10 @@
 #
 
 action :upload do
-  @user = new_resource.keystone_user
-  @pass = new_resource.keystone_pass
-  @tenant = new_resource.keystone_tenant
-  @ks_uri = new_resource.keystone_uri
+  @user = new_resource.identity_user
+  @pass = new_resource.identity_pass
+  @tenant = new_resource.identity_tenant
+  @ks_uri = new_resource.identity_uri
 
   name = new_resource.image_name
   url = new_resource.image_url
