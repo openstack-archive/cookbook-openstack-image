@@ -4,6 +4,7 @@
 #
 # Copyright 2012-2013, AT&T Services, Inc.
 # Copyright 2013, Craig Tracey <craigtracey@gmail.com>
+# Copyright 2013, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +27,6 @@ class ::Chef::Recipe
 end
 
 db_create_with_user("image",
-  node["openstack-image"]["db"]["username"],
+  node["openstack"]["image"]["db"]["username"],
   db_password("glance")
 )

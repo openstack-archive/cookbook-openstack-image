@@ -3,6 +3,7 @@
 # Recipe:: registry
 #
 # Copyright 2012, Rackspace US, Inc.
+# Copyright 2013, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,17 +22,17 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-if node["openstack-image"]["syslog"]["use"]
+if node["openstack"]["image"]["syslog"]["use"]
   include_recipe "openstack-common::logging"
 end
 
-platform_options = node["openstack-image"]["platform"]
+platform_options = node["openstack"]["image"]["platform"]
 
 package "python-keystone" do
   action :install
 end
 
-db_user = node["openstack-image"]["db"]["username"]
+db_user = node["openstack"]["image"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
@@ -56,9 +57,9 @@ platform_options["image_packages"].each do |pkg|
   end
 end
 
-directory ::File.dirname(node["openstack-image"]["registry"]["auth"]["cache_dir"]) do
-  owner node["openstack-image"]["user"]
-  group node["openstack-image"]["group"]
+directory ::File.dirname(node["openstack"]["image"]["registry"]["auth"]["cache_dir"]) do
+  owner node["openstack"]["image"]["user"]
+  group node["openstack"]["image"]["group"]
   mode 00700
 end
 
@@ -81,15 +82,15 @@ file "/var/lib/glance/glance.sqlite" do
 end
 
 directory "/etc/glance" do
-  owner node["openstack-image"]["user"]
-  group node["openstack-image"]["group"]
+  owner node["openstack"]["image"]["user"]
+  group node["openstack"]["image"]["group"]
   mode  00700
 end
 
-if node["openstack-image"]["registry"]["bind_interface"].nil?
+if node["openstack"]["image"]["registry"]["bind_interface"].nil?
   bind_address = registry_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["openstack-image"]["registry"]["bind_interface"]}"]
+  bind_address = node["network"]["ipaddress_#{node["openstack"]["image"]["registry"]["bind_interface"]}"]
 end
 
 template "/etc/glance/glance-registry.conf" do

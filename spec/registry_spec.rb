@@ -6,7 +6,7 @@ describe "openstack-image::registry" do
       image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       @node = @chef_run.node
-      @node.set["openstack-image"]["syslog"]["use"] = true
+      @node.set["openstack"]["image"]["syslog"]["use"] = true
       @chef_run.converge "openstack-image::registry"
     end
 
