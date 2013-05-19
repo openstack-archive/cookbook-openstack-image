@@ -105,8 +105,8 @@ Attributes
 * `openstack-image["service_tenant_name"]` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack-image["service_user"]` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack-image["service_role"]` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
-* `default["openstack-image"]["api"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
-* `default["openstack-image"]["registry"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
+* `openstack-image["api"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
+* `openstack-image["registry"]["auth"]["cache_dir"]` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
 * `openstack-image["image_upload"]` - Toggles whether to automatically upload images in the `openstack-image["images"]` array
 * `openstack-image["images"]` - Default list of images to upload to the glance repository as part of the install
 * `openstack-image["image]["<imagename>"]` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
