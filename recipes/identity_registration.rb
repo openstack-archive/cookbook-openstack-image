@@ -4,6 +4,7 @@
 #
 # Copyright 2013, AT&T Services, Inc.
 # Copyright 2013, Craig Tracey <craigtracey@gmail.com>
+# Copyright 2013, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,9 +34,9 @@ registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
 
 service_pass = service_password "glance"
-service_tenant_name = node["openstack-image"]["service_tenant_name"]
-service_user = node["openstack-image"]["service_user"]
-service_role = node["openstack-image"]["service_role"]
+service_tenant_name = node["openstack"]["image"]["service_tenant_name"]
+service_user = node["openstack"]["image"]["service_user"]
+service_role = node["openstack"]["image"]["service_role"]
 
 # Register Image Service
 openstack_identity_register "Register Image Service" do
@@ -53,7 +54,7 @@ openstack_identity_register "Register Image Endpoint" do
   auth_uri auth_uri
   bootstrap_token bootstrap_token
   service_type "image"
-  endpoint_region node["openstack-image"]["region"]
+  endpoint_region node["openstack"]["image"]["region"]
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
   endpoint_publicurl api_endpoint.to_s

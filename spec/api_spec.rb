@@ -6,7 +6,7 @@ describe "openstack-image::api" do
       image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
       @node = @chef_run.node
-      @node.set["openstack-image"]["syslog"]["use"] = true
+      @node.set["openstack"]["image"]["syslog"]["use"] = true
       @chef_run.converge "openstack-image::api"
     end
 
@@ -199,12 +199,12 @@ describe "openstack-image::api" do
       }
       chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS.merge(opts)
       node = chef_run.node
-      node.set["openstack-image"] = {
+      node.set["openstack"]["image"] = {
         "image_upload" => true,
-        "images" => [
+        "upload_images" => [
           "image1"
         ],
-        "image" => {
+        "upload_image" => {
           "image1" => "http://example.com/image.qcow2"
         }
       }

@@ -1,13 +1,13 @@
-<%= node["openstack-image"]["custom_template_banner"] %>
+<%= node["openstack"]["image"]["custom_template_banner"] %>
 
 [DEFAULT]
 # Show more verbose log output (sets INFO log level output)
-verbose = <%= node["openstack-image"]["verbose"] %>
+verbose = <%= node["openstack"]["image"]["verbose"] %>
 
 # Show debugging output in logs (sets DEBUG log level output)
-debug = <%= node["openstack-image"]["debug"] %>
+debug = <%= node["openstack"]["image"]["debug"] %>
 
-<% if node["openstack-image"]["syslog"]["use"] %>
+<% if node["openstack"]["image"]["syslog"]["use"] %>
 log_config = /etc/openstack/logging.conf
 <% else %>
 # Log to this file. Make sure you do not set the same log
