@@ -27,8 +27,8 @@ end
 
 identity_admin_endpoint = endpoint "identity-admin"
 
-bootstrap_token = secret "secrets", "openstack_identity_bootstrap_token"
-auth_uri = ::URI.decode identity_admin_endpoint.to_s
+token = secret "secrets", "openstack_identity_bootstrap_token"
+auth_url = ::URI.decode identity_admin_endpoint.to_s
 
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
@@ -37,11 +37,12 @@ service_pass = service_password "glance"
 service_tenant_name = node["openstack"]["image"]["service_tenant_name"]
 service_user = node["openstack"]["image"]["service_user"]
 service_role = node["openstack"]["image"]["service_role"]
+region = node["openstack"]["image"]["region"]
 
 # Register Image Service
 openstack_identity_register "Register Image Service" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
+  auth_uri auth_url
+  bootstrap_token token
   service_name "glance"
   service_type "image"
   service_description "Glance Image Service"
@@ -51,10 +52,10 @@ end
 
 # Register Image Endpoint
 openstack_identity_register "Register Image Endpoint" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
+  auth_uri auth_url
+  bootstrap_token token
   service_type "image"
-  endpoint_region node["openstack"]["image"]["region"]
+  endpoint_region region
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
   endpoint_publicurl api_endpoint.to_s
@@ -64,8 +65,8 @@ end
 
 # Register Service Tenant
 openstack_identity_register "Register Service Tenant" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
+  auth_uri auth_url
+  bootstrap_token token
   tenant_name service_tenant_name
   tenant_description "Service Tenant"
   tenant_enabled true # Not required as this is the default
@@ -75,20 +76,21 @@ end
 
 # Register Service User
 openstack_identity_register "Register #{service_user} User" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
+  auth_uri auth_url
+  bootstrap_token token
   tenant_name service_tenant_name
   user_name service_user
   user_pass service_pass
-  user_enabled true # Not required as this is the default
+  # String until https://review.openstack.org/#/c/29498/ merged
+  user_enabled true
 
   action :create_user
 end
 
 ## Grant Admin role to Service User for Service Tenant ##
 openstack_identity_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
-  auth_uri auth_uri
-  bootstrap_token bootstrap_token
+  auth_uri auth_url
+  bootstrap_token token
   tenant_name service_tenant_name
   user_name service_user
   role_name service_role
