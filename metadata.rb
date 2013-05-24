@@ -3,7 +3,7 @@ maintainer        "Opscode, Inc."
 license           "Apache 2.0"
 description       "Installs and configures the Glance Image Registry and Delivery Service"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "2012.2.3"
+version           "7.0.0"
 recipe            "openstack-image::api", "Installs packages required for a glance api server"
 recipe            "openstack-image::registry", "Installs packages required for a glance registry server"
 recipe            "openstack-image::db", "Creates the Glance registry database"
