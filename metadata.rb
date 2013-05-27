@@ -14,7 +14,7 @@ recipe            "openstack-image::identity_registration", "Registers Glance en
 end
 
 depends           "database"
-depends           "openstack-identity", ">= 2012.2.1"
+depends           "openstack-identity", ">= 7.0.0"
 depends           "openstack-common", ">= 0.2.0"
 suggests          "mysql"
 suggests          "postgresql"
