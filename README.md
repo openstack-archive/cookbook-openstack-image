@@ -16,9 +16,9 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
-* openstack-identity">= 2012.2.1"
 * mysql
-* openstack-common >= 0.2.0
+* openstack-common
+* openstack-identity
 
 Usage
 =====
