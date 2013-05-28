@@ -72,9 +72,6 @@ template "/etc/glance/policy.json" do
   mode   00644
 
   notifies :restart, "service[image-api]", :immediately
-
-  #TODO(jaypipes): This shouldn't be necessary... not sure why it's here.
-  not_if { File.exists? "/etc/glance/policy.json" }
 end
 
 glance = node["openstack"]["image"]
