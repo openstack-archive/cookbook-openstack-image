@@ -103,7 +103,6 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['identity_service_chef_role']` - The name of the Chef role that installs the Keystone Service API
 * `openstack['image']['user'] - User glance runs as
 * `openstack['image']['group'] - Group glance runs as
-* `openstack['image']['glance_api_chef_role']` - The name of the Chef role that installs the Glance API service
 * `openstack['image']['db']['username']` - Username for glance database access
 * `openstack['image']['api']['adminURL']` - Used when registering image endpoint with keystone
 * `openstack['image']['api']['internalURL']` - Used when registering image endpoint with keystone
