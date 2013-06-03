@@ -87,7 +87,7 @@ sql_connection = db_uri("image", db_user, db_pass)
 
 registry_endpoint = endpoint "image-registry"
 api_endpoint = endpoint "image-api"
-service_pass = service_password "glance"
+service_pass = service_password "openstack-image"
 service_tenant_name = node["openstack"]["image"]["service_tenant_name"]
 service_user = node["openstack"]["image"]["service_user"]
 

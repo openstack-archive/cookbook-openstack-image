@@ -21,7 +21,7 @@ def image_stubs
     and_return "bootstrap-token"
   ::Chef::Recipe.any_instance.stub(:db_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:user_password).and_return String.new
-  ::Chef::Recipe.any_instance.stub(:service_password).with("glance").
+  ::Chef::Recipe.any_instance.stub(:service_password).with("openstack-image").
     and_return "glance-pass"
 end
 

@@ -38,7 +38,7 @@ sql_connection = db_uri("image", db_user, db_pass)
 
 identity_endpoint = endpoint "identity-admin"
 registry_endpoint = endpoint "image-registry"
-service_pass = service_password "glance"
+service_pass = service_password "openstack-image"
 
 package "curl" do
   action :install
