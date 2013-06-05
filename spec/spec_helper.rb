@@ -33,8 +33,6 @@ def expect_runs_openstack_common_logging_recipe
 end
 
 def expect_creates_cache_dir
-  #TODO: ChefSpec needs to handle guards better.  This
-  #      should only be created when pki is enabled.
   describe "/var/cache/glance" do
     before do
       @dir = @chef_run.directory "/var/cache/glance"
