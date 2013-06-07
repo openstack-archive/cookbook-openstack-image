@@ -2,11 +2,11 @@ require_relative "spec_helper"
 
 describe "openstack-image::identity_registration" do
   before do
+    image_stubs
     @identity_register_mock = double "identity_register"
   end
 
   it "registers image service" do
-    image_stubs
     ::Chef::Recipe.any_instance.stub(:openstack_identity_register)
     ::Chef::Recipe.any_instance.should_receive(:openstack_identity_register).
       with("Register Image Service") do |&arg|
@@ -31,7 +31,6 @@ describe "openstack-image::identity_registration" do
   end
 
   it "registers image endpoint" do
-    image_stubs
     ::Chef::Recipe.any_instance.stub(:openstack_identity_register)
     ::Chef::Recipe.any_instance.should_receive(:openstack_identity_register).
       with("Register Image Endpoint") do |&arg|
@@ -60,7 +59,6 @@ describe "openstack-image::identity_registration" do
   end
 
   it "registers service tenant" do
-    image_stubs
     ::Chef::Recipe.any_instance.stub(:openstack_identity_register)
     ::Chef::Recipe.any_instance.should_receive(:openstack_identity_register).
       with("Register Service Tenant") do |&arg|
@@ -85,7 +83,6 @@ describe "openstack-image::identity_registration" do
   end
 
   it "registers service user" do
-    image_stubs
     ::Chef::Recipe.any_instance.stub(:openstack_identity_register)
     ::Chef::Recipe.any_instance.should_receive(:openstack_identity_register).
       with("Register glance User") do |&arg|
@@ -112,7 +109,6 @@ describe "openstack-image::identity_registration" do
   end
 
   it "grants admin role to service user for service tenant" do
-    image_stubs
     ::Chef::Recipe.any_instance.stub(:openstack_identity_register)
     ::Chef::Recipe.any_instance.should_receive(:openstack_identity_register).
       with("Grant 'admin' Role to glance User for service Tenant") do |&arg|

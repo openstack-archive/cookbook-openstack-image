@@ -1,9 +1,9 @@
 require_relative "spec_helper"
 
 describe "openstack-image::registry" do
+  before { image_stubs }
   describe "redhat" do
     before do
-      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
       @chef_run.converge "openstack-image::registry"
     end
@@ -24,7 +24,13 @@ describe "openstack-image::registry" do
     end
 
     it "doesn't version the database" do
-      pending "TODO: how to test this"
+      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.stub_command("glance-manage db_version", false)
+      chef_run.converge "openstack-image::registry"
+      cmd = "glance-manage version_control 0"
+
+      expect(chef_run).not_to execute_command cmd
     end
   end
 end

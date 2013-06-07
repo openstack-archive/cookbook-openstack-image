@@ -1,12 +1,12 @@
 require_relative "spec_helper"
 
 describe "openstack-image::registry" do
+  before { image_stubs }
   describe "ubuntu" do
     before do
-      image_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-      @node = @chef_run.node
-      @node.set["openstack"]["image"]["syslog"]["use"] = true
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["image"]["syslog"]["use"] = true
+      end
       @chef_run.converge "openstack-image::registry"
     end
 
@@ -35,9 +35,26 @@ describe "openstack-image::registry" do
       expect(@chef_run).to set_service_to_start_on_boot "glance-registry"
     end
 
-    it "versions the database" do
-      cmd = "glance-manage version_control 0"
-      expect(@chef_run).to execute_command cmd
+    describe "glance manage" do
+      before { @cmd = "glance-manage version_control 0" }
+
+      it "versions the database" do
+        opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+        chef_run = ::ChefSpec::ChefRunner.new opts
+        chef_run.stub_command("glance-manage db_version", false)
+        chef_run.converge "openstack-image::registry"
+
+        expect(chef_run).to execute_command @cmd
+      end
+
+      it "doesn't version when glance-manage db_version false" do
+        opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+        chef_run = ::ChefSpec::ChefRunner.new opts
+        chef_run.stub_command("glance-manage db_version", true)
+        chef_run.converge "openstack-image::registry"
+
+        expect(chef_run).not_to execute_command @cmd
+      end
     end
 
     it "deletes glance.sqlite" do
@@ -63,13 +80,14 @@ describe "openstack-image::registry" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-registry restart" do
         expect(@file).to notify "service[image-registry]", :restart
       end
     end
 
     it "runs db migrations" do
       cmd = "glance-manage db_sync"
+
       expect(@chef_run).to execute_command cmd
     end
 
@@ -90,7 +108,7 @@ describe "openstack-image::registry" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-registry restart" do
         expect(@file).to notify "service[image-registry]", :restart
       end
     end

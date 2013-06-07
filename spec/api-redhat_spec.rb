@@ -1,9 +1,9 @@
 require_relative "spec_helper"
 
 describe "openstack-image::api" do
+  before { image_stubs }
   describe "redhat" do
     before do
-      image_stubs
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
       @chef_run.converge "openstack-image::api"
     end

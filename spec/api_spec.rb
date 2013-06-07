@@ -1,12 +1,12 @@
 require_relative "spec_helper"
 
 describe "openstack-image::api" do
+  before { image_stubs }
   describe "ubuntu" do
     before do
-      image_stubs
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-      @node = @chef_run.node
-      @node.set["openstack"]["image"]["syslog"]["use"] = true
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        n.set["openstack"]["image"]["syslog"]["use"] = true
+      end
       @chef_run.converge "openstack-image::api"
     end
 
@@ -46,7 +46,7 @@ describe "openstack-image::api" do
         expect(sprintf("%o", @file.mode)).to eq "644"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
     end
@@ -68,7 +68,7 @@ describe "openstack-image::api" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
     end
@@ -90,7 +90,7 @@ describe "openstack-image::api" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
     end
@@ -112,7 +112,7 @@ describe "openstack-image::api" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
     end
@@ -134,7 +134,7 @@ describe "openstack-image::api" do
         pending "TODO: implement"
       end
 
-      it "notifies nova-api-ec2 restart" do
+      it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
     end
@@ -159,12 +159,14 @@ describe "openstack-image::api" do
 
     it "has glance-cache-pruner cronjob running every 30 minutes" do
       cron = @chef_run.cron "glance-cache-pruner"
+
       expect(cron.command).to eq "/usr/bin/glance-cache-pruner"
       expect(cron.minute).to eq "*/30"
     end
 
     it "has glance-cache-cleaner to run at 00:01 each day" do
       cron = @chef_run.cron "glance-cache-cleaner"
+
       expect(cron.command).to eq "/usr/bin/glance-cache-cleaner"
       expect(cron.minute).to eq "01"
       expect(cron.hour).to eq "00"
@@ -189,21 +191,20 @@ describe "openstack-image::api" do
     end
 
     it "uploads qcow images" do
-      image_stubs
       opts = {
         :step_into => ["openstack-image_image"]
       }
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS.merge(opts)
-      node = chef_run.node
-      node.set["openstack"]["image"] = {
-        "image_upload" => true,
-        "upload_images" => [
-          "image1"
-        ],
-        "upload_image" => {
-          "image1" => "http://example.com/image.qcow2"
+      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS.merge(opts) do |n|
+        n.set["openstack"]["image"] = {
+          "image_upload" => true,
+          "upload_images" => [
+            "image1"
+          ],
+          "upload_image" => {
+            "image1" => "http://example.com/image.qcow2"
+          }
         }
-      }
+      end
       chef_run.converge "openstack-image::api"
       cmd = "glance --insecure " \
             "-I glance " \
