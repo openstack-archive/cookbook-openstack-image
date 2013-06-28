@@ -126,7 +126,7 @@ end
 if node["openstack"]["image"]["api"]["bind_interface"].nil?
   bind_address = api_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["openstack"]["image"]["api"]["bind_interface"]}"]
+  bind_address = address_for node["openstack"]["image"]["api"]["bind_interface"]
 end
 
 template "/etc/glance/glance-api.conf" do

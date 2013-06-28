@@ -13,6 +13,9 @@ require "chefspec"
 }
 
 def image_stubs
+  ::Chef::Recipe.any_instance.stub(:address_for).
+    with("lo").
+    and_return "127.0.1.1"
   ::Chef::Recipe.any_instance.stub(:config_by_role).
     with("rabbitmq-server", "queue").and_return(
       {'host' => 'rabbit-host', 'port' => 'rabbit-port'}

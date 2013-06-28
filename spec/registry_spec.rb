@@ -76,8 +76,19 @@ describe "openstack-image::registry" do
         expect(sprintf("%o", @file.mode)).to eq "644"
       end
 
-      it "template contents" do
-        pending "TODO: implement"
+      it "has bind host when bind_interface not specified" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          "bind_host = 127.0.0.1"
+      end
+
+      it "has bind host when bind_interface specified" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["registry"]["bind_interface"] = "lo"
+        end
+        chef_run.converge "openstack-image::registry"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          "bind_host = 127.0.1.1"
       end
 
       it "notifies image-registry restart" do

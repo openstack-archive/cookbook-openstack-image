@@ -90,7 +90,7 @@ end
 if node["openstack"]["image"]["registry"]["bind_interface"].nil?
   bind_address = registry_endpoint.host
 else
-  bind_address = node["network"]["ipaddress_#{node["openstack"]["image"]["registry"]["bind_interface"]}"]
+  bind_address = address_for node["openstack"]["image"]["registry"]["bind_interface"]
 end
 
 template "/etc/glance/glance-registry.conf" do
