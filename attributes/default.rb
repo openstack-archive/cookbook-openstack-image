@@ -39,6 +39,10 @@ default["openstack"]["image"]["region"] = "RegionOne"
 default["openstack"]["image"]["rabbit_server_chef_role"] = "rabbitmq-server"
 
 default["openstack"]["image"]["db"]["username"] = "glance"
+# Execute database migrations.  There are cases where migrations should not be
+# executed.  For example when upgrading a zone, and the image database is
+# replicated across many zones.
+default["openstack"]["image"]["db"]["migrate"] = true
 
 default["openstack"]["image"]["service_tenant_name"] = "service"
 default["openstack"]["image"]["service_user"] = "glance"
@@ -63,7 +67,6 @@ default["openstack"]["image"]["api"]["rbd"]["rbd_store_ceph_conf"] = "/etc/ceph/
 default["openstack"]["image"]["api"]["rbd"]["rbd_store_user"] = "glance"
 default["openstack"]["image"]["api"]["rbd"]["rbd_store_pool"] = "images"
 default["openstack"]["image"]["api"]["rbd"]["rbd_store_chunk_size"] = "8"
-
 
 # If set, glance registry service will bind to the address on this interface,
 # otherwise it will bind to the API endpoint's host.

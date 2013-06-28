@@ -109,8 +109,9 @@ template "/etc/glance/glance-registry.conf" do
   notifies :restart, "service[image-registry]", :immediately
 end
 
-#sync db after config file is generated
-execute "glance-manage db_sync"
+execute "glance-manage db_sync" do
+  only_if { node["openstack"]["image"]["db"]["migrate"] }
+end
 
 template "/etc/glance/glance-registry-paste.ini" do
   source "glance-registry-paste.ini.erb"

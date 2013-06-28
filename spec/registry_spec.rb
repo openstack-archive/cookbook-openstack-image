@@ -35,7 +35,7 @@ describe "openstack-image::registry" do
       expect(@chef_run).to set_service_to_start_on_boot "glance-registry"
     end
 
-    describe "glance manage" do
+    describe "version_control" do
       before { @cmd = "glance-manage version_control 0" }
 
       it "versions the database" do
@@ -96,10 +96,27 @@ describe "openstack-image::registry" do
       end
     end
 
-    it "runs db migrations" do
-      cmd = "glance-manage db_sync"
+    describe "db_sync" do
+      before do
+        @cmd = "glance-manage db_sync"
+      end
 
-      expect(@chef_run).to execute_command cmd
+      it "runs migrations" do
+        expect(@chef_run).to execute_command @cmd
+      end
+
+      it "doesn't run migrations" do
+        opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+        chef_run = ::ChefSpec::ChefRunner.new(opts) do |n|
+          n.set["openstack"]["image"]["db"]["migrate"] = false
+        end
+        # Lame we must still stub this, since the recipe contains shell
+        # guards.  Need to work on a way to resolve this.
+        chef_run.stub_command("glance-manage db_version", false)
+        chef_run.converge "openstack-image::registry"
+
+        expect(chef_run).not_to execute_command @cmd
+      end
     end
 
     describe "glance-registry-paste.ini" do
