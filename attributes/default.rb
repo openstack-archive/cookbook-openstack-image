@@ -36,13 +36,22 @@ default["openstack"]["image"]["region"] = "RegionOne"
 
 # The name of the Chef role that knows about the message queue server
 # that Glance uses
-default["openstack"]["image"]["rabbit_server_chef_role"] = "rabbitmq-server"
+default["openstack"]["image"]["rabbit_server_chef_role"] = node["openstack"]["mq"]["server_role"]
 
 default["openstack"]["image"]["db"]["username"] = "glance"
 # Execute database migrations.  There are cases where migrations should not be
 # executed.  For example when upgrading a zone, and the image database is
 # replicated across many zones.
 default["openstack"]["image"]["db"]["migrate"] = true
+
+# This user's password is stored in an encrypted databag
+# and accessed with openstack-common cookbook library's
+# user_password routine.  You are expected to create
+# the user, pass, vhost in a wrapper rabbitmq cookbook.
+default["openstack"]["image"]["rabbit"]["username"] = node["openstack"]["mq"]["user"]
+default["openstack"]["image"]["rabbit"]["vhost"] = node["openstack"]["mq"]["vhost"]
+default["openstack"]["image"]["rabbit"]["port"] = node["openstack"]["mq"]["port"]
+default["openstack"]["image"]["rabbit"]["host"] = node["openstack"]["mq"]["host"]
 
 default["openstack"]["image"]["service_tenant_name"] = "service"
 default["openstack"]["image"]["service_user"] = "glance"

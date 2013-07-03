@@ -75,8 +75,6 @@ template "/etc/glance/policy.json" do
 end
 
 glance = node["openstack"]["image"]
-rabbit_server_role = glance["rabbit_server_chef_role"]
-rabbit_info = config_by_role rabbit_server_role, "queue"
 
 identity_endpoint = endpoint "identity-admin"
 auth_uri = ::URI.decode identity_endpoint.to_s
@@ -140,7 +138,6 @@ template "/etc/glance/glance-api.conf" do
     :registry_ip_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
-    :rabbit_ipaddress => rabbit_info["host"],    #FIXME!
     :glance_flavor => glance_flavor,
     "identity_endpoint" => identity_endpoint,
     "service_pass" => service_pass,
