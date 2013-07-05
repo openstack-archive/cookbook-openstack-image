@@ -15,8 +15,6 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-* database
-* mysql
 * openstack-common
 * openstack-identity
 
@@ -34,10 +32,6 @@ registry
 keystone-registration
 ---------------------
 - Registers the API endpoint and glance service Keystone user
-
-db
---
-- Creates the Glance registry database
 
 The Glance cookbook currently supports file, swift, and Rackspace Cloud Files (swift API compliant) backing stores.  NOTE: changing the storage location from cloudfiles to swift (and vice versa) requires that you manually export and import your stored images.
 
