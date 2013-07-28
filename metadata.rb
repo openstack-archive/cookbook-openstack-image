@@ -12,5 +12,5 @@ recipe            "openstack-image::identity_registration", "Registers Glance en
   supports os
 end
 
-depends           "openstack-common", "~> 0.3.0"
+depends           "openstack-common", "~> 0.4.0"
 depends           "openstack-identity", "~> 7.0.0"
