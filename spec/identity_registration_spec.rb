@@ -14,7 +14,7 @@ describe "openstack-image::identity_registration" do
     ).to_hash
 
     expect(resource).to include(
-      :auth_uri => "https://127.0.0.1:35357/v2.0",
+      :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :service_type => "image",
       :service_description => "Glance Image Service",
@@ -29,13 +29,13 @@ describe "openstack-image::identity_registration" do
     ).to_hash
 
     expect(resource).to include(
-      :auth_uri => "https://127.0.0.1:35357/v2.0",
+      :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :service_type => "image",
       :endpoint_region => "RegionOne",
-      :endpoint_adminurl => "https://127.0.0.1:9292/v2",
-      :endpoint_internalurl => "https://127.0.0.1:9292/v2",
-      :endpoint_publicurl => "https://127.0.0.1:9292/v2",
+      :endpoint_adminurl => "http://127.0.0.1:9292/v2",
+      :endpoint_internalurl => "http://127.0.0.1:9292/v2",
+      :endpoint_publicurl => "http://127.0.0.1:9292/v2",
       :action => [:create_endpoint]
     )
   end
@@ -47,7 +47,7 @@ describe "openstack-image::identity_registration" do
     ).to_hash
 
     expect(resource).to include(
-      :auth_uri => "https://127.0.0.1:35357/v2.0",
+      :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :tenant_name => "service",
       :tenant_description => "Service Tenant",
@@ -63,7 +63,7 @@ describe "openstack-image::identity_registration" do
     ).to_hash
 
     expect(resource).to include(
-      :auth_uri => "https://127.0.0.1:35357/v2.0",
+      :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :tenant_name => "service",
       :user_name => "glance",
@@ -80,7 +80,7 @@ describe "openstack-image::identity_registration" do
     ).to_hash
 
     expect(resource).to include(
-      :auth_uri => "https://127.0.0.1:35357/v2.0",
+      :auth_uri => "http://127.0.0.1:35357/v2.0",
       :bootstrap_token => "bootstrap-token",
       :tenant_name => "service",
       :role_name => "admin",

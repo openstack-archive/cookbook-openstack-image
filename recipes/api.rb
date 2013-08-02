@@ -76,8 +76,21 @@ end
 
 glance = node["openstack"]["image"]
 
-identity_endpoint = endpoint "identity-admin"
-auth_uri = ::URI.decode identity_endpoint.to_s
+identity_endpoint = endpoint "identity-api"
+identity_admin_endpoint = endpoint "identity-admin"
+service_pass = service_password "openstack-image"
+
+#TODO(jaypipes): Move this logic and stuff into the openstack-common
+# library cookbook.
+auth_uri = identity_endpoint.to_s
+if node["openstack"]["image"]["api"]["auth"]["version"] != "v2.0"
+  # The auth_uri should contain /v2.0 in most cases, but if the
+  # auth_version is v3.0, we leave it off. This is only necessary
+  # for environments that need to support V3 non-default-domain
+  # tokens, which is really the only reason to set version to
+  # something other than v2.0 (the default)
+  auth_uri = auth_uri.gsub('/v2.0', '')
+end
 
 db_user = node["openstack"]["image"]["db"]["username"]
 db_pass = db_password "glance"
@@ -139,8 +152,9 @@ template "/etc/glance/glance-api.conf" do
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
     :glance_flavor => glance_flavor,
-    "identity_endpoint" => identity_endpoint,
-    "service_pass" => service_pass,
+    :auth_uri => auth_uri,
+    :identity_admin_endpoint => identity_admin_endpoint,
+    :service_pass => service_pass,
     :swift_store_key => swift_store_key,
     :swift_user_tenant => swift_user_tenant,
     :swift_store_user => swift_store_user,

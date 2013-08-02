@@ -57,6 +57,10 @@ default["openstack"]["image"]["service_tenant_name"] = "service"
 default["openstack"]["image"]["service_user"] = "glance"
 default["openstack"]["image"]["service_role"] = "admin"
 
+# Setting this to v2.0. See discussion on
+# https://bugs.launchpad.net/openstack-chef/+bug/1207504
+default["openstack"]["image"]["api"]["auth"]["version"] = "v2.0"
+
 # Keystone PKI signing directories
 # XXX keystoneclient wants these dirs to exist even if it doesn't use them
 default["openstack"]["image"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"

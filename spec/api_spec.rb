@@ -223,7 +223,7 @@ describe "openstack-image::api" do
             "-I glance " \
             "-K glance-pass " \
             "-T service " \
-            "-N https://127.0.0.1:35357/v2.0 " \
+            "-N http://127.0.0.1:5000/v2.0 " \
             "image-create " \
             "--name image1 " \
             "--is-public true " \
