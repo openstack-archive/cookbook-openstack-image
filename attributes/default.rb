@@ -85,6 +85,10 @@ default["openstack"]["image"]["api"]["rbd"]["rbd_store_chunk_size"] = "8"
 # otherwise it will bind to the API endpoint's host.
 default["openstack"]["image"]["registry"]["bind_interface"] = nil
 
+# API to use for accessing data. Default value points to sqlalchemy
+# package.
+default["openstack"]["image"]["data_api"] = "glance.db.sqlalchemy.api"
+
 # Default Image Locations
 default["openstack"]["image"]["image_upload"] = false
 default["openstack"]["image"]["upload_images"] = [ "cirros" ]
