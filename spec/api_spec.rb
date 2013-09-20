@@ -173,14 +173,14 @@ describe "openstack-image::api" do
     it "has glance-cache-pruner cronjob running every 30 minutes" do
       cron = @chef_run.cron "glance-cache-pruner"
 
-      expect(cron.command).to eq "/usr/bin/glance-cache-pruner"
+      expect(cron.command).to eq "/usr/bin/glance-cache-pruner > /dev/null 2>&1"
       expect(cron.minute).to eq "*/30"
     end
 
     it "has glance-cache-cleaner to run at 00:01 each day" do
       cron = @chef_run.cron "glance-cache-cleaner"
 
-      expect(cron.command).to eq "/usr/bin/glance-cache-cleaner"
+      expect(cron.command).to eq "/usr/bin/glance-cache-cleaner > /dev/null 2>&1"
       expect(cron.minute).to eq "01"
       expect(cron.hour).to eq "00"
     end

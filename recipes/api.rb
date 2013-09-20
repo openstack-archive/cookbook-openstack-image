@@ -212,14 +212,14 @@ end
 # Configure glance-cache-pruner to run every 30 minutes
 cron "glance-cache-pruner" do
   minute "*/30"
-  command "/usr/bin/glance-cache-pruner"
+  command "/usr/bin/glance-cache-pruner > /dev/null 2>&1"
 end
 
 # Configure glance-cache-cleaner to run at 00:01 everyday
 cron "glance-cache-cleaner" do
   minute  "01"
   hour    "00"
-  command "/usr/bin/glance-cache-cleaner"
+  command "/usr/bin/glance-cache-cleaner > /dev/null 2>&1"
 end
 
 template "/etc/glance/glance-scrubber-paste.ini" do
