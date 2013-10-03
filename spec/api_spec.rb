@@ -81,6 +81,23 @@ describe "openstack-image::api" do
           "bind_host = 127.0.1.1"
       end
 
+      it "has default filesystem_store_datadir setting" do
+
+        expect(@chef_run).to create_file_with_content @file.name,
+          "filesystem_store_datadir = /var/lib/glance/images"
+      end
+
+      it "has configurable filesystem_store_datadir setting" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["filesystem_store_datadir"] = "foo"
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^filesystem_store_datadir = foo$/
+      end
+
       it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
