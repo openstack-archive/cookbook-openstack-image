@@ -84,6 +84,44 @@ describe "openstack-image::api" do
       it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
+
+      it "does not have caching enabled by default" do
+        expect(@chef_run).to create_file_with_content @file.name, /^flavor = keystone$/
+      end
+
+      it "enables caching when attribute is set" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["api"]["caching"] = true
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^flavor = keystone\+caching$/
+      end
+
+      it "enables cache_management when attribute is set" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["api"]["cache_management"] = true
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^flavor = keystone\+cachemanagement$/
+      end
+
+      it "enables only cache_management when it and the caching attributes are set" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["api"]["cache_management"] = true
+          n.set["openstack"]["image"]["api"]["caching"] = true
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^flavor = keystone\+cachemanagement$/
+      end
     end
 
     describe "glance-api-paste.ini" do
