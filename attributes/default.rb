@@ -63,6 +63,9 @@ default["openstack"]["image"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/a
 default["openstack"]["image"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
 default["openstack"]["image"]["api"]["default_store"] = "file"
+
+default["openstack"]["image"]["filesystem_store_datadir"] = "/var/lib/glance/images"
+
 # If set, glance API service will bind to the address on this interface,
 # otherwise it will bind to the API endpoint's host.
 default["openstack"]["image"]["api"]["bind_interface"] = nil
