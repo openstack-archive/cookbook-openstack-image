@@ -10,11 +10,11 @@ debug = <%= node["openstack"]["image"]["debug"] %>
 # =============== Image Cache Options =============================
 
 # Directory that the Image Cache writes data to
-image_cache_dir = /var/lib/glance/image-cache/
+image_cache_dir = <%= node["openstack"]["image"]["cache"]["dir"] %>
 
 # Number of seconds after which we should consider an incomplete image to be
 # stalled and eligible for reaping
-image_cache_stall_time = 86400
+image_cache_stall_time = <%= node["openstack"]["image"]["cache"]["stall_time"] %>
 
 # image_cache_invalid_entry_grace_period - seconds
 #
@@ -24,7 +24,7 @@ image_cache_stall_time = 86400
 #
 # This is number of seconds to leave these invalid images around before they
 # are elibible to be reaped.
-image_cache_invalid_entry_grace_period = 3600
+image_cache_invalid_entry_grace_period = <%= node["openstack"]["image"]["cache"]["grace_period"] %>
 
 # Max cache size in bytes
 image_cache_max_size = <%= node["openstack"]["image"]["api"]["cache"]["image_cache_max_size"] %>
