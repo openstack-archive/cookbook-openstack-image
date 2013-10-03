@@ -145,6 +145,54 @@ describe "openstack-image::api" do
       it "notifies image-api restart" do
         expect(@file).to notify "service[image-api]", :restart
       end
+
+      it "has the default image_cache_dir setting" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^image_cache_dir = \/var\/lib\/glance\/image\-cache\/$/
+      end
+
+      it "has a configurable image_cache_dir setting" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["cache"]["dir"] = "foo"
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^image_cache_dir = foo$/
+      end
+
+      it "has the default cache stall_time setting" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^image_cache_stall_time = 86400$/
+      end
+
+      it "has a configurable stall_time setting" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["cache"]["stall_time"] = "42"
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^image_cache_stall_time = 42$/
+      end
+
+      it "has the default grace_period setting" do
+        expect(@chef_run).to create_file_with_content @file.name,
+          /^image_cache_invalid_entry_grace_period = 3600$/
+      end
+
+      it "has a configurable grace_period setting" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["image"]["cache"]["grace_period"] = "42"
+          n.set["cpu"] = { 'total' => '1' }
+        end
+        chef_run.converge "openstack-image::api"
+
+        expect(chef_run).to create_file_with_content @file.name,
+          /^image_cache_invalid_entry_grace_period = 42$/
+      end
     end
 
     describe "glance-cache-paste.ini" do

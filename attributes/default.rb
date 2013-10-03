@@ -78,6 +78,14 @@ default["openstack"]["image"]["api"]["swift"]["large_object_size"] = "200"
 default["openstack"]["image"]["api"]["swift"]["large_object_chunk_size"] = "200"
 default["openstack"]["image"]["api"]["cache"]["image_cache_max_size"] = "10737418240"
 
+# Directory for the Image Cache
+default["openstack"]["image"]["cache"]["dir"] = "/var/lib/glance/image-cache/"
+# Number of seconds until an incomplete image is considered stalled an
+# eligible for reaping
+default["openstack"]["image"]["cache"]["stall_time"] = 86400
+# Number of seconds to leave invalid images around before they are eligible to be reaped
+default["openstack"]["image"]["cache"]["grace_period"] = 3600
+
 # Ceph Options
 default["openstack"]["image"]["api"]["rbd"]["rbd_store_ceph_conf"] = "/etc/ceph/ceph.conf"
 default["openstack"]["image"]["api"]["rbd"]["rbd_store_user"] = "glance"
