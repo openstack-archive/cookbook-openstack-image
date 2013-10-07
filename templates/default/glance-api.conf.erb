@@ -260,4 +260,8 @@ admin_password = <%= @service_pass %>
 signing_dir = <%= node["openstack"]["image"]["api"]["auth"]["cache_dir"] %>
 
 [paste_deploy]
+# Partial name of a pipeline in your paste configuration file with the
+# service name removed. For example, if your paste section name is
+# [pipeline:glance-api-keystone], you would configure the flavor below
+# as 'keystone'.
 flavor = <%= @glance_flavor %>

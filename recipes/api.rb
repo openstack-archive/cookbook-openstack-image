@@ -127,11 +127,11 @@ else
   swift_store_auth_version=glance["api"]["swift_store_auth_version"]
 end
 
-# Only use the glance image cacher if we aren't using file for our backing store.
-if glance["api"]["default_store"]=="file"
-  glance_flavor="keystone"
-else
-  glance_flavor="keystone+cachemanagement"
+glance_flavor = "keystone"
+if glance["api"]["cache_management"]
+  glance_flavor += "+cachemanagement"
+elsif glance["api"]["caching"]
+  glance_flavor += "+caching"
 end
 
 if node["openstack"]["image"]["api"]["bind_interface"].nil?

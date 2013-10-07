@@ -66,6 +66,10 @@ default["openstack"]["image"]["api"]["auth"]["version"] = "v2.0"
 default["openstack"]["image"]["api"]["auth"]["cache_dir"] = "/var/cache/glance/api"
 default["openstack"]["image"]["registry"]["auth"]["cache_dir"] = "/var/cache/glance/registry"
 
+# Whether to use any of the default caching pipelines from the paste configuration file
+default["openstack"]["image"]["api"]["caching"] = false
+default["openstack"]["image"]["api"]["cache_management"] = false
+
 default["openstack"]["image"]["api"]["default_store"] = "file"
 
 default["openstack"]["image"]["filesystem_store_datadir"] = "/var/lib/glance/images"
