@@ -36,7 +36,8 @@ db_user = node["openstack"]["image"]["db"]["username"]
 db_pass = db_password "glance"
 sql_connection = db_uri("image", db_user, db_pass)
 
-identity_endpoint = endpoint "identity-admin"
+identity_endpoint = endpoint "identity-api"
+identity_admin_endpoint = endpoint "identity-admin"
 registry_endpoint = endpoint "image-registry"
 service_pass = service_password "openstack-image"
 
@@ -102,7 +103,8 @@ template "/etc/glance/glance-registry.conf" do
     :registry_bind_address => bind_address,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
-    "identity_endpoint" => identity_endpoint,
+    :identity_endpoint => identity_endpoint,
+    "identity_admin_endpoint" => identity_admin_endpoint,
     "service_pass" => service_pass
   )
 
