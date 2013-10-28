@@ -323,10 +323,11 @@ describe "openstack-image::api" do
       end
       chef_run.converge "openstack-image::api"
       cmd = "glance --insecure " \
-            "-I glance " \
-            "-K glance-pass " \
-            "-T service " \
-            "-N http://127.0.0.1:5000/v2.0 " \
+            "--os-username glance " \
+            "--os-password glance-pass " \
+            "--os-tenant-name service " \
+            "--os-image-url http://127.0.0.1:9292 " \
+            "--os-auth-url http://127.0.0.1:5000/v2.0 " \
             "image-create " \
             "--name image1 " \
             "--is-public true " \

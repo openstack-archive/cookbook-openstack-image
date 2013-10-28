@@ -184,7 +184,7 @@ template "/etc/glance/glance-cache.conf" do
     :registry_port => registry_endpoint.port
   )
 
-  notifies :restart, "service[image-api]"
+  notifies :restart, "service[image-api]", :immediately
 end
 
 #TODO(jaypipes) I don't think this even exists or at least isn't
@@ -195,7 +195,7 @@ template "/etc/glance/glance-cache-paste.ini" do
   group node["openstack"]["image"]["group"]
   mode   00644
 
-  notifies :restart, "service[image-api]"
+  notifies :restart, "service[image-api]", :immediately
 end
 
 template "/etc/glance/glance-scrubber.conf" do

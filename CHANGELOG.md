@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.0.3:
+* Use the image-api endpoint within the image_image LWRP to enable non-localhost
+  uploads.
+* Use non-deprecated parameters within the image_image LWRP use of the glance CLI.
+
 ## 7.0.2:
 * Added cron redirection attribute.
 
