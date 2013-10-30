@@ -119,6 +119,9 @@ default["openstack"]["image"]["syslog"]["use"] = false
 default["openstack"]["image"]["syslog"]["facility"] = "LOG_LOCAL2"
 default["openstack"]["image"]["syslog"]["config_facility"] = "local2"
 
+# cron output redirection
+default["openstack"]["image"]["cron"]["redirection"] = "> /dev/null 2>&1"
+
 # platform-specific settings
 case platform
 when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this

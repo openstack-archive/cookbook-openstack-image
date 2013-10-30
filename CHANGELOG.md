@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.0.2:
+* Added cron redirection attribute.
+
 ## 7.0.1:
 * Corrected inconsistent keystone middleware auth_token for glance-registry.conf.erb.
 

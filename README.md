@@ -118,6 +118,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['rbd']['rbd_store_user']` - User for connecting to ceph store
 * `openstack['image']['api']['rbd']['rbd_store_pool']` - RADOS pool for images
 * `openstack['image']['api']['rbd']['rbd_store_chunk_size']` - Size in MB of chunks for RADOS Store, should be a power of 2
+* `openstack['image']['cron']['redirection']` - Redirection of cron output
 
 Testing
 =====
