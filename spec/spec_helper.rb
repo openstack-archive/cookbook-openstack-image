@@ -66,7 +66,6 @@ end
 def expect_installs_ubuntu_glance_packages
   it "installs glance packages" do
     expect(@chef_run).to upgrade_package "glance"
-    expect(@chef_run).to upgrade_package "python-swift"
   end
 end
 

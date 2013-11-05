@@ -46,6 +46,14 @@ platform_options["image_packages"].each do |pkg|
   end
 end
 
+if node["openstack"]["image"]["api"]["default_store"] == "swift"
+  platform_options["swift_packages"].each do |pkg|
+    package pkg do
+      action :upgrade
+    end
+  end
+end
+
 service "image-api" do
   service_name platform_options["image_api_service"]
   supports :status => true, :restart => true

@@ -21,7 +21,6 @@ describe "openstack-image::registry" do
 
     it "installs glance packages" do
       expect(@chef_run).to upgrade_package "openstack-glance"
-      expect(@chef_run).to upgrade_package "openstack-swift"
       expect(@chef_run).to upgrade_package "cronie"
     end
 

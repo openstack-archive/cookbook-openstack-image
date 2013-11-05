@@ -130,7 +130,8 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["openstack"]["image"]["platform"] = {
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "MySQL-python" ],
-    "image_packages" => [ "openstack-glance", "openstack-swift", "cronie" ],
+    "image_packages" => [ "openstack-glance", "cronie" ],
+    "swift_packages" => [ "openstack-swift" ],
     "image_api_service" => "openstack-glance-api",
     "image_registry_service" => "openstack-glance-registry",
     "image_api_process_name" => "glance-api",
@@ -142,7 +143,8 @@ when "suse"
   default["openstack"]["image"]["platform"] = {
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysql" ],
-    "image_packages" => [ "openstack-glance", "openstack-swift", "python-glanceclient" ],
+    "image_packages" => [ "openstack-glance", "python-glanceclient" ],
+    "swift_packages" => [ "openstack-swift" ],
     "image_api_service" => "openstack-glance-api",
     "image_registry_service" => "openstack-glance-registry",
     "image_api_process_name" => "glance-api",
@@ -154,7 +156,8 @@ when "ubuntu"
   default["openstack"]["image"]["platform"] = {
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysqldb" ],
-    "image_packages" => [ "glance", "python-swift" ],
+    "image_packages" => [ "glance" ],
+    "swift_packages" => [ "python-swift" ],
     "image_api_service" => "glance-api",
     "image_registry_service" => "glance-registry",
     "image_registry_process_name" => "glance-registry",

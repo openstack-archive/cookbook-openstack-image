@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.0.5:
+* Allow swift packages to be optionally installed.
+
 ## 7.0.4:
 ### Bug
 * Fixed <db_type>_python_packages issue when setting node.openstack.db.image.db_type to sqlite.
