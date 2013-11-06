@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.0.4:
+### Bug
+* Fixed <db_type>_python_packages issue when setting node.openstack.db.image.db_type to sqlite.
+* Added `converges when configured to use sqlite db backend` test case for this scenario.
+
 ## 7.0.3:
 * Use the image-api endpoint within the image_image LWRP to enable non-localhost
   uploads.

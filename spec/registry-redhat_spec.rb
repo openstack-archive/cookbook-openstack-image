@@ -8,6 +8,13 @@ describe "openstack-image::registry" do
       @chef_run.converge "openstack-image::registry"
     end
 
+    it "converges when configured to use sqlite" do
+      chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
+      node = chef_run.node
+      node.set["openstack"]["db"]["image"]["db_type"] = "sqlite"
+      chef_run.converge "openstack-image::registry"
+    end
+
     it "installs mysql python packages" do
       expect(@chef_run).to install_package "MySQL-python"
     end

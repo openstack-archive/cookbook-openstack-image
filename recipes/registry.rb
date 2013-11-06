@@ -46,9 +46,12 @@ package "curl" do
 end
 
 db_type = node['openstack']['db']['identity']['db_type']
-platform_options["#{db_type}_python_packages"].each do |pkg|
-  package pkg do
-    action :install
+pkg_key = "#{db_type}_python_packages"
+if platform_options.has_key?(pkg_key)
+  platform_options[pkg_key].each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 end
 
