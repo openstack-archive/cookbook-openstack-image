@@ -68,6 +68,16 @@ describe "openstack-image::registry" do
       expect(@chef_run).to delete_file "/var/lib/glance/glance.sqlite"
     end
 
+    it "does not delete glance.sqlite when configured to use sqlite" do
+      opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      node = chef_run.node
+      node.set["openstack"]["db"]["image"]["db_type"] = "sqlite"
+      chef_run.stub_command("glance-manage db_version", true)
+      chef_run.converge "openstack-image::registry"
+      expect(chef_run).not_to delete_file "/var/lib/glance/glance.sqlite"
+    end
+
     expect_creates_glance_dir
 
     describe "glance-registry.conf" do

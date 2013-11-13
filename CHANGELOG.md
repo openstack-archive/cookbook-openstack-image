@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.0.6
+### Bug
+* Do not delete the sqlite database layed down by the glance packages when node.openstack.db.image.db_type is set to sqlite.
+
 ## 7.0.5:
 * Allow swift packages to be optionally installed.
 

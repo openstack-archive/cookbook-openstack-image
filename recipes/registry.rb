@@ -83,6 +83,7 @@ end
 
 file "/var/lib/glance/glance.sqlite" do
   action :delete
+  not_if { node["openstack"]["db"]["image"]["db_type"] == "sqlite" }
 end
 
 directory "/etc/glance" do
