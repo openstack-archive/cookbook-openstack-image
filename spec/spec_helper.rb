@@ -1,4 +1,5 @@
 require "chefspec"
+require "chef/application"
 
 ::LOG_LEVEL = :fatal
 ::REDHAT_OPTS = {
@@ -27,6 +28,7 @@ def image_stubs
   ::Chef::Recipe.any_instance.stub(:user_password).and_return String.new
   ::Chef::Recipe.any_instance.stub(:service_password).with("openstack-image").
     and_return "glance-pass"
+  ::Chef::Application.stub(:fatal!)
 end
 
 def expect_runs_openstack_common_logging_recipe

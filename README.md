@@ -120,6 +120,26 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['rbd']['rbd_store_chunk_size']` - Size in MB of chunks for RADOS Store, should be a power of 2
 * `openstack['image']['cron']['redirection']` - Redirection of cron output
 
+
+MQ attributes
+-------------
+* `openstack['image']['mq']['service_type']` - Select qpid or rabbitmq. default rabbitmq
+* `openstack['image']['mq']['notifier_strategy']` - Notifier stragegy. default noop.
+* `openstack['image']['mq']['qpid']['host']` - The qpid host to use
+* `openstack['image']['mq']['qpid']['port']` - The qpid port to use
+* `openstack['image']['mq']['qpid']['qpid_hosts']` - Qpid hosts. TODO. use only when ha is specified.
+* `openstack['image']['mq']['qpid']['username']` - Username for qpid connection
+* `openstack['image']['mq']['qpid']['password']` - Password for qpid connection
+* `openstack['image']['mq']['qpid']['sasl_mechanisms']` - Space separated list of SASL mechanisms to use for auth
+* `openstack['image']['mq']['qpid']['reconnect_timeout']` - The number of seconds to wait before deciding that a reconnect attempt has failed.
+* `openstack['image']['mq']['qpid']['reconnect_limit']` - The limit for the number of times to reconnect before considering the connection to be failed.
+* `openstack['image']['mq']['qpid']['reconnect_interval_min']` - Minimum number of seconds between connection attempts.
+* `openstack['image']['mq']['qpid']['reconnect_interval_max']` - Maximum number of seconds between connection attempts.
+* `openstack['image']['mq']['qpid']['reconnect_interval']` - Equivalent to setting qpid_reconnect_interval_min and qpid_reconnect_interval_max to the same value.
+* `openstack['image']['mq']['qpid']['heartbeat']` - Seconds between heartbeat messages sent to ensure that the connection is still alive.
+* `openstack['image']['mq']['qpid']['protocol']` - Protocol to use. Default tcp.
+* `openstack['image']['mq']['qpid']['tcp_nodelay']` - Disable the Nagle algorithm. default disabled.
+
 Testing
 =====
 
@@ -149,6 +169,7 @@ Author:: John Dewey (<jdewey@att.com>)
 Author:: Craig Tracey (<craigtracey@gmail.com>)
 Author:: Sean Gallagher (<sean.gallagher@att.com>)
 Author:: Mark Vanderwiel (<vanderwl@us.ibm.com>)
+Author:: Salman Baset (<sabaset@us.ibm.com>)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.

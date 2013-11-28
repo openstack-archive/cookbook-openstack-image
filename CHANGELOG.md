@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.1.0
+### Blue print
+* Add qpid support to glance. Default is rabbit
+
 ## 7.0.6
 ### Bug
 * Do not delete the sqlite database layed down by the glance packages when node.openstack.db.image.db_type is set to sqlite.

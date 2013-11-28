@@ -95,10 +95,10 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
-notifier_strategy = noop
+notifier_strategy = <%= node["openstack"]["image"]["mq"]["notifier_strategy"] %>
 
-# Configuration options if sending notifications via rabbitmq (these are
-# the defaults)
+<% if node["openstack"]["image"]["mq"]["service_type"] == "rabbitmq" %>
+#### RABBITMQ #####
 rabbit_host = localhost
 rabbit_port = 5672
 rabbit_use_ssl = false
@@ -107,25 +107,32 @@ rabbit_password = guest
 rabbit_virtual_host = /
 rabbit_notification_exchange = glance
 rabbit_notification_topic = glance_notifications
+<% end %>
 
-# Configuration options if sending notifications via Qpid (these are
-# the defaults)
+<% if node["openstack"]["image"]["mq"]["service_type"] == "qpid"  %>
+##### QPID #####
+rpc_backend=nova.openstack.common.rpc.impl_qpid
 qpid_notification_exchange = glance
 qpid_notification_topic = glance_notifications
-qpid_host = localhost
-qpid_port = 5672
-qpid_username =
-qpid_password =
-qpid_sasl_mechanisms =
-qpid_reconnect_timeout = 0
-qpid_reconnect_limit = 0
-qpid_reconnect_interval_min = 0
-qpid_reconnect_interval_max = 0
-qpid_reconnect_interval = 0
-qpid_heartbeat = 5
-# Set to 'ssl' to enable SSL
-qpid_protocol = tcp
-qpid_tcp_nodelay = True
+
+qpid_hostname=<%= node["openstack"]["image"]["mq"]["qpid"]["host"] %>
+qpid_port=<%= node["openstack"]["image"]["mq"]["qpid"]["port"] %>
+
+qpid_password=<%= node["openstack"]["image"]["mq"]["qpid"]["password"] %>
+qpid_username=<%= node["openstack"]["image"]["mq"]["qpid"]["username"] %>
+qpid_sasl_mechanisms=<%= node["openstack"]["image"]["mq"]["qpid"]["sasl_mechanisms"] %>
+qpid_reconnect=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect"] %>
+qpid_reconnect_timeout=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect_timeout"] %>
+qpid_reconnect_limit=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect_limit"] %>
+qpid_reconnect_interval_min=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect_interval_min"] %>
+qpid_reconnect_interval_max=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect_interval_max"] %>
+qpid_reconnect_interval=<%= node["openstack"]["image"]["mq"]["qpid"]["reconnect_interval"] %>
+qpid_heartbeat=<%= node["openstack"]["image"]["mq"]["qpid"]["heartbeat"] %>
+# qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
+qpid_protocol=<%= node["openstack"]["image"]["mq"]["qpid"]["protocol"] %>
+qpid_tcp_nodelay=<%= node["openstack"]["image"]["mq"]["qpid"]["tcp_nodelay"] %>
+
+<% end %>
 
 # ============ Filesystem Store Options ========================
 
