@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 7.1.1
+### Bug
+* Relax the dependency on openstack-identity to the 7.x series
+
 ## 7.1.0
 ### Blue print
 * Add qpid support to glance. Default is rabbit
