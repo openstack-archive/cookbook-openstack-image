@@ -6,6 +6,7 @@
 # Copyright 2012-2013, Opscode, Inc.
 # Copyright 2012-2013, AT&T Services, Inc.
 # Copyright 2013, Craig Tracey <craigtracey@gmail.com>
+# Copyright 2013, IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -235,18 +236,4 @@ template "/etc/glance/glance-scrubber-paste.ini" do
   owner node["openstack"]["image"]["user"]
   group node["openstack"]["image"]["group"]
   mode   00644
-end
-
-if node["openstack"]["image"]["image_upload"]
-  node["openstack"]["image"]["upload_images"].each do |img|
-    openstack_image_image "Image setup for #{img.to_s}" do
-      image_url node["openstack"]["image"]["upload_image"][img.to_sym]
-      image_name img
-      identity_user service_user
-      identity_pass service_pass
-      identity_tenant service_tenant_name
-      identity_uri auth_uri
-      action :upload
-    end
-  end
 end

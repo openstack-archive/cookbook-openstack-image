@@ -126,7 +126,6 @@ default["openstack"]["image"]["registry"]["bind_interface"] = nil
 default["openstack"]["image"]["data_api"] = "glance.db.sqlalchemy.api"
 
 # Default Image Locations
-default["openstack"]["image"]["image_upload"] = false
 default["openstack"]["image"]["upload_images"] = [ "cirros" ]
 default["openstack"]["image"]["upload_image"]["precise"] = "http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img"
 default["openstack"]["image"]["upload_image"]["oneiric"] = "http://cloud-images.ubuntu.com/oneiric/current/oneiric-server-cloudimg-amd64-disk1.img"
@@ -151,7 +150,8 @@ when "fedora", "redhat", "centos" # :pragma-foodcritic: ~FC024 - won't fix this
   default["openstack"]["image"]["platform"] = {
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "MySQL-python" ],
-    "image_packages" => [ "openstack-glance", "cronie" ],
+    "image_packages" => [ "openstack-glance", "cronie", "python-glanceclient"],
+    "image_client_packages" => ["python-glanceclient"],
     "swift_packages" => [ "openstack-swift" ],
     "image_api_service" => "openstack-glance-api",
     "image_registry_service" => "openstack-glance-registry",
@@ -165,6 +165,7 @@ when "suse"
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysql" ],
     "image_packages" => [ "openstack-glance", "python-glanceclient" ],
+    "image_client_packages" => ["python-glanceclient"],
     "swift_packages" => [ "openstack-swift" ],
     "image_api_service" => "openstack-glance-api",
     "image_registry_service" => "openstack-glance-registry",
@@ -178,6 +179,7 @@ when "ubuntu"
     "postgresql_python_packages" => [ "python-psycopg2" ],
     "mysql_python_packages" => [ "python-mysqldb" ],
     "image_packages" => [ "glance" ],
+    "image_client_packages" => ["python-glanceclient"],
     "swift_packages" => [ "python-swift" ],
     "image_api_service" => "glance-api",
     "image_registry_service" => "glance-registry",

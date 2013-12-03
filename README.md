@@ -33,6 +33,10 @@ keystone-registration
 ---------------------
 - Registers the API endpoint and glance service Keystone user
 
+image-upload
+------------
+- Upload image to glance. If you want to upload image during openstack installation, you need to add this recipe or the os-image role to the run list in a certain role and ensure before this recipe or the os-image role glance api and glance registry recipes have been executed.
+
 The Glance cookbook currently supports file, swift, and Rackspace Cloud Files (swift API compliant) backing stores.  NOTE: changing the storage location from cloudfiles to swift (and vice versa) requires that you manually export and import your stored images.
 
 To enable these features set the following in the default attributes section in your environment:
@@ -48,8 +52,7 @@ Files
         },
         "upload_images": [
             "cirros"
-        ],
-        "image_upload": true
+        ]
     }
 }
 ```
@@ -65,8 +68,7 @@ Swift
         },
         "upload_images": [
             "cirros"
-        ],
-        "image_upload": true
+        ]
     }
 }
 ```
@@ -106,7 +108,6 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['service_role']` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack['image']['api']['auth']['cache_dir']` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
 * `openstack['image']['registry']['auth']['cache_dir']` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
-* `openstack['image']['image_upload']` - Toggles whether to automatically upload images in the `openstack['image']['upload_images']` array
 * `openstack['image']['upload_images']` - Default list of images to upload to the glance repository as part of the install
 * `openstack['image']['upload_image']['<imagename>']` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `openstack['image']['upload_image']['natty']` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"

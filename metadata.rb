@@ -7,6 +7,7 @@ version           "8.0.0"
 recipe            "openstack-image::api", "Installs packages required for a glance api server"
 recipe            "openstack-image::registry", "Installs packages required for a glance registry server"
 recipe            "openstack-image::identity_registration", "Registers Glance endpoints and service with Keystone"
+recipe            "openstack-image::image_upload", "Upload image using glance image-create command"
 
 %w{ ubuntu fedora redhat centos suse }.each do |os|
   supports os
