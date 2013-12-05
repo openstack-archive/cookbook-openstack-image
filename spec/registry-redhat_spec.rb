@@ -19,6 +19,17 @@ describe "openstack-image::registry" do
       expect(@chef_run).to install_package "MySQL-python"
     end
 
+    it "installs db2 python packages if explicitly told" do
+      chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS
+      node = chef_run.node
+      node.set["openstack"]["db"]["image"]["db_type"] = "db2"
+      chef_run.converge "openstack-image::registry"
+
+      ["db2-odbc", "python-ibm-db", "python-ibm-db-sa"].each do |pkg|
+        expect(chef_run).to install_package pkg
+      end
+    end
+
     it "installs glance packages" do
       expect(@chef_run).to upgrade_package "openstack-glance"
       expect(@chef_run).to upgrade_package "cronie"

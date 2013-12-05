@@ -120,6 +120,8 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['rbd']['rbd_store_pool']` - RADOS pool for images
 * `openstack['image']['api']['rbd']['rbd_store_chunk_size']` - Size in MB of chunks for RADOS Store, should be a power of 2
 * `openstack['image']['cron']['redirection']` - Redirection of cron output
+TODO: Add DB2 support on other platforms
+* `openstack['image']['platform']['db2_python_packages']` - Array of DB2 python packages, only available on redhat platform
 
 
 MQ attributes
@@ -171,6 +173,7 @@ Author:: Craig Tracey (<craigtracey@gmail.com>)
 Author:: Sean Gallagher (<sean.gallagher@att.com>)
 Author:: Mark Vanderwiel (<vanderwl@us.ibm.com>)
 Author:: Salman Baset (<sabaset@us.ibm.com>)
+Author:: Chen Zhiwei (zhiwchen@cn.ibm.com)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.
