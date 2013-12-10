@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 8.0.0
+* Updating to Havana Release
+
 ## 7.1.1
 ### Bug
 * Relax the dependency on openstack-identity to the 7.x series

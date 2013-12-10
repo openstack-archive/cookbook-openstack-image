@@ -4,7 +4,7 @@ describe "openstack-image::api" do
   before { image_stubs }
   describe "ubuntu" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+      @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
         n.set["openstack"]["image"]["syslog"]["use"] = true
         n.set["cpu"] = { 'total' => '1' }
       end
@@ -14,7 +14,7 @@ describe "openstack-image::api" do
     expect_runs_openstack_common_logging_recipe
 
     it "doesn't run logging recipe" do
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
       chef_run.converge "openstack-image::api"
 
       expect(chef_run).not_to include_recipe "openstack-common::logging"
@@ -25,7 +25,7 @@ describe "openstack-image::api" do
     end
 
     it "has configurable default_store setting for swift" do
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
         n.set["openstack"]["image"]["api"]["default_store"] = "swift"
       end
       chef_run.converge "openstack-image::api"
@@ -40,7 +40,7 @@ describe "openstack-image::api" do
     expect_installs_ubuntu_glance_packages
 
     it "starts glance api on boot" do
-      expect(@chef_run).to set_service_to_start_on_boot "glance-api"
+      expect(@chef_run).to enable_service("glance-api")
     end
 
     expect_creates_glance_dir
@@ -53,7 +53,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -61,7 +62,7 @@ describe "openstack-image::api" do
       end
 
       it "notifies image-api restart" do
-        expect(@file).to notify "service[image-api]", :restart
+        expect(@file).to notify("service[image-api]").to(:restart)
       end
     end
 
@@ -71,7 +72,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -79,78 +81,79 @@ describe "openstack-image::api" do
       end
 
       it "has bind host when bind_interface not specified" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "bind_host = 127.0.0.1"
+        match = "bind_host = 127.0.0.1"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has bind host when bind_interface specified" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["api"]["bind_interface"] = "lo"
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          "bind_host = 127.0.1.1"
+        match = "bind_host = 127.0.1.1"
+        expect(chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has default filesystem_store_datadir setting" do
 
-        expect(@chef_run).to create_file_with_content @file.name,
-          "filesystem_store_datadir = /var/lib/glance/images"
+        match = "filesystem_store_datadir = /var/lib/glance/images"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has configurable filesystem_store_datadir setting" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["filesystem_store_datadir"] = "foo"
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^filesystem_store_datadir = foo$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^filesystem_store_datadir = foo$/)
       end
 
       it "notifies image-api restart" do
-        expect(@file).to notify "service[image-api]", :restart
+        expect(@file).to notify("service[image-api]").to(:restart)
       end
 
       it "does not have caching enabled by default" do
-        expect(@chef_run).to create_file_with_content @file.name, /^flavor = keystone$/
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /^flavor = keystone$/)
       end
 
       it "enables caching when attribute is set" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["api"]["caching"] = true
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^flavor = keystone\+caching$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^flavor = keystone\+caching$/)
       end
 
       it "enables cache_management when attribute is set" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["api"]["cache_management"] = true
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^flavor = keystone\+cachemanagement$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^flavor = keystone\+cachemanagement$/)
       end
 
       it "enables only cache_management when it and the caching attributes are set" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["api"]["cache_management"] = true
           n.set["openstack"]["image"]["api"]["caching"] = true
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^flavor = keystone\+cachemanagement$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^flavor = keystone\+cachemanagement$/)
       end
     end
 
@@ -162,73 +165,73 @@ describe "openstack-image::api" do
       end
 
       it "has qpid_hostname" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_hostname=127.0.0.1"
+        match = "qpid_hostname=127.0.0.1"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_port" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_port=5672"
+        match = "qpid_port=5672"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_username" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_username="
+        match = "qpid_username="
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_password" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_password="
+        match = "qpid_password="
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_sasl_mechanisms" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_sasl_mechanisms="
+        match = "qpid_sasl_mechanisms="
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect=true"
+        match = "qpid_reconnect=true"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect_timeout" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect_timeout=0"
+        match = "qpid_reconnect_timeout=0"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect_limit" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect_limit=0"
+        match = "qpid_reconnect_limit=0"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect_interval_min" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect_interval_min=0"
+        match = "qpid_reconnect_interval_min=0"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect_interval_max" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect_interval_max=0"
+        match = "qpid_reconnect_interval_max=0"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_reconnect_interval" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_reconnect_interval=0"
+        match = "qpid_reconnect_interval=0"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_heartbeat" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_heartbeat=60"
+        match = "qpid_heartbeat=60"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_protocol" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_protocol=tcp"
+        match = "qpid_protocol=tcp"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
 
       it "has qpid_tcp_nodelay" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          "qpid_tcp_nodelay=true"
+        match = "qpid_tcp_nodelay=true"
+        expect(@chef_run).to render_file(@file.name).with_content(match)
       end
     end
 
@@ -238,7 +241,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -250,7 +254,7 @@ describe "openstack-image::api" do
       end
 
       it "notifies image-api restart" do
-        expect(@file).to notify "service[image-api]", :restart
+        expect(@file).to notify("service[image-api]").to(:restart)
       end
     end
 
@@ -260,7 +264,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -272,55 +277,55 @@ describe "openstack-image::api" do
       end
 
       it "notifies image-api restart" do
-        expect(@file).to notify "service[image-api]", :restart
+        expect(@file).to notify("service[image-api]").to(:restart)
       end
 
       it "has the default image_cache_dir setting" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          /^image_cache_dir = \/var\/lib\/glance\/image\-cache\/$/
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /^image_cache_dir = \/var\/lib\/glance\/image\-cache\/$/)
       end
 
       it "has a configurable image_cache_dir setting" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["cache"]["dir"] = "foo"
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^image_cache_dir = foo$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^image_cache_dir = foo$/)
       end
 
       it "has the default cache stall_time setting" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          /^image_cache_stall_time = 86400$/
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /^image_cache_stall_time = 86400$/)
       end
 
       it "has a configurable stall_time setting" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["cache"]["stall_time"] = "42"
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^image_cache_stall_time = 42$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^image_cache_stall_time = 42$/)
       end
 
       it "has the default grace_period setting" do
-        expect(@chef_run).to create_file_with_content @file.name,
-          /^image_cache_invalid_entry_grace_period = 3600$/
+        expect(@chef_run).to render_file(@file.name).with_content(
+          /^image_cache_invalid_entry_grace_period = 3600$/)
       end
 
       it "has a configurable grace_period setting" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
           n.set["openstack"]["image"]["cache"]["grace_period"] = "42"
           n.set["cpu"] = { 'total' => '1' }
         end
         chef_run.converge "openstack-image::api"
 
-        expect(chef_run).to create_file_with_content @file.name,
-          /^image_cache_invalid_entry_grace_period = 42$/
+        expect(chef_run).to render_file(@file.name).with_content(
+          /^image_cache_invalid_entry_grace_period = 42$/)
       end
     end
 
@@ -330,7 +335,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -342,7 +348,7 @@ describe "openstack-image::api" do
       end
 
       it "notifies image-api restart" do
-        expect(@file).to notify "service[image-api]", :restart
+        expect(@file).to notify("service[image-api]").to(:restart)
       end
     end
 
@@ -352,7 +358,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -385,7 +392,8 @@ describe "openstack-image::api" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "glance", "glance"
+        expect(@file.owner).to eq("glance")
+        expect(@file.group).to eq("glance")
       end
 
       it "has proper modes" do
@@ -397,11 +405,11 @@ describe "openstack-image::api" do
       end
     end
 
-    it "uploads qcow images" do
+    it "uploads qcow image when one does not exist" do
       opts = {
-        :step_into => ["openstack-image_image"]
+        :step_into => ["openstack_image_image"]
       }
-      chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS.merge(opts) do |n|
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS.merge(opts) do |n|
         n.set["openstack"]["image"] = {
           "image_upload" => true,
           "upload_images" => [
@@ -412,21 +420,45 @@ describe "openstack-image::api" do
           }
         }
       end
-      chef_run.converge "openstack-image::api"
-      cmd = "glance --insecure " \
-            "--os-username glance " \
-            "--os-password glance-pass " \
-            "--os-tenant-name service " \
-            "--os-image-url http://127.0.0.1:9292 " \
-            "--os-auth-url http://127.0.0.1:5000/v2.0 " \
-            "image-create " \
-            "--name image1 " \
-            "--is-public true " \
-            "--container-format bare "\
-            "--disk-format qcow2 " \
-            "--location http://example.com/image.qcow2"
+      list_cmd = "glance --insecure " \
+                 "--os-username glance " \
+                 "--os-password glance-pass " \
+                 "--os-tenant-name service "\
+                 "--os-image-url http://127.0.0.1:9292 " \
+                 "--os-auth-url http://127.0.0.1:5000/v2.0 " \
+                 "image-list | grep image1"
+      stub_command(list_cmd).and_return(false)
+      chef_run.converge("openstack-image::api")
 
-      expect(chef_run).to execute_command cmd
+      expect(chef_run).to run_execute("Uploading QCOW2 image image1")
+    end
+
+    it "does not upload qcow image if it already exists" do
+      opts = {
+        :step_into => ["openstack_image_image"]
+      }
+      chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS.merge(opts) do |n|
+        n.set["openstack"]["image"] = {
+          "image_upload" => true,
+          "upload_images" => [
+            "image1"
+          ],
+          "upload_image" => {
+            "image1" => "http://example.com/image.qcow2"
+          }
+        }
+      end
+      list_cmd = "glance --insecure " \
+                 "--os-username glance " \
+                 "--os-password glance-pass " \
+                 "--os-tenant-name service "\
+                 "--os-image-url http://127.0.0.1:9292 " \
+                 "--os-auth-url http://127.0.0.1:5000/v2.0 " \
+                 "image-list | grep image1"
+      stub_command(list_cmd).and_return(true)
+      chef_run.converge("openstack-image::api")
+
+      expect(chef_run).to_not run_execute("Uploading QCOW2 image image1")
     end
   end
 end

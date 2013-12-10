@@ -44,7 +44,8 @@ def expect_creates_cache_dir
     end
 
     it "has proper owner" do
-      expect(@dir).to be_owned_by "glance", "glance"
+      expect(@dir.owner).to eq("glance")
+      expect(@dir.group).to eq("glance")
     end
 
     it "has proper modes" do
@@ -78,7 +79,8 @@ def expect_creates_glance_dir
     end
 
     it "has proper owner" do
-      expect(@dir).to be_owned_by "glance", "glance"
+      expect(@dir.owner).to eq("glance")
+      expect(@dir.group).to eq("glance")
     end
 
     it "has proper modes" do

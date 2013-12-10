@@ -3,7 +3,7 @@ require_relative "spec_helper"
 describe "openstack-image::identity_registration" do
   before do
     image_stubs
-    @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
     @chef_run.converge "openstack-image::identity_registration"
   end
 
