@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Cookbook Name:: openstack-image
 # Provider:: image
@@ -30,28 +31,26 @@ action :upload do
   url = new_resource.image_url
 
   ep = endpoint 'image-api'
-  api = ep.to_s.gsub(ep.path, '') #remove trailing /v2
+  api = ep.to_s.gsub(ep.path, '') # remove trailing /v2
 
   type = new_resource.image_type
-  if type == "unknown"
-    type = _determine_type(url)
-  end
+  type = _determine_type(url) if type == 'unknown'
   _upload_image(type, name, api, url)
   new_resource.updated_by_last_action(true)
 end
 
 private
+
 def _determine_type(url)
   # Lets do our best to determine the type from the file extension
   case ::File.extname(url)
-  when ".gz", ".tgz"
-    return "ami"
-  when ".qcow2", ".img"
-    return "qcow"
+  when '.gz', '.tgz'
+    return 'ami'
+  when '.qcow2', '.img'
+    return 'qcow'
   end
 end
 
-private
 def _upload_image(type, name, api, url)
   case type
   when 'ami'
@@ -61,29 +60,28 @@ def _upload_image(type, name, api, url)
   end
 end
 
-private
 def _upload_qcow(name, api, url)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
-  c_fmt = "--container-format bare"
-  d_fmt = "--disk-format qcow2"
+  c_fmt = '--container-format bare'
+  d_fmt = '--disk-format qcow2'
 
   execute "Uploading QCOW2 image #{name}" do
-    cwd "/tmp"
+    cwd '/tmp'
     command "#{glance_cmd} image-create --name #{name} --is-public true #{c_fmt} #{d_fmt} --location #{url}"
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end
 end
 
-private
-def _upload_ami(name, api, url)
+# TODO(chrislaco) This refactor is in the works via Craig Tracey
+def _upload_ami(name, api, url) # rubocop:disable MethodLength
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
-  aki_fmt = "--container-format aki --disk-format aki"
-  ari_fmt = "--container-format ari --disk-format ari"
-  ami_fmt = "--container-format ami --disk-format ami"
+  aki_fmt = '--container-format aki --disk-format aki'
+  ari_fmt = '--container-format ari --disk-format ari'
+  ami_fmt = '--container-format ami --disk-format ami'
 
   bash "Uploading AMI image #{name}" do
-    cwd "/tmp"
-    user "root"
+    cwd '/tmp'
+    user 'root'
     code <<-EOH
         set -x
         mkdir -p images/#{name}

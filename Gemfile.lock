@@ -135,7 +135,7 @@ GEM
       mixlib-shellout
       systemu (~> 2.5.2)
       yajl-ruby
-    parser (2.1.2)
+    parser (2.1.4)
       ast (~> 1.1)
       slop (~> 3.4, >= 3.4.5)
     polyglot (0.3.3)

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Cookbook Name:: openstack-image
 # Resource:: image
@@ -26,10 +27,10 @@ def initialize(*args)
   @action = :upload
 end
 
-attribute :image_url, :kind_of => String
-attribute :image_type, :kind_of => String, :default => "unknown", :equal_to => ["unknown", "ami", "qcow"]
-attribute :image_name, :kind_of => String, :default => "default"
-attribute :identity_user, :kind_of => String
-attribute :identity_pass, :kind_of => String
-attribute :identity_tenant, :kind_of => String
-attribute :identity_uri, :kind_of => String
+attribute :image_url, kind_of: String
+attribute :image_type, kind_of: String, default: 'unknown', equal_to: ['unknown', 'ami', 'qcow']
+attribute :image_name, kind_of: String, default: 'default'
+attribute :identity_user, kind_of: String
+attribute :identity_pass, kind_of: String
+attribute :identity_tenant, kind_of: String
+attribute :identity_uri, kind_of: String

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Cookbook Name:: openstack-image
 # Recipe:: identity_registration
@@ -19,42 +20,41 @@
 # limitations under the License.
 #
 
-require "uri"
+require 'uri'
 
-class ::Chef::Recipe
+class ::Chef::Recipe # rubocop:disable Documentation
   include ::Openstack
 end
 
-identity_admin_endpoint = endpoint "identity-admin"
+identity_admin_endpoint = endpoint 'identity-admin'
 
-token = secret "secrets", "openstack_identity_bootstrap_token"
+token = secret 'secrets', 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
-registry_endpoint = endpoint "image-registry"
-api_endpoint = endpoint "image-api"
+api_endpoint = endpoint 'image-api'
 
-service_pass = service_password "openstack-image"
-service_tenant_name = node["openstack"]["image"]["service_tenant_name"]
-service_user = node["openstack"]["image"]["service_user"]
-service_role = node["openstack"]["image"]["service_role"]
-region = node["openstack"]["image"]["region"]
+service_pass = service_password 'openstack-image'
+service_tenant_name = node['openstack']['image']['service_tenant_name']
+service_user = node['openstack']['image']['service_user']
+service_role = node['openstack']['image']['service_role']
+region = node['openstack']['image']['region']
 
 # Register Image Service
-openstack_identity_register "Register Image Service" do
+openstack_identity_register 'Register Image Service' do
   auth_uri auth_url
   bootstrap_token token
-  service_name "glance"
-  service_type "image"
-  service_description "Glance Image Service"
+  service_name 'glance'
+  service_type 'image'
+  service_description 'Glance Image Service'
 
   action :create_service
 end
 
 # Register Image Endpoint
-openstack_identity_register "Register Image Endpoint" do
+openstack_identity_register 'Register Image Endpoint' do
   auth_uri auth_url
   bootstrap_token token
-  service_type "image"
+  service_type 'image'
   endpoint_region region
   endpoint_adminurl api_endpoint.to_s
   endpoint_internalurl api_endpoint.to_s
@@ -64,11 +64,11 @@ openstack_identity_register "Register Image Endpoint" do
 end
 
 # Register Service Tenant
-openstack_identity_register "Register Service Tenant" do
+openstack_identity_register 'Register Service Tenant' do
   auth_uri auth_url
   bootstrap_token token
   tenant_name service_tenant_name
-  tenant_description "Service Tenant"
+  tenant_description 'Service Tenant'
   tenant_enabled true # Not required as this is the default
 
   action :create_tenant

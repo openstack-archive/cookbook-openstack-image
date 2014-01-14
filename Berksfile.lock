@@ -14,13 +14,13 @@
       "ref": "2201bd113ffe1742c19811aa4df59a5790af71e3"
     },
     "apt": {
-      "locked_version": "2.3.0"
+      "locked_version": "2.3.4"
     },
     "database": {
-      "locked_version": "1.4.0"
+      "locked_version": "1.6.0"
     },
     "mysql": {
-      "locked_version": "3.0.0"
+      "locked_version": "4.0.18"
     },
     "openssl": {
       "locked_version": "1.1.0"

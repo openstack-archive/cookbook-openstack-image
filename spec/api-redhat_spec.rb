@@ -1,28 +1,29 @@
-require_relative "spec_helper"
+# encoding: UTF-8
+require_relative 'spec_helper'
 
-describe "openstack-image::api" do
+describe 'openstack-image::api' do
   before { image_stubs }
-  describe "redhat" do
+  describe 'redhat' do
     before do
       @chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS
-      @chef_run.converge "openstack-image::api"
+      @chef_run.converge 'openstack-image::api'
     end
 
-    it "does not install swift packages" do
-      expect(@chef_run).not_to upgrade_package "openstack-swift"
+    it 'does not install swift packages' do
+      expect(@chef_run).not_to upgrade_package 'openstack-swift'
     end
 
-    it "has configurable default_store setting for swift" do
+    it 'has configurable default_store setting for swift' do
       chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS do |n|
-        n.set["openstack"]["image"]["api"]["default_store"] = "swift"
+        n.set['openstack']['image']['api']['default_store'] = 'swift'
       end
-      chef_run.converge "openstack-image::api"
+      chef_run.converge 'openstack-image::api'
 
-      expect(chef_run).to upgrade_package "openstack-swift"
+      expect(chef_run).to upgrade_package 'openstack-swift'
     end
 
-    it "starts glance api on boot" do
-      expect(@chef_run).to enable_service("openstack-glance-api")
+    it 'starts glance api on boot' do
+      expect(@chef_run).to enable_service('openstack-glance-api')
     end
   end
 end
