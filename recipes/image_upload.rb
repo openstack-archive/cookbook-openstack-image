@@ -46,7 +46,7 @@ if node['openstack']['image']['api']['auth']['version'] != 'v2.0'
   auth_uri = auth_uri.gsub('/v2.0', '')
 end
 
-service_pass = service_password 'openstack-image'
+service_pass = get_password "service", 'openstack-image'
 service_tenant_name = node['openstack']['image']['service_tenant_name']
 service_user = node['openstack']['image']['service_user']
 

@@ -47,7 +47,7 @@ default['openstack']['image']['db']['migrate'] = true
 
 # This user's password is stored in an encrypted databag
 # and accessed with openstack-common cookbook library's
-# user_password routine.  You are expected to create
+# get_password routine.  You are expected to create
 # the user, pass, vhost in a wrapper rabbitmq cookbook.
 default['openstack']['image']['rabbit']['username'] = 'guest'
 default['openstack']['image']['rabbit']['vhost'] = '/'
