@@ -33,7 +33,7 @@ package 'python-keystone' do
   action :install
 end
 
-db_user = node['openstack']['image']['db']['username']
+db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
@@ -46,7 +46,7 @@ package 'curl' do
   action :install
 end
 
-pkg_key = "#{node['openstack']['db']['image']['db_type']}_python_packages"
+pkg_key = "#{node['openstack']['db']['image']['service_type']}_python_packages"
 if platform_options.key?(pkg_key)
   platform_options[pkg_key].each do |pkg|
     package pkg do
@@ -83,7 +83,7 @@ end
 
 file '/var/lib/glance/glance.sqlite' do
   action :delete
-  not_if { node['openstack']['db']['image']['db_type'] == 'sqlite' }
+  not_if { node['openstack']['db']['image']['service_type'] == 'sqlite' }
 end
 
 directory '/etc/glance' do
@@ -116,7 +116,7 @@ template '/etc/glance/glance-registry.conf' do
 end
 
 execute 'glance-manage db_sync' do
-  only_if { node['openstack']['image']['db']['migrate'] }
+  only_if { node['openstack']['db']['image']['migrate'] }
 end
 
 template '/etc/glance/glance-registry-paste.ini' do

@@ -120,7 +120,7 @@ describe 'openstack-image::api' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
 
       before do
-        node.set['openstack']['image']['mq']['service_type'] = 'qpid'
+        node.set['openstack']['mq']['image']['service_type'] = 'qpid'
       end
 
       it 'has qpid_hostname' do

@@ -22,7 +22,7 @@ describe 'openstack-image::registry' do
     include_examples 'glance-directory'
 
     it 'converges when configured to use sqlite' do
-      node.set['openstack']['db']['image']['db_type'] = 'sqlite'
+      node.set['openstack']['db']['image']['service_type'] = 'sqlite'
 
       expect { chef_run }.to_not raise_error
     end
@@ -56,7 +56,7 @@ describe 'openstack-image::registry' do
     end
 
     it 'does not delete glance.sqlite when configured to use sqlite' do
-      node.set['openstack']['db']['image']['db_type'] = 'sqlite'
+      node.set['openstack']['db']['image']['service_type'] = 'sqlite'
 
       expect(chef_run).not_to delete_file('/var/lib/glance/glance.sqlite')
     end
@@ -98,7 +98,7 @@ describe 'openstack-image::registry' do
       end
 
       it 'does not run migrations when openstack/image/db/migrate is false' do
-        node.set['openstack']['image']['db']['migrate'] = false
+        node.set['openstack']['db']['image']['migrate'] = false
         stub_command('glance-manage db_version').and_return(false)
 
         expect(chef_run).not_to run_execute(cmd)

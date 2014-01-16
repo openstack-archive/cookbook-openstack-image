@@ -39,41 +39,6 @@ default['openstack']['image']['region'] = 'RegionOne'
 # that Glance uses
 default['openstack']['image']['rabbit_server_chef_role'] = 'os-ops-messaging'
 
-default['openstack']['image']['db']['username'] = 'glance'
-# Execute database migrations.  There are cases where migrations should not be
-# executed.  For example when upgrading a zone, and the image database is
-# replicated across many zones.
-default['openstack']['image']['db']['migrate'] = true
-
-# This user's password is stored in an encrypted databag
-# and accessed with openstack-common cookbook library's
-# get_password routine.  You are expected to create
-# the user, pass, vhost in a wrapper rabbitmq cookbook.
-default['openstack']['image']['rabbit']['username'] = 'guest'
-default['openstack']['image']['rabbit']['vhost'] = '/'
-default['openstack']['image']['rabbit']['port'] = 5672
-default['openstack']['image']['rabbit']['host'] = '127.0.0.1'
-
-# MQ options
-default['openstack']['image']['mq']['service_type'] = node['openstack']['mq']['service_type']
-default['openstack']['image']['mq']['notifier_strategy'] = 'noop'
-default['openstack']['image']['mq']['qpid']['host'] = '127.0.0.1'
-default['openstack']['image']['mq']['qpid']['port'] = '5672'
-default['openstack']['image']['mq']['qpid']['qpid_hosts'] = ['127.0.0.1:5672']
-
-default['openstack']['image']['mq']['qpid']['username'] = ''
-default['openstack']['image']['mq']['qpid']['password'] = ''
-default['openstack']['image']['mq']['qpid']['sasl_mechanisms'] = ''
-default['openstack']['image']['mq']['qpid']['reconnect'] = true
-default['openstack']['image']['mq']['qpid']['reconnect_timeout'] = 0
-default['openstack']['image']['mq']['qpid']['reconnect_limit'] = 0
-default['openstack']['image']['mq']['qpid']['reconnect_interval_min'] = 0
-default['openstack']['image']['mq']['qpid']['reconnect_interval_max'] = 0
-default['openstack']['image']['mq']['qpid']['reconnect_interval'] = 0
-default['openstack']['image']['mq']['qpid']['heartbeat'] = 60
-default['openstack']['image']['mq']['qpid']['protocol'] = 'tcp'
-default['openstack']['image']['mq']['qpid']['tcp_nodelay'] = true
-
 default['openstack']['image']['service_tenant_name'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
 default['openstack']['image']['service_role'] = 'admin'

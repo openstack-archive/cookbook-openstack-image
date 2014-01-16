@@ -102,7 +102,7 @@ if node['openstack']['image']['api']['auth']['version'] != 'v2.0'
   auth_uri = auth_uri.gsub('/v2.0', '')
 end
 
-db_user = node['openstack']['image']['db']['username']
+db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
