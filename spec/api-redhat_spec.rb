@@ -2,28 +2,29 @@
 require_relative 'spec_helper'
 
 describe 'openstack-image::api' do
-  before { image_stubs }
   describe 'redhat' do
-    before do
-      @chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS
-      @chef_run.converge 'openstack-image::api'
+    let(:runner) { ChefSpec::Runner.new(REDHAT_OPTS) }
+    let(:node) { runner.node }
+    let(:chef_run) do
+      node.set_unless['cpu']['total'] = 1
+
+      runner.converge(described_recipe)
     end
 
-    it 'does not install swift packages' do
-      expect(@chef_run).not_to upgrade_package 'openstack-swift'
+    include_context 'image-stubs'
+
+    it 'does not upgrade swift packages by default' do
+      expect(chef_run).not_to upgrade_package('openstack-swift')
     end
 
-    it 'has configurable default_store setting for swift' do
-      chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS do |n|
-        n.set['openstack']['image']['api']['default_store'] = 'swift'
-      end
-      chef_run.converge 'openstack-image::api'
+    it 'upgrades swift package if openstack/image/api/default_store is swift' do
+      node.set['openstack']['image']['api']['default_store'] = 'swift'
 
-      expect(chef_run).to upgrade_package 'openstack-swift'
+      expect(chef_run).to upgrade_package('openstack-swift')
     end
 
     it 'starts glance api on boot' do
-      expect(@chef_run).to enable_service('openstack-glance-api')
+      expect(chef_run).to enable_service('openstack-glance-api')
     end
   end
 end

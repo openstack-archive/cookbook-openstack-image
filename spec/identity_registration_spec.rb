@@ -2,14 +2,16 @@
 require_relative 'spec_helper'
 
 describe 'openstack-image::identity_registration' do
-  before do
-    image_stubs
-    @chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-    @chef_run.converge 'openstack-image::identity_registration'
+  let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+  let(:node) { runner.node }
+  let(:chef_run) do
+    runner.converge(described_recipe)
   end
 
+  include_context 'image-stubs'
+
   it 'registers image service' do
-    resource = @chef_run.find_resource(
+    resource = chef_run.find_resource(
       'openstack-identity_register',
       'Register Image Service'
     ).to_hash
@@ -24,7 +26,7 @@ describe 'openstack-image::identity_registration' do
   end
 
   it 'registers image endpoint' do
-    resource = @chef_run.find_resource(
+    resource = chef_run.find_resource(
       'openstack-identity_register',
       'Register Image Endpoint'
     ).to_hash
@@ -42,7 +44,7 @@ describe 'openstack-image::identity_registration' do
   end
 
   it 'registers service tenant' do
-    resource = @chef_run.find_resource(
+    resource = chef_run.find_resource(
       'openstack-identity_register',
       'Register Service Tenant'
     ).to_hash
@@ -58,7 +60,7 @@ describe 'openstack-image::identity_registration' do
   end
 
   it 'registers service user' do
-    resource = @chef_run.find_resource(
+    resource = chef_run.find_resource(
       'openstack-identity_register',
       'Register glance User'
     ).to_hash
@@ -75,7 +77,7 @@ describe 'openstack-image::identity_registration' do
   end
 
   it 'grants admin role to service user for service tenant' do
-    resource = @chef_run.find_resource(
+    resource = chef_run.find_resource(
       'openstack-identity_register',
       "Grant 'admin' Role to glance User for service Tenant"
     ).to_hash

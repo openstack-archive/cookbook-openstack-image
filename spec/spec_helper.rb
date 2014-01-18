@@ -3,94 +3,95 @@ require 'chefspec'
 require 'chefspec/berkshelf'
 require 'chef/application'
 
-::LOG_LEVEL = :fatal
-::REDHAT_OPTS = {
+LOG_LEVEL = :fatal
+REDHAT_OPTS = {
   platform: 'redhat',
   version: '6.3',
-  log_level: ::LOG_LEVEL
+  log_level: LOG_LEVEL
 }
-::UBUNTU_OPTS = {
+UBUNTU_OPTS = {
   platform: 'ubuntu',
   version: '12.04',
-  log_level: ::LOG_LEVEL
+  log_level: LOG_LEVEL
 }
 
-# TODO(chrislaco): Factor this into proper RSpec shared_contexts
-def image_stubs # rubocop:disable MethodLength
-  ::Chef::Recipe.any_instance.stub(:address_for)
-    .with('lo')
-    .and_return('127.0.1.1')
-  ::Chef::Recipe.any_instance.stub(:config_by_role)
-    .with('rabbitmq-server', 'queue')
-    .and_return(
-      'host' => 'rabbit-host', 'port' => 'rabbit-port'
-    )
-  ::Chef::Recipe.any_instance.stub(:get_password).and_return('')
-  ::Chef::Recipe.any_instance.stub(:secret)
-    .with('secrets', 'openstack_identity_bootstrap_token')
-    .and_return('bootstrap-token')
-  ::Chef::Recipe.any_instance.stub(:get_password)
-    .with("service", 'openstack-image')
-    .and_return('glance-pass')
-  ::Chef::Application.stub(:fatal!)
-end
+shared_context 'image-stubs' do
+  before do
+    Chef::Recipe.any_instance.stub(:address_for)
+      .with('lo')
+      .and_return('127.0.1.1')
 
-def expect_runs_openstack_common_logging_recipe
-  it 'runs logging recipe if node attributes say to' do
-    expect(@chef_run).to include_recipe 'openstack-common::logging'
+    Chef::Recipe.any_instance.stub(:config_by_role)
+      .with('rabbitmq-server', 'queue')
+      .and_return(
+        'host' => 'rabbit-host', 'port' => 'rabbit-port'
+      )
+
+    Chef::Recipe.any_instance.stub(:secret)
+      .with('secrets', 'openstack_identity_bootstrap_token')
+      .and_return('bootstrap-token')
+
+    Chef::Recipe.any_instance.stub(:get_password).and_return('')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('service', 'openstack-image')
+      .and_return('glance-pass')
+
+    Chef::Application.stub(:fatal!)
   end
 end
 
-# TODO(chrislaco): Factor this into proper RSpec shared_contexts
-def expect_creates_cache_dir # rubocop:disable MethodLength
-  describe '/var/cache/glance' do
-    before do
-      @dir = @chef_run.directory '/var/cache/glance'
-    end
+shared_examples 'common-logging-recipe' do
+  it 'does not include logging recipe by default' do
+    expect(chef_run).not_to include_recipe('openstack-common::logging')
+  end
 
-    it 'has proper owner' do
-      expect(@dir.owner).to eq('glance')
-      expect(@dir.group).to eq('glance')
-    end
+  it 'includes logging recipe if openstack/image/syslog/use attribute is true' do
+    node.set['openstack']['image']['syslog']['use'] = true
 
-    it 'has proper modes' do
-      expect(sprintf('%o', @dir.mode)).to eq '700'
-    end
+    expect(chef_run).to include_recipe('openstack-common::logging')
   end
 end
 
-def expect_installs_python_keystone
+shared_examples 'common-packages' do
   it 'installs python-keystone package' do
-    expect(@chef_run).to install_package 'python-keystone'
+    expect(chef_run).to install_package 'python-keystone'
   end
-end
 
-def expect_installs_curl
   it 'installs curl package' do
-    expect(@chef_run).to install_package 'curl'
+    expect(chef_run).to install_package 'curl'
   end
-end
 
-def expect_installs_ubuntu_glance_packages
   it 'installs glance packages' do
-    expect(@chef_run).to upgrade_package 'glance'
+    expect(chef_run).to upgrade_package 'glance'
   end
 end
 
-# TODO(chrislaco): Factor this into proper RSpec shared_contexts
-def expect_creates_glance_dir # rubocop:disable MethodLength
-  describe '/etc/glance' do
-    before do
-      @dir = @chef_run.directory '/etc/glance'
-    end
+shared_examples 'cache-directory' do
+  describe '/var/cache/glance' do
+    let(:dir) { chef_run.directory('/var/cache/glance') }
 
     it 'has proper owner' do
-      expect(@dir.owner).to eq('glance')
-      expect(@dir.group).to eq('glance')
+      expect(dir.owner).to eq('glance')
+      expect(dir.group).to eq('glance')
     end
 
     it 'has proper modes' do
-      expect(sprintf('%o', @dir.mode)).to eq '700'
+      expect(sprintf('%o', dir.mode)).to eq '700'
+    end
+  end
+end
+
+shared_examples 'glance-directory' do
+  describe '/etc/glance' do
+    let(:dir) { chef_run.directory('/etc/glance') }
+
+    it 'has proper owner' do
+      expect(dir.owner).to eq('glance')
+      expect(dir.group).to eq('glance')
+    end
+
+    it 'has proper modes' do
+      expect(sprintf('%o', dir.mode)).to eq '700'
     end
   end
 end
