@@ -56,7 +56,7 @@ if node['openstack']['image']['api']['default_store'] == 'swift'
   end
 end
 
-service 'image-api' do
+service 'glance-api' do
   service_name platform_options['image_api_service']
   supports status: true, restart: true
 
@@ -81,7 +81,7 @@ template '/etc/glance/policy.json' do
   group node['openstack']['image']['group']
   mode   00644
 
-  notifies :restart, 'service[image-api]', :immediately
+  notifies :restart, 'service[glance-api]', :immediately
 end
 
 glance = node['openstack']['image']
@@ -169,7 +169,7 @@ template '/etc/glance/glance-api.conf' do
     swift_store_auth_version: swift_store_auth_version
   )
 
-  notifies :restart, 'service[image-api]', :immediately
+  notifies :restart, 'service[glance-api]', :immediately
 end
 
 template '/etc/glance/glance-api-paste.ini' do
@@ -178,7 +178,7 @@ template '/etc/glance/glance-api-paste.ini' do
   group node['openstack']['image']['group']
   mode   00644
 
-  notifies :restart, 'service[image-api]', :immediately
+  notifies :restart, 'service[glance-api]', :immediately
 end
 
 template '/etc/glance/glance-cache.conf' do
@@ -191,7 +191,7 @@ template '/etc/glance/glance-cache.conf' do
     registry_port: registry_endpoint.port
   )
 
-  notifies :restart, 'service[image-api]', :immediately
+  notifies :restart, 'service[glance-api]', :immediately
 end
 
 # TODO(jaypipes) I don't think this even exists or at least isn't
@@ -202,7 +202,7 @@ template '/etc/glance/glance-cache-paste.ini' do
   group node['openstack']['image']['group']
   mode   00644
 
-  notifies :restart, 'service[image-api]', :immediately
+  notifies :restart, 'service[glance-api]', :immediately
 end
 
 template '/etc/glance/glance-scrubber.conf' do

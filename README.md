@@ -23,11 +23,11 @@ Usage
 
 api
 ------
-- Installs the image-api server
+- Installs the glance-api server
 
 registry
 --------
-- Installs the image-registry server
+- Installs the glance-registry server
 
 keystone-registration
 ---------------------

@@ -85,8 +85,8 @@ describe 'openstack-image::registry' do
         expect(chef_run).to render_file(file.name).with_content(match)
       end
 
-      it 'notifies image-registry restart' do
-        expect(file).to notify('service[image-registry]').to(:restart)
+      it 'notifies glance-registry restart' do
+        expect(file).to notify('service[glance-registry]').to(:restart)
       end
     end
 
@@ -121,8 +121,8 @@ describe 'openstack-image::registry' do
         pending 'TODO: implement'
       end
 
-      it 'notifies image-registry restart' do
-        expect(file).to notify('service[image-registry]').to(:restart)
+      it 'notifies glance-registry restart' do
+        expect(file).to notify('service[glance-registry]').to(:restart)
       end
     end
   end

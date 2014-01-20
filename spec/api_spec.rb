@@ -43,8 +43,8 @@ describe 'openstack-image::api' do
         expect(sprintf('%o', file.mode)).to eq '644'
       end
 
-      it 'notifies image-api restart' do
-        expect(file).to notify('service[image-api]').to(:restart)
+      it 'notifies glance-api restart' do
+        expect(file).to notify('service[glance-api]').to(:restart)
       end
     end
 
@@ -84,8 +84,8 @@ describe 'openstack-image::api' do
           /^filesystem_store_datadir = foo$/)
       end
 
-      it 'notifies image-api restart' do
-        expect(file).to notify('service[image-api]').to(:restart)
+      it 'notifies glance-api restart' do
+        expect(file).to notify('service[glance-api]').to(:restart)
       end
 
       it 'does not have caching enabled by default' do
@@ -210,8 +210,8 @@ describe 'openstack-image::api' do
         pending 'TODO: implement'
       end
 
-      it 'notifies image-api restart' do
-        expect(file).to notify('service[image-api]').to(:restart)
+      it 'notifies glance-api restart' do
+        expect(file).to notify('service[glance-api]').to(:restart)
       end
     end
 
@@ -231,8 +231,8 @@ describe 'openstack-image::api' do
         pending 'TODO: implement'
       end
 
-      it 'notifies image-api restart' do
-        expect(file).to notify('service[image-api]').to(:restart)
+      it 'notifies glance-api restart' do
+        expect(file).to notify('service[glance-api]').to(:restart)
       end
 
       it 'has the default image_cache_dir setting' do
@@ -288,8 +288,8 @@ describe 'openstack-image::api' do
         pending 'TODO: implement'
       end
 
-      it 'notifies image-api restart' do
-        expect(file).to notify('service[image-api]').to(:restart)
+      it 'notifies glance-api restart' do
+        expect(file).to notify('service[glance-api]').to(:restart)
       end
     end
 

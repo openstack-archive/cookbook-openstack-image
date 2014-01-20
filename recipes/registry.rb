@@ -67,7 +67,7 @@ directory ::File.dirname(node['openstack']['image']['registry']['auth']['cache_d
   mode 00700
 end
 
-service 'image-registry' do
+service 'glance-registry' do
   service_name platform_options['image_registry_service']
   supports status: true, restart: true
 
@@ -112,7 +112,7 @@ template '/etc/glance/glance-registry.conf' do
     'service_pass' => service_pass
   )
 
-  notifies :restart, 'service[image-registry]', :immediately
+  notifies :restart, 'service[glance-registry]', :immediately
 end
 
 execute 'glance-manage db_sync' do
@@ -125,5 +125,5 @@ template '/etc/glance/glance-registry-paste.ini' do
   group  'root'
   mode   00644
 
-  notifies :restart, 'service[image-registry]', :immediately
+  notifies :restart, 'service[glance-registry]', :immediately
 end
