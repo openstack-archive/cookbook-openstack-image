@@ -1,7 +1,0 @@
-# embedded attributes make for long lines
-LineLength:
-  Enabled: false
-
-# Allow small arrays before forcing  %w or %W
-WordArray:
-  MinSize: 3

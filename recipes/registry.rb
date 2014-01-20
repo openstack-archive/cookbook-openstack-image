@@ -34,20 +34,19 @@ package 'python-keystone' do
 end
 
 db_user = node['openstack']['image']['db']['username']
-db_pass = get_password "db", 'glance'
+db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
 registry_endpoint = endpoint 'image-registry'
-service_pass = get_password "service", 'openstack-image'
+service_pass = get_password 'service', 'openstack-image'
 
 package 'curl' do
   action :install
 end
 
-db_type = node['openstack']['db']['image']['db_type']
-pkg_key = "#{db_type}_python_packages"
+pkg_key = "#{node['openstack']['db']['image']['db_type']}_python_packages"
 if platform_options.key?(pkg_key)
   platform_options[pkg_key].each do |pkg|
     package pkg do

@@ -88,7 +88,7 @@ glance = node['openstack']['image']
 
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
-service_pass = get_password "service", 'openstack-image'
+service_pass = get_password 'service', 'openstack-image'
 
 # TODO(jaypipes): Move this logic and stuff into the openstack-common
 # library cookbook.
@@ -103,13 +103,11 @@ if node['openstack']['image']['api']['auth']['version'] != 'v2.0'
 end
 
 db_user = node['openstack']['image']['db']['username']
-db_pass = get_password "db", 'glance'
+db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
 registry_endpoint = endpoint 'image-registry'
 api_endpoint = endpoint 'image-api'
-service_tenant_name = node['openstack']['image']['service_tenant_name']
-service_user = node['openstack']['image']['service_user']
 
 # Possible combinations of options here
 # - default_store=file
@@ -124,7 +122,7 @@ service_user = node['openstack']['image']['service_user']
 #           Rackspace Cloud Files.
 if glance['api']['swift_store_auth_address'].nil?
   swift_store_auth_address = auth_uri
-  swift_store_user = "#{service_tenant_name}:#{service_user}"
+  swift_store_user = "#{glance['service_tenant_name']}:#{glance['service_user']}"
   swift_user_tenant = nil
   swift_store_key = service_pass
   swift_store_auth_version = 2
@@ -132,7 +130,7 @@ else
   swift_store_auth_address = glance['api']['swift_store_auth_address']
   swift_user_tenant = glance['api']['swift_user_tenant']
   swift_store_user = glance['api']['swift_store_user']
-  swift_store_key = get_password "service", swift_store_user
+  swift_store_key = get_password 'service', swift_store_user
   swift_store_auth_version = glance['api']['swift_store_auth_version']
 end
 
@@ -221,14 +219,14 @@ end
 # Configure glance-cache-pruner to run every 30 minutes
 cron 'glance-cache-pruner' do
   minute '*/30'
-  command "/usr/bin/glance-cache-pruner #{node["openstack"]["image"]["cron"]["redirection"]}"
+  command "/usr/bin/glance-cache-pruner #{node['openstack']['image']['cron']['redirection']}"
 end
 
 # Configure glance-cache-cleaner to run at 00:01 everyday
 cron 'glance-cache-cleaner' do
   minute  '01'
   hour    '00'
-  command "/usr/bin/glance-cache-cleaner #{node["openstack"]["image"]["cron"]["redirection"]}"
+  command "/usr/bin/glance-cache-cleaner #{node['openstack']['image']['cron']['redirection']}"
 end
 
 template '/etc/glance/glance-scrubber-paste.ini' do
