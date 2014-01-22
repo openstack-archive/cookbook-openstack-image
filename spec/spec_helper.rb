@@ -31,7 +31,9 @@ shared_context 'image-stubs' do
       .with('secrets', 'openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
 
-    Chef::Recipe.any_instance.stub(:get_password).and_return('')
+    Chef::Recipe.any_instance.stub(:get_password)
+    .with('db', anything)
+    .and_return('')
     Chef::Recipe.any_instance.stub(:get_password)
       .with('service', 'openstack-image')
       .and_return('glance-pass')
