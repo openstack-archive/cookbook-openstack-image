@@ -45,6 +45,7 @@ end
 platform_options['image_packages'].each do |pkg|
   package pkg do
     action :upgrade
+    options platform_options['package_overrides']
   end
 end
 
@@ -52,6 +53,7 @@ if node['openstack']['image']['api']['default_store'] == 'swift'
   platform_options['swift_packages'].each do |pkg|
     package pkg do
       action :upgrade
+      options platform_options['package_overrides']
     end
   end
 end

@@ -27,6 +27,14 @@ describe 'openstack-image::api' do
       expect(chef_run).to upgrade_package('python-swift')
     end
 
+    it 'honors platform package name and option overrides for swift packages' do
+      node.set['openstack']['image']['platform']['package_overrides'] = '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes'
+      node.set['openstack']['image']['api']['default_store'] = 'swift'
+      node.set['openstack']['image']['platform']['swift_packages'] = ['my-swift']
+
+      expect(chef_run).to upgrade_package('my-swift').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
+    end
+
     it 'starts glance api on boot' do
       expect(chef_run).to enable_service('glance-api')
     end

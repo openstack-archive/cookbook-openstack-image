@@ -51,6 +51,7 @@ if platform_options.key?(pkg_key)
   platform_options[pkg_key].each do |pkg|
     package pkg do
       action :install
+      options platform_options['package_overrides']
     end
   end
 end
@@ -58,6 +59,7 @@ end
 platform_options['image_packages'].each do |pkg|
   package pkg do
     action :upgrade
+    options platform_options['package_overrides']
   end
 end
 

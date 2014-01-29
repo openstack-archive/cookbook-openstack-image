@@ -66,6 +66,13 @@ shared_examples 'common-packages' do
   it 'installs glance packages' do
     expect(chef_run).to upgrade_package 'glance'
   end
+
+  it 'honors the platform name and option package overrides' do
+    node.set['openstack']['image']['platform']['package_overrides'] = '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes'
+    node.set['openstack']['image']['platform']['image_packages'] = ['my-glance']
+
+    expect(chef_run).to upgrade_package('my-glance').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
+  end
 end
 
 shared_examples 'cache-directory' do
