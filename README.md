@@ -116,6 +116,8 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['swift']['store_container']` - Set the container used by glance to store images and snapshots.  Defaults to "glance"
 * `openstack['image']['api']['swift']['store_large_object_size']` - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
 * `openstack['image']['api']['swift']['store_large_object_chunk_size']` - Set the chunk size for glance.  Defaults to "200" MB
+* `openstack['image']['api']['swift']['enable_snet']` - Set whether to use ServiceNET to communicate with the Swift Storage servers. (Rackspace specific option)
+* `openstack['image']['api']['swift']['store_region']` -  The region of the swift endpoint to be used for single tenant. This setting is only necessary if the tenant has multiple swift endpoints.
 * `openstack['image']['api']['rbd']['rbd_store_ceph_conf']` - Default location of ceph.conf
 * `openstack['image']['api']['rbd']['rbd_store_user']` - User for connecting to ceph store
 * `openstack['image']['api']['rbd']['rbd_store_pool']` - RADOS pool for images
