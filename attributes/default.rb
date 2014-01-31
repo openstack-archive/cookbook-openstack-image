@@ -43,6 +43,9 @@ default['openstack']['image']['service_tenant_name'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
 default['openstack']['image']['service_role'] = 'admin'
 
+# Return the URL that references where the data is stored on the backend.
+default['openstack']['image']['api']['show_image_direct_url'] = 'False'
+
 # Setting this to v2.0. See discussion on
 # https://bugs.launchpad.net/openstack-chef/+bug/1207504
 default['openstack']['image']['api']['auth']['version'] = 'v2.0'

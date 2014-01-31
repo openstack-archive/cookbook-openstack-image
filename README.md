@@ -106,6 +106,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['service_tenant_name']` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack['image']['service_user']` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack['image']['service_role']` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `openstack['image']['api']['show_image_direct_url']` - Allow glance to return URL referencing where data is stored on the backend. Default 'False'
 * `openstack['image']['api']['auth']['cache_dir']` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
 * `openstack['image']['registry']['auth']['cache_dir']` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
 * `openstack['image']['upload_images']` - Default list of images to upload to the glance repository as part of the install

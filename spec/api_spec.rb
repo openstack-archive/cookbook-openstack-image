@@ -122,6 +122,12 @@ describe 'openstack-image::api' do
         expect(chef_run).to render_file(file.name).with_content(
           /^flavor = keystone\+cachemanagement$/)
       end
+
+      it 'sets show_image_direct_url appropriately' do
+        node.set['openstack']['image']['api']['show_image_direct_url'] = 'True'
+        expect(chef_run).to render_file(file.name).with_content(
+          /^show_image_direct_url = True$/)
+      end
     end
 
     describe 'qpid' do

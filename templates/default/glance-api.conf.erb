@@ -35,6 +35,13 @@ sql_connection = <%= @sql_connection %>
 
 # Role used to identify an authenticated user as administrator
 #admin_role = admin
+#
+# Return the URL that references where the data is stored on
+# the backend storage system.  For example, if using the
+# file system store a URL of 'file:///path/to/image' will
+# be returned to the user in the 'direct_url' meta-data field.
+# The default value is false.
+show_image_direct_url = <%= node["openstack"]["image"]["api"]["show_image_direct_url"] %>
 
 # ================= Syslog Options ============================
 
