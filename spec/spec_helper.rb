@@ -37,6 +37,9 @@ shared_context 'image-stubs' do
     Chef::Recipe.any_instance.stub(:get_password)
       .with('service', 'openstack-image')
       .and_return('glance-pass')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('user', 'guest')
+      .and_return('rabbit-pass')
 
     Chef::Application.stub(:fatal!)
   end

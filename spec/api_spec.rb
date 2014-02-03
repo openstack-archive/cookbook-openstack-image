@@ -124,10 +124,45 @@ describe 'openstack-image::api' do
       end
     end
 
+    describe 'rabbitmq' do
+      let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
+
+      before do
+        node.set['openstack']['mq']['image']['notifier_strategy'] = 'rabbit'
+        node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
+      end
+
+      it 'has rabbit_host' do
+        match = 'rabbit_host = 127.0.0.1'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
+      it 'has rabbit_port' do
+        match = 'rabbit_port = 5672'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
+      it 'has rabbit_userid' do
+        match = 'rabbit_userid = guest'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
+      it 'has rabbit_password' do
+        match = 'rabbit_password = rabbit-pass'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
+      it 'has rabbit_virtual_host' do
+        match = 'rabbit_virtual_host = /'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+    end
+
     describe 'qpid' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
 
       before do
+        node.set['openstack']['mq']['image']['notifier_strategy'] = 'qpid'
         node.set['openstack']['mq']['image']['service_type'] = 'qpid'
       end
 
