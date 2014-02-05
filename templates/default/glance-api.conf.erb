@@ -102,21 +102,19 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
-notifier_strategy = <%= node["openstack"]["mq"]["image"]["notifier_strategy"] %>
+notifier_strategy = <%= @notifier_strategy %>
 
-<% if node["openstack"]["mq"]["image"]["service_type"] == "rabbitmq" %>
+<% if @notifier_strategy == "rabbit" and @mq_service_type == "rabbitmq" %>
 #### RABBITMQ #####
-rabbit_host = localhost
-rabbit_port = 5672
+rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
+rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
 rabbit_use_ssl = false
-rabbit_userid = guest
-rabbit_password = guest
-rabbit_virtual_host = /
+rabbit_userid = <%= node["openstack"]["mq"]["image"]["rabbit"]["userid"] %>
+rabbit_password = <%= @mq_password %>
+rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 rabbit_notification_exchange = glance
 rabbit_notification_topic = glance_notifications
-<% end %>
-
-<% if node["openstack"]["mq"]["image"]["service_type"] == "qpid"  %>
+<% elsif @notifier_strategy == "qpid" and @mq_service_type == "qpid" %>
 ##### QPID #####
 rpc_backend=nova.openstack.common.rpc.impl_qpid
 qpid_notification_exchange = glance
@@ -125,7 +123,7 @@ qpid_notification_topic = glance_notifications
 qpid_hostname=<%= node["openstack"]["mq"]["image"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["mq"]["image"]["qpid"]["port"] %>
 
-qpid_password=<%= node["openstack"]["mq"]["image"]["qpid"]["password"] %>
+qpid_password=<%= @mq_password %>
 qpid_username=<%= node["openstack"]["mq"]["image"]["qpid"]["username"] %>
 qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["image"]["qpid"]["sasl_mechanisms"] %>
 qpid_reconnect=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect"] %>
@@ -138,7 +136,6 @@ qpid_heartbeat=<%= node["openstack"]["mq"]["image"]["qpid"]["heartbeat"] %>
 # qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
 qpid_protocol=<%= node["openstack"]["mq"]["image"]["qpid"]["protocol"] %>
 qpid_tcp_nodelay=<%= node["openstack"]["mq"]["image"]["qpid"]["tcp_nodelay"] %>
-
 <% end %>
 
 # ============ Filesystem Store Options ========================

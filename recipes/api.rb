@@ -108,6 +108,14 @@ db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
+mq_service_type = node['openstack']['mq']['image']['service_type']
+
+if mq_service_type == 'rabbitmq'
+  mq_password = get_password 'user', node['openstack']['mq']['image']['rabbit']['userid']
+elsif mq_service_type == 'qpid'
+  mq_password = node['openstack']['mq']['image']['qpid']['password']
+end
+
 registry_endpoint = endpoint 'image-registry'
 api_endpoint = endpoint 'image-api'
 
@@ -168,7 +176,10 @@ template '/etc/glance/glance-api.conf' do
     swift_user_tenant: swift_user_tenant,
     swift_store_user: swift_store_user,
     swift_store_auth_address: swift_store_auth_address,
-    swift_store_auth_version: swift_store_auth_version
+    swift_store_auth_version: swift_store_auth_version,
+    notifier_strategy: node['openstack']['mq']['image']['notifier_strategy'],
+    mq_service_type: mq_service_type,
+    mq_password: mq_password
   )
 
   notifies :restart, 'service[glance-api]', :immediately
