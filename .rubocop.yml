@@ -2,15 +2,12 @@ AllCops:
   Includes:
     - metadata.rb
     - Gemfile
-    - recipes/**
     - attributes/**
-    - spec/**
-    - resources/**
+    - libraries/**
     - providers/**
-  Excludes:
-    - templates/**
-    - files/**
-
+    - recipes/**
+    - resources/**
+    - spec/**
 
 Encoding:
   Exclude:
