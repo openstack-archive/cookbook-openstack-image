@@ -69,6 +69,8 @@ default['openstack']['image']['api']['bind_interface'] = nil
 default['openstack']['image']['api']['swift']['container'] = 'glance'
 default['openstack']['image']['api']['swift']['large_object_size'] = '200'
 default['openstack']['image']['api']['swift']['large_object_chunk_size'] = '200'
+default['openstack']['image']['api']['swift']['enable_snet'] = 'False'
+default['openstack']['image']['api']['swift']['store_region'] = nil
 default['openstack']['image']['api']['cache']['image_cache_max_size'] = '10737418240'
 
 # Directory for the Image Cache

@@ -190,7 +190,10 @@ swift_store_large_object_chunk_size = <%= node["openstack"]["image"]["api"]["swi
 # To use ServiceNET for authentication, prefix hostname of
 # `swift_store_auth_address` with 'snet-'.
 # Ex. https://example.com/v1.0/ -> https://snet-example.com/v1.0/
-swift_enable_snet = False
+swift_enable_snet = <%= node["openstack"]["image"]["api"]["swift"]["enable_snet"] %>
+<% unless node["openstack"]["image"]["api"]["swift"]["store_region"].nil? %>
+swift_store_region = <%= node["openstack"]["image"]["api"]["swift"]["store_region"] %>
+<% end %>
 
 # ============ S3 Store Options =============================
 

@@ -128,6 +128,24 @@ describe 'openstack-image::api' do
         expect(chef_run).to render_file(file.name).with_content(
           /^show_image_direct_url = True$/)
       end
+
+      it 'sets swift_enable_snet as specified' do
+        node.set['openstack']['image']['api']['swift']['enable_snet'] = 'True'
+        expect(chef_run).to render_file(file.name).with_content(
+          /^swift_enable_snet = True$/)
+      end
+
+      it 'doesnt set swift_store_region if nil' do
+        node.set['openstack']['image']['api']['swift']['store_region'] = nil
+        expect(chef_run).to_not render_file(file.name).with_content(
+          /^swift_store_region/)
+      end
+
+      it 'does set swift_store_region if not nil' do
+        node.set['openstack']['image']['api']['swift']['store_region'] = 'test_region'
+        expect(chef_run).to render_file(file.name).with_content(
+          /^swift_store_region = test_region$/)
+      end
     end
 
     describe 'rabbitmq' do
