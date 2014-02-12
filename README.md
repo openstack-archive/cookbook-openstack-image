@@ -25,6 +25,10 @@ api
 ------
 - Installs the glance-api server
 
+client
+----
+- Install the glance client packages
+
 registry
 --------
 - Installs the glance-registry server
