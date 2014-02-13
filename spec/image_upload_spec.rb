@@ -7,6 +7,7 @@ describe 'openstack-image::image_upload' do
     let(:options) { UBUNTU_OPTS.merge(step_into: 'openstack_image_image') }
     let(:node) { runner.node }
     let(:chef_run) do
+      node.set_unless['cpu']['total'] = 1
       runner.converge(described_recipe)
     end
 

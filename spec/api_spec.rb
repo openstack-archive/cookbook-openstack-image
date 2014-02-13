@@ -123,6 +123,18 @@ describe 'openstack-image::api' do
           /^flavor = keystone\+cachemanagement$/)
       end
 
+      it 'has configurable api workers setting' do
+        node.set['openstack']['image']['api']['workers'] = 10
+        expect(chef_run).to render_file(file.name).with_content(
+          /^workers = 10$/)
+      end
+
+      it 'confirms default min value is set' do
+        node.set['cpu']['total'] = 10
+        expect(chef_run).to render_file(file.name).with_content(
+          /^workers = 8$/)
+      end
+
       it 'sets show_image_direct_url appropriately' do
         node.set['openstack']['image']['api']['show_image_direct_url'] = 'True'
         expect(chef_run).to render_file(file.name).with_content(

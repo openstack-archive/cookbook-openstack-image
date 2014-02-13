@@ -26,7 +26,7 @@ backlog = 4096
 # may improve performance (especially if using SSL with
 # compression turned on). It is typically recommended to set
 # this value to the number of CPUs present on your machine.
-workers = <%= node["cpu"]["total"] %>
+workers = <%= node["openstack"]["image"]["api"]["workers"] %>
 
 # SQLAlchemy connection string for the reference implementation
 # registry server. Any valid SQLAlchemy connection string is fine.
