@@ -113,12 +113,12 @@ rabbit_userid = <%= node["openstack"]["mq"]["image"]["rabbit"]["userid"] %>
 rabbit_password = <%= @mq_password %>
 rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 rabbit_notification_exchange = glance
-rabbit_notification_topic = glance_notifications
+rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
 <% elsif @notifier_strategy == "qpid" and @mq_service_type == "qpid" %>
 ##### QPID #####
 rpc_backend=nova.openstack.common.rpc.impl_qpid
 qpid_notification_exchange = glance
-qpid_notification_topic = glance_notifications
+qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
 
 qpid_hostname=<%= node["openstack"]["mq"]["image"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["mq"]["image"]["qpid"]["port"] %>

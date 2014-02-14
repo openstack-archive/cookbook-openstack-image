@@ -166,6 +166,7 @@ describe 'openstack-image::api' do
       before do
         node.set['openstack']['mq']['image']['notifier_strategy'] = 'rabbit'
         node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
+        node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
       end
 
       it 'has rabbit_host' do
@@ -192,6 +193,11 @@ describe 'openstack-image::api' do
         match = 'rabbit_virtual_host = /'
         expect(chef_run).to render_file(file.name).with_content(match)
       end
+
+      it 'has rabbit_notification_topic' do
+        match = 'rabbit_notification_topic = rabbit_topic'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
     end
 
     describe 'qpid' do
@@ -200,6 +206,7 @@ describe 'openstack-image::api' do
       before do
         node.set['openstack']['mq']['image']['notifier_strategy'] = 'qpid'
         node.set['openstack']['mq']['image']['service_type'] = 'qpid'
+        node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
       end
 
       it 'has qpid_hostname' do
@@ -269,6 +276,11 @@ describe 'openstack-image::api' do
 
       it 'has qpid_tcp_nodelay' do
         match = 'qpid_tcp_nodelay=true'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
+      it 'has qpid_notification_topic' do
+        match = 'qpid_notification_topic = qpid_topic'
         expect(chef_run).to render_file(file.name).with_content(match)
       end
     end
