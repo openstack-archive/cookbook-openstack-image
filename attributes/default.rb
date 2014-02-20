@@ -33,7 +33,7 @@ default['openstack']['image']['debug'] = 'False'
 default['openstack']['image']['identity_service_chef_role'] = 'os-identity'
 
 # Gets set in the Image Endpoint when registering with Keystone
-default['openstack']['image']['region'] = 'RegionOne'
+default['openstack']['image']['region'] = node['openstack']['region']
 
 # The name of the Chef role that knows about the message queue server
 # that Glance uses

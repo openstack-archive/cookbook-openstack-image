@@ -44,6 +44,20 @@ describe 'openstack-image::identity_registration' do
     )
   end
 
+  it 'overrides image endpoint region' do
+    node.set['openstack']['image']['region'] = 'imageRegion'
+
+    resource = chef_run.find_resource(
+      'openstack-identity_register',
+      'Register Image Endpoint'
+    ).to_hash
+
+    expect(resource).to include(
+      endpoint_region: 'imageRegion',
+      action: [:create_endpoint]
+    )
+  end
+
   it 'registers service tenant' do
     resource = chef_run.find_resource(
       'openstack-identity_register',
