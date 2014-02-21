@@ -6,8 +6,6 @@ describe 'openstack-image::api' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set_unless['cpu']['total'] = 1
-
       runner.converge(described_recipe)
     end
 
@@ -130,7 +128,7 @@ describe 'openstack-image::api' do
       end
 
       it 'confirms default min value is set' do
-        node.set['cpu']['total'] = 10
+        node.automatic['cpu']['total'] = 10
         expect(chef_run).to render_file(file.name).with_content(
           /^workers = 8$/)
       end

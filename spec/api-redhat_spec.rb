@@ -6,8 +6,6 @@ describe 'openstack-image::api' do
     let(:runner) { ChefSpec::Runner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      node.set_unless['cpu']['total'] = 1
-
       runner.converge(described_recipe)
     end
 
