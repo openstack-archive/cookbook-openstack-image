@@ -76,13 +76,6 @@ service 'glance-registry' do
   action :enable
 end
 
-# Having to manually version the database because of Ubuntu bug
-# https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
-execute 'glance-manage version_control 0' do
-  not_if 'glance-manage db_version'
-  only_if { platform?('ubuntu', 'debian') }
-end
-
 file '/var/lib/glance/glance.sqlite' do
   action :delete
   not_if { node['openstack']['db']['image']['service_type'] == 'sqlite' }
@@ -115,6 +108,13 @@ template '/etc/glance/glance-registry.conf' do
   )
 
   notifies :restart, 'service[glance-registry]', :immediately
+end
+
+# Having to manually version the database because of Ubuntu bug
+# https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
+execute 'glance-manage version_control 0' do
+  not_if 'glance-manage db_version'
+  only_if { platform?('ubuntu', 'debian') }
 end
 
 execute 'glance-manage db_sync' do
