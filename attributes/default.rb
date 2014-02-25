@@ -80,7 +80,7 @@ default['openstack']['image']['api']['cache']['image_cache_max_size'] = '1073741
 default['openstack']['image']['cache']['dir'] = '/var/lib/glance/image-cache/'
 # Number of seconds until an incomplete image is considered stalled an
 # eligible for reaping
-default['openstack']['image']['cache']['stall_time'] = 86_400
+default['openstack']['image']['cache']['stall_time'] = 86400
 # Number of seconds to leave invalid images around before they are eligible to be reaped
 default['openstack']['image']['cache']['grace_period'] = 3600
 
