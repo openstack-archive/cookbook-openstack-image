@@ -113,7 +113,7 @@ mq_service_type = node['openstack']['mq']['image']['service_type']
 if mq_service_type == 'rabbitmq'
   mq_password = get_password 'user', node['openstack']['mq']['image']['rabbit']['userid']
 elsif mq_service_type == 'qpid'
-  mq_password = node['openstack']['mq']['image']['qpid']['password']
+  mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
 end
 
 registry_endpoint = endpoint 'image-registry'

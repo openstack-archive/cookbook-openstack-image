@@ -39,7 +39,7 @@ shared_context 'image-stubs' do
       .and_return('glance-pass')
     Chef::Recipe.any_instance.stub(:get_password)
       .with('user', 'guest')
-      .and_return('rabbit-pass')
+      .and_return('mq-pass')
 
     Chef::Application.stub(:fatal!)
   end

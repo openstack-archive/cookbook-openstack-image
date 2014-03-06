@@ -183,7 +183,7 @@ describe 'openstack-image::api' do
       end
 
       it 'has rabbit_password' do
-        match = 'rabbit_password = rabbit-pass'
+        match = 'rabbit_password = mq-pass'
         expect(chef_run).to render_file(file.name).with_content(match)
       end
 
@@ -205,6 +205,7 @@ describe 'openstack-image::api' do
         node.set['openstack']['mq']['image']['notifier_strategy'] = 'qpid'
         node.set['openstack']['mq']['image']['service_type'] = 'qpid'
         node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
+        node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
       end
 
       it 'has qpid_hostname' do
@@ -218,12 +219,12 @@ describe 'openstack-image::api' do
       end
 
       it 'has qpid_username' do
-        match = 'qpid_username='
+        match = 'qpid_username=guest'
         expect(chef_run).to render_file(file.name).with_content(match)
       end
 
       it 'has qpid_password' do
-        match = 'qpid_password='
+        match = 'qpid_password=mq-pass'
         expect(chef_run).to render_file(file.name).with_content(match)
       end
 
