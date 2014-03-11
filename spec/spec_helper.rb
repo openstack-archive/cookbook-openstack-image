@@ -40,6 +40,9 @@ shared_context 'image-stubs' do
     Chef::Recipe.any_instance.stub(:get_password)
       .with('user', 'guest')
       .and_return('mq-pass')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('service', 'rbd-image')
+      .and_return('rbd-pass')
 
     Chef::Application.stub(:fatal!)
   end

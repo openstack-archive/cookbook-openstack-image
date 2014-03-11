@@ -56,6 +56,31 @@ if node['openstack']['image']['api']['default_store'] == 'swift'
       options platform_options['package_overrides']
     end
   end
+
+elsif node['openstack']['image']['api']['default_store'] == 'rbd'
+  rbd_user = node['openstack']['image']['api']['rbd']['rbd_store_user']
+  rbd_key = get_password 'service', node['openstack']['image']['api']['rbd']['key_name']
+
+  include_recipe 'openstack-common::ceph_client'
+
+  platform_options['ceph_packages'].each do |pkg|
+    package pkg do
+      options platform_options['package_overrides']
+      action :upgrade
+    end
+  end
+
+  template "/etc/ceph/ceph.client.#{rbd_user}.keyring" do
+    source 'ceph.client.keyring.erb'
+    cookbook 'openstack-common'
+    owner node['openstack']['image']['user']
+    group node['openstack']['image']['group']
+    mode '0600'
+    variables(
+      name: rbd_user,
+      key: rbd_key
+    )
+  end
 end
 
 service 'glance-api' do

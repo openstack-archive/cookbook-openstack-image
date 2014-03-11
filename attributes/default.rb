@@ -89,6 +89,8 @@ default['openstack']['image']['api']['rbd']['rbd_store_ceph_conf'] = '/etc/ceph/
 default['openstack']['image']['api']['rbd']['rbd_store_user'] = 'glance'
 default['openstack']['image']['api']['rbd']['rbd_store_pool'] = 'images'
 default['openstack']['image']['api']['rbd']['rbd_store_chunk_size'] = '8'
+# The name used for the data bag item containing the Cephx user's password
+default['openstack']['image']['api']['rbd']['key_name'] = 'rbd-image'
 
 # If set, glance registry service will bind to the address on this interface,
 # otherwise it will bind to the API endpoint's host.
@@ -126,6 +128,7 @@ when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
     'db2_python_packages' => ['db2-odbc', 'python-ibm-db', 'python-ibm-db-sa'],
     'image_packages' => ['openstack-glance', 'cronie', 'python-glanceclient'],
     'image_client_packages' => ['python-glanceclient'],
+    'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
     'image_registry_service' => 'openstack-glance-registry',
@@ -140,6 +143,7 @@ when 'suse'
     'mysql_python_packages' => ['python-mysql'],
     'image_packages' => ['openstack-glance', 'python-glanceclient'],
     'image_client_packages' => ['python-glanceclient'],
+    'ceph_packages' => [],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
     'image_registry_service' => 'openstack-glance-registry',
@@ -154,6 +158,7 @@ when 'ubuntu'
     'mysql_python_packages' => ['python-mysqldb'],
     'image_packages' => ['glance'],
     'image_client_packages' => ['python-glanceclient'],
+    'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['python-swift'],
     'image_api_service' => 'glance-api',
     'image_registry_service' => 'glance-registry',

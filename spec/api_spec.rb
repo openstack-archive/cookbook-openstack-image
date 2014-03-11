@@ -19,18 +19,65 @@ describe 'openstack-image::api' do
       expect(chef_run).not_to upgrade_package('python-swift')
     end
 
-    it 'upgrades swift package if openstack/image/api/default_store is swift' do
-      node.set['openstack']['image']['api']['default_store'] = 'swift'
+    describe 'using swift for default_store' do
+      before do
+        node.set['openstack']['image']['api']['default_store'] = 'swift'
+      end
 
-      expect(chef_run).to upgrade_package('python-swift')
+      it 'upgrades swift package if openstack/image/api/default_store is swift' do
+        expect(chef_run).to upgrade_package('python-swift')
+      end
+
+      it 'honors platform package name and option overrides for swift packages' do
+        node.set['openstack']['image']['platform']['package_overrides'] = '--override1 --override2'
+        node.set['openstack']['image']['platform']['swift_packages'] = ['my-swift']
+
+        expect(chef_run).to upgrade_package('my-swift').with(options: '--override1 --override2')
+      end
     end
 
-    it 'honors platform package name and option overrides for swift packages' do
-      node.set['openstack']['image']['platform']['package_overrides'] = '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes'
-      node.set['openstack']['image']['api']['default_store'] = 'swift'
-      node.set['openstack']['image']['platform']['swift_packages'] = ['my-swift']
+    describe 'using rbd for default_store' do
+      before do
+        node.set['openstack']['image']['api']['default_store'] = 'rbd'
+      end
 
-      expect(chef_run).to upgrade_package('my-swift').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
+      it 'upgrades python-ceph package' do
+        expect(chef_run).to upgrade_package('python-ceph')
+      end
+
+      it 'honors platform package name and option overrides for ceph packages' do
+        node.set['openstack']['image']['platform']['package_overrides'] = '--override1 --override2'
+        node.set['openstack']['image']['platform']['ceph_packages'] = ['my-ceph']
+
+        expect(chef_run).to upgrade_package('my-ceph').with(options: '--override1 --override2')
+      end
+
+      it 'includes the ceph_client recipe from openstack-common' do
+        expect(chef_run).to include_recipe('openstack-common::ceph_client')
+      end
+
+      describe 'cephx client keyring file' do
+        let(:file) { chef_run.template('/etc/ceph/ceph.client.glance.keyring') }
+        it 'has the proper content' do
+          [/^\[client\.glance\]$/,
+           /^  key = rbd-pass$/].each do |content|
+            expect(chef_run).to render_file(file.name).with_content(content)
+          end
+        end
+
+        it "is created using openstack-common's template" do
+          expect(chef_run).to create_template(file.name).with(cookbook: 'openstack-common')
+        end
+
+        it 'has the correct owner' do
+          expect(file.owner). to eq('glance')
+          expect(file.group). to eq('glance')
+        end
+
+        it 'has the correct mode' do
+          expect(sprintf('%o', file.mode)).to eq '600'
+        end
+      end
     end
 
     it 'starts glance api on boot' do
@@ -155,6 +202,31 @@ describe 'openstack-image::api' do
         node.set['openstack']['image']['api']['swift']['store_region'] = 'test_region'
         expect(chef_run).to render_file(file.name).with_content(
           /^swift_store_region = test_region$/)
+      end
+
+      it 'does set the default rbd_store settings' do
+        [%r|^rbd_store_ceph_conf = /etc/ceph/ceph\.conf$|,
+         /^rbd_store_user = glance$/,
+         /^rbd_store_pool = images$/,
+         /^rbd_store_chunk_size = 8$/
+        ].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
+        end
+      end
+
+      it 'does set the rbd_store settings when overridden' do
+        node.set['openstack']['image']['api']['rbd']['rbd_store_ceph_conf'] = '/etc/ceph.conf'
+        node.set['openstack']['image']['api']['rbd']['rbd_store_user'] = 'openstack-image'
+        node.set['openstack']['image']['api']['rbd']['rbd_store_pool'] = 'bootimages'
+        node.set['openstack']['image']['api']['rbd']['rbd_store_chunk_size'] = 4
+
+        [%r|^rbd_store_ceph_conf = /etc/ceph\.conf$|,
+         /^rbd_store_user = openstack-image$/,
+         /^rbd_store_pool = bootimages$/,
+         /^rbd_store_chunk_size = 4$/
+        ].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
+        end
       end
     end
 

@@ -117,7 +117,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['upload_images']` - Default list of images to upload to the glance repository as part of the install
 * `openstack['image']['upload_image']['<imagename>']` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `openstack['image']['upload_image']['natty']` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
-* `openstack['image']['api']['default_store']` - Toggles the backend storage type.  Currently supported is "file" and "swift"
+* `openstack['image']['api']['default_store']` - Toggles the backend storage type.  Currently supported is "file", "swift" and "rbd".
 * `openstack['image']['api']['swift']['store_container']` - Set the container used by glance to store images and snapshots.  Defaults to "glance"
 * `openstack['image']['api']['swift']['store_large_object_size']` - Set the size at which glance starts to chunnk files.  Defaults to "200" MB
 * `openstack['image']['api']['swift']['store_large_object_chunk_size']` - Set the chunk size for glance.  Defaults to "200" MB
@@ -127,6 +127,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['rbd']['rbd_store_user']` - User for connecting to ceph store
 * `openstack['image']['api']['rbd']['rbd_store_pool']` - RADOS pool for images
 * `openstack['image']['api']['rbd']['rbd_store_chunk_size']` - Size in MB of chunks for RADOS Store, should be a power of 2
+* `openstack['image']['api']['rbd']['key_name']` - The data bag item name used for the Cephx key of the rbd_store_user.
 * `openstack['image']['cron']['redirection']` - Redirection of cron output
 TODO: Add DB2 support on other platforms
 * `openstack['image']['platform']['db2_python_packages']` - Array of DB2 python packages, only available on redhat platform
