@@ -273,3 +273,12 @@ template '/etc/glance/glance-scrubber-paste.ini' do
   group node['openstack']['image']['group']
   mode   00644
 end
+
+if node['openstack']['image']['api']['default_store'] == 'file'
+  directory node['openstack']['image']['filesystem_store_datadir'] do
+    owner node['openstack']['image']['user']
+    group node['openstack']['image']['group']
+    mode 00750
+    recursive true
+  end
+end
