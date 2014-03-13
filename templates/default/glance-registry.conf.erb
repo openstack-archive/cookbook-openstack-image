@@ -62,10 +62,13 @@ log_file = /var/log/glance/registry.log
 
 # ================= Keystone authtoken ===============================
 [keystone_authtoken]
-auth_uri = <%= @identity_endpoint.to_s %>
+auth_uri = <%= @auth_uri %>
 auth_host = <%= @identity_admin_endpoint.host %>
 auth_port = <%= @identity_admin_endpoint.port %>
 auth_protocol = <%= @identity_admin_endpoint.scheme %>
+<% if node['openstack']['image']['registry']['auth']['version'] != 'v2.0' %>
+auth_version = <%= node['openstack']['image']['registry']['auth']['version'] %>
+<% end %>
 admin_tenant_name = <%= node["openstack"]["image"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["image"]["service_user"] %>
 admin_password = <%= @service_pass %>

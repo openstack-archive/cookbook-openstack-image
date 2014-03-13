@@ -42,6 +42,8 @@ identity_admin_endpoint = endpoint 'identity-admin'
 registry_endpoint = endpoint 'image-registry'
 service_pass = get_password 'service', 'openstack-image'
 
+auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']
+
 package 'curl' do
   action :install
 end
@@ -102,7 +104,7 @@ template '/etc/glance/glance-registry.conf' do
     :registry_bind_address => bind_address,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
-    :identity_endpoint => identity_endpoint,
+    :auth_uri => auth_uri,
     'identity_admin_endpoint' => identity_admin_endpoint,
     'service_pass' => service_pass
   )

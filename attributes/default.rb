@@ -49,9 +49,8 @@ default['openstack']['image']['api']['workers'] = [8, node['cpu']['total'].to_i]
 # Return the URL that references where the data is stored on the backend.
 default['openstack']['image']['api']['show_image_direct_url'] = 'False'
 
-# Setting this to v2.0. See discussion on
-# https://bugs.launchpad.net/openstack-chef/+bug/1207504
-default['openstack']['image']['api']['auth']['version'] = 'v2.0'
+default['openstack']['image']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
+default['openstack']['image']['registry']['auth']['version'] = node['openstack']['api']['auth']['version']
 
 # Keystone PKI signing directories
 # XXX keystoneclient wants these dirs to exist even if it doesn't use them
