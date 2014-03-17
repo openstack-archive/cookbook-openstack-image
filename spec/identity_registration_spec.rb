@@ -36,9 +36,9 @@ describe 'openstack-image::identity_registration' do
       bootstrap_token: 'bootstrap-token',
       service_type: 'image',
       endpoint_region: 'RegionOne',
-      endpoint_adminurl: 'http://127.0.0.1:9292/v2',
-      endpoint_internalurl: 'http://127.0.0.1:9292/v2',
-      endpoint_publicurl: 'http://127.0.0.1:9292/v2',
+      endpoint_adminurl: 'http://127.0.0.1:9292',
+      endpoint_internalurl: 'http://127.0.0.1:9292',
+      endpoint_publicurl: 'http://127.0.0.1:9292',
       action: [:create_endpoint]
     )
   end
