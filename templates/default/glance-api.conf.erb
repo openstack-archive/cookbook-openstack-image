@@ -116,7 +116,7 @@ rabbit_notification_exchange = glance
 rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
 <% elsif @notifier_strategy == "qpid" and @mq_service_type == "qpid" %>
 ##### QPID #####
-rpc_backend=nova.openstack.common.rpc.impl_qpid
+rpc_backend=glance.openstack.common.rpc.impl_qpid
 qpid_notification_exchange = glance
 qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
 

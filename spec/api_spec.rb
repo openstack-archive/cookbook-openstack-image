@@ -280,6 +280,11 @@ describe 'openstack-image::api' do
         node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
       end
 
+      it 'has rpc_backend' do
+        match = 'rpc_backend=glance.openstack.common.rpc.impl_qpid'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
       it 'has qpid_hostname' do
         match = 'qpid_hostname=127.0.0.1'
         expect(chef_run).to render_file(file.name).with_content(match)
