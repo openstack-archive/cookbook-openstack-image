@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 8.2.1
+### Bug
+* Fix the DB2 ODBC driver issue
+
 ## 8.2.0
 ### Blue print
 * Use the common auth uri tranformation function and add the auth version to configuration files.
