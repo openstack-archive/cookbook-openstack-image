@@ -166,19 +166,13 @@ elsif glance['api']['caching']
   glance_flavor += '+caching'
 end
 
-if node['openstack']['image']['api']['bind_interface'].nil?
-  bind_address = api_endpoint.host
-else
-  bind_address = address_for node['openstack']['image']['api']['bind_interface']
-end
-
 template '/etc/glance/glance-api.conf' do
   source 'glance-api.conf.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode   00644
   variables(
-    api_bind_address: bind_address,
+    api_bind_address: api_endpoint.host,
     api_bind_port: api_endpoint.port,
     registry_ip_address: registry_endpoint.host,
     registry_port: registry_endpoint.port,

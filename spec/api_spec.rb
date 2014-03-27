@@ -119,7 +119,7 @@ describe 'openstack-image::api' do
       end
 
       it 'has bind host when bind_interface specified' do
-        node.set['openstack']['image']['api']['bind_interface'] = 'lo'
+        node.set['openstack']['endpoints']['image-api']['bind_interface'] = 'lo'
 
         match = 'bind_host = 127.0.1.1'
         expect(chef_run).to render_file(file.name).with_content(match)

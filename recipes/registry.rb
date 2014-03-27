@@ -89,19 +89,13 @@ directory '/etc/glance' do
   mode  00700
 end
 
-if node['openstack']['image']['registry']['bind_interface'].nil?
-  bind_address = registry_endpoint.host
-else
-  bind_address = address_for node['openstack']['image']['registry']['bind_interface']
-end
-
 template '/etc/glance/glance-registry.conf' do
   source 'glance-registry.conf.erb'
   owner  'root'
   group  'root'
   mode   00644
   variables(
-    :registry_bind_address => bind_address,
+    :registry_bind_address => registry_endpoint.host,
     :registry_port => registry_endpoint.port,
     :sql_connection => sql_connection,
     :auth_uri => auth_uri,

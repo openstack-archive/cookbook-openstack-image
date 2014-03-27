@@ -65,9 +65,6 @@ default['openstack']['image']['api']['default_store'] = 'file'
 
 default['openstack']['image']['filesystem_store_datadir'] = '/var/lib/glance/images'
 
-# If set, glance API service will bind to the address on this interface,
-# otherwise it will bind to the API endpoint's host.
-default['openstack']['image']['api']['bind_interface'] = nil
 default['openstack']['image']['api']['swift']['container'] = 'glance'
 default['openstack']['image']['api']['swift']['large_object_size'] = '200'
 default['openstack']['image']['api']['swift']['large_object_chunk_size'] = '200'
@@ -90,10 +87,6 @@ default['openstack']['image']['api']['rbd']['rbd_store_pool'] = 'images'
 default['openstack']['image']['api']['rbd']['rbd_store_chunk_size'] = '8'
 # The name used for the data bag item containing the Cephx user's password
 default['openstack']['image']['api']['rbd']['key_name'] = 'rbd-image'
-
-# If set, glance registry service will bind to the address on this interface,
-# otherwise it will bind to the API endpoint's host.
-default['openstack']['image']['registry']['bind_interface'] = nil
 
 # API to use for accessing data. Default value points to sqlalchemy
 # package.
