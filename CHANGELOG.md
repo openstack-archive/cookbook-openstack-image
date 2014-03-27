@@ -1,6 +1,8 @@
 # CHANGELOG for cookbook-openstack-image
 
 This file is used to list changes made in each version of cookbook-openstack-image.
+## 9.0.0
+* Upgrade to Icehouse
 
 ## 8.2.1
 ### Bug
