@@ -1,6 +1,9 @@
 # encoding: UTF-8
 require 'chefspec'
 require 'chefspec/berkshelf'
+
+ChefSpec::Coverage.start! { add_filter 'openstack-image' }
+
 require 'chef/application'
 
 LOG_LEVEL = :fatal
@@ -110,9 +113,3 @@ shared_examples 'glance-directory' do
     end
   end
 end
-
-# README(galstrom21): This will remove any coverage warnings from
-#   dependent cookbooks
-ChefSpec::Coverage.filters << '*/openstack-image'
-
-at_exit { ChefSpec::Coverage.report! }
