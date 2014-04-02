@@ -106,6 +106,17 @@ default['openstack']['image']['syslog']['use'] = false
 default['openstack']['image']['syslog']['facility'] = 'LOG_LOCAL2'
 default['openstack']['image']['syslog']['config_facility'] = 'local2'
 
+# vmware attributes
+default['openstack']['image']['api']['vmware']['vmware_server_host'] = ''
+default['openstack']['image']['api']['vmware']['vmware_server_username'] = ''
+default['openstack']['image']['api']['vmware']['vmware_server_password'] = ''
+default['openstack']['image']['api']['vmware']['vmware_datacenter_path'] = ''
+default['openstack']['image']['api']['vmware']['vmware_datastore_name'] = ''
+default['openstack']['image']['api']['vmware']['vmware_api_retry_count'] = 10
+default['openstack']['image']['api']['vmware']['vmware_task_poll_interval'] = 5
+default['openstack']['image']['api']['vmware']['vmware_store_image_dir'] = '/openstack_glance'
+default['openstack']['image']['api']['vmware']['vmware_api_insecure'] = false
+
 # cron output redirection
 default['openstack']['image']['cron']['redirection'] = '> /dev/null 2>&1'
 

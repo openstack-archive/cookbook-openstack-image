@@ -9,7 +9,8 @@ debug = <%= node["openstack"]["image"]["debug"] %>
 
 # Which backend store should Glance use by default is not specified
 # in a request to add a new image to Glance? Default: 'file'
-# Available choices are 'file', 'swift', and 's3'
+# Available choices are 'file', 'swift', 's3', 'cinder', 'gridfs',
+# 'http', 'sheepdog' and 'vsphere'
 default_store = <%= node["openstack"]["image"]["api"]["default_store"] %>
 
 # Address to bind the API server
@@ -241,6 +242,42 @@ rbd_store_pool = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_pool"] 
 # Images will be chunked into objects of this size (in megabytes).
 # For best performance, this should be a power of two
 rbd_store_chunk_size = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_chunk_size"] %>
+
+# ============ VMware Datastore Store Options =====================
+
+# ESX/ESXi or vCenter Server target system.
+# The server value can be an IP address or a DNS name
+# e.g. 127.0.0.1, 127.0.0.1:443, www.vmware-infra.com
+vmware_server_host = <%= node['openstack']['image']['api']['vmware']['vmware_server_host'] %>
+
+# Server username (string value)
+vmware_server_username = <%= node['openstack']['image']['api']['vmware']['vmware_server_username'] %>
+
+# Server password (string value)
+vmware_server_password = <%= node['openstack']['image']['api']['vmware']['vmware_server_password'] %>
+
+# Inventory path to a datacenter (string value)
+# Value optional when vmware_server_ip is an ESX/ESXi host: if specified
+# should be `ha-datacenter`.
+vmware_datacenter_path = <%= node['openstack']['image']['api']['vmware']['vmware_datacenter_path'] %>
+
+# Datastore associated with the datacenter (string value)
+vmware_datastore_name = <%= node['openstack']['image']['api']['vmware']['vmware_datastore_name'] %>
+
+# The number of times we retry on failures
+# e.g., socket error, etc (integer value)
+vmware_api_retry_count = <%= node['openstack']['image']['api']['vmware']['vmware_api_retry_count'] %>
+
+# The interval used for polling remote tasks
+# invoked on VMware ESX/VC server in seconds (integer value)
+vmware_task_poll_interval = <%= node['openstack']['image']['api']['vmware']['vmware_task_poll_interval'] %>
+
+# Absolute path of the folder containing the images in the datastore
+# (string value)
+vmware_store_image_dir = <%= node['openstack']['image']['api']['vmware']['vmware_store_image_dir'] %>
+
+# Allow to perform insecure SSL requests to the target system (boolean value)
+vmware_api_insecure = <%= node['openstack']['image']['api']['vmware']['vmware_api_insecure'] %>
 
 # ============ Delayed Delete Options =============================
 

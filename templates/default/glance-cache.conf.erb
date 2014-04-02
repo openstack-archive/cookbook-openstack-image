@@ -51,6 +51,42 @@ registry_port = <%= @registry_port %>
 # admin_user = %SERVICE_USER%
 # admin_password = %SERVICE_PASSWORD%
 
+# ============ VMware Datastore Store Options =====================
+
+# ESX/ESXi or vCenter Server target system.
+# The server value can be an IP address or a DNS name
+# e.g. 127.0.0.1, 127.0.0.1:443, www.vmware-infra.com
+vmware_server_host = <%= node['openstack']['image']['api']['vmware']['vmware_server_host'] %>
+
+# Server username (string value)
+vmware_server_username = <%= node['openstack']['image']['api']['vmware']['vmware_server_username'] %>
+
+# Server password (string value)
+vmware_server_password = <%= node['openstack']['image']['api']['vmware']['vmware_server_password'] %>
+
+# Inventory path to a datacenter (string value)
+# Value optional when vmware_server_ip is an ESX/ESXi host: if specified
+# should be `ha-datacenter`.
+vmware_datacenter_path = <%= node['openstack']['image']['api']['vmware']['vmware_datacenter_path'] %>
+
+# Datastore associated with the datacenter (string value)
+vmware_datastore_name = <%= node['openstack']['image']['api']['vmware']['vmware_datastore_name'] %>
+
+# The number of times we retry on failures
+# e.g., socket error, etc (integer value)
+vmware_api_retry_count = <%= node['openstack']['image']['api']['vmware']['vmware_api_retry_count'] %>
+
+# The interval used for polling remote tasks
+# invoked on VMware ESX/VC server in seconds (integer value)
+vmware_task_poll_interval = <%= node['openstack']['image']['api']['vmware']['vmware_task_poll_interval'] %>
+
+# Absolute path of the folder containing the images in the datastore
+# (string value)
+vmware_store_image_dir = <%= node['openstack']['image']['api']['vmware']['vmware_store_image_dir'] %>
+
+# Allow to perform insecure SSL requests to the target system (boolean value)
+vmware_api_insecure = <%= node['openstack']['image']['api']['vmware']['vmware_api_insecure'] %>
+
 # ================= Security Options ==========================
 
 # AES key for encrypting store 'location' metadata, including
