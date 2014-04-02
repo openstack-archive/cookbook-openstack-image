@@ -28,7 +28,7 @@ end
 
 identity_admin_endpoint = endpoint 'identity-admin'
 
-token = secret 'secrets', 'openstack_identity_bootstrap_token'
+token = get_secret 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
 api_endpoint = endpoint 'image-api'

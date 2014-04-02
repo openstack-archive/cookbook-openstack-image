@@ -30,8 +30,8 @@ shared_context 'image-stubs' do
         'host' => 'rabbit-host', 'port' => 'rabbit-port'
       )
 
-    Chef::Recipe.any_instance.stub(:secret)
-      .with('secrets', 'openstack_identity_bootstrap_token')
+    Chef::Recipe.any_instance.stub(:get_secret)
+      .with('openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
 
     Chef::Recipe.any_instance.stub(:get_password)
