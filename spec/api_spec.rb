@@ -228,6 +228,27 @@ describe 'openstack-image::api' do
           expect(chef_run).to render_file(file.name).with_content(line)
         end
       end
+
+      it 'has default_store setting' do
+        expect(chef_run).to render_file(file.name).with_content(
+          /^default_store = file$/)
+      end
+
+      [
+        /^vmware_server_host = $/,
+        /^vmware_server_username = $/,
+        /^vmware_server_password = $/,
+        /^vmware_datacenter_path = $/,
+        /^vmware_datastore_name = $/,
+        /^vmware_api_retry_count = 10/,
+        /^vmware_task_poll_interval = 5$/,
+        /^vmware_store_image_dir = \/openstack_glance$/,
+        /^vmware_api_insecure = false$/
+      ].each do |content|
+        it "has a #{content.source[1...-1]} line" do
+          expect(chef_run).to render_file(file.name).with_content(content)
+        end
+      end
     end
 
     describe 'keystone_authtoken' do
@@ -486,6 +507,22 @@ describe 'openstack-image::api' do
 
         expect(chef_run).to render_file(file.name).with_content(
           /^image_cache_invalid_entry_grace_period = 42$/)
+      end
+
+      [
+        /^vmware_server_host = $/,
+        /^vmware_server_username = $/,
+        /^vmware_server_password = $/,
+        /^vmware_datacenter_path = $/,
+        /^vmware_datastore_name = $/,
+        /^vmware_api_retry_count = 10/,
+        /^vmware_task_poll_interval = 5$/,
+        /^vmware_store_image_dir = \/openstack_glance$/,
+        /^vmware_api_insecure = false$/
+      ].each do |content|
+        it "has a #{content.source[1...-1]} line" do
+          expect(chef_run).to render_file(file.name).with_content(content)
+        end
       end
     end
 
