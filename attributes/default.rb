@@ -43,6 +43,8 @@ default['openstack']['image']['service_tenant_name'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
 default['openstack']['image']['service_role'] = 'admin'
 
+default['openstack']['image']['notification_driver'] = 'noop'
+
 # Set the number of api workers
 default['openstack']['image']['api']['workers'] = [8, node['cpu']['total'].to_i].min
 

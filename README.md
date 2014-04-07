@@ -110,6 +110,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['service_tenant_name']` - Tenant name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack['image']['service_user']` - User name used by glance when interacting with keystone - used in the API and registry paste.ini files
 * `openstack['image']['service_role']` - User role used by glance when interacting with keystone - used in the API and registry paste.ini files
+* `openstack['image']['notification_driver']` - Notification driver, default noop.
 * `openstack['image']['api']['workers']` - Set the number of glance api workers.
 * `openstack['image']['api']['show_image_direct_url']` - Allow glance to return URL referencing where data is stored on the backend. Default 'False'
 * `openstack['image']['api']['auth']['cache_dir']` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
@@ -136,7 +137,6 @@ TODO: Add DB2 support on other platforms
 MQ attributes
 -------------
 * `openstack['image']['mq']['service_type']` - Select qpid or rabbitmq. default rabbitmq
-* `openstack['image']['mq']['notifier_strategy']` - Notifier stragegy. default noop.
 * `openstack['image']['mq']['qpid']['host']` - The qpid host to use
 * `openstack['image']['mq']['qpid']['port']` - The qpid port to use
 * `openstack['image']['mq']['qpid']['qpid_hosts']` - Qpid hosts. TODO. use only when ha is specified.

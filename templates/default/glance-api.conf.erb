@@ -103,9 +103,9 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
-notifier_strategy = <%= @notifier_strategy %>
+notification_driver = <%= @notification_driver %>
 
-<% if @notifier_strategy == "rabbit" and @mq_service_type == "rabbitmq" %>
+<% if @notification_driver == "rabbit" and @mq_service_type == "rabbitmq" %>
 #### RABBITMQ #####
 rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
 rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
@@ -115,7 +115,7 @@ rabbit_password = <%= @mq_password %>
 rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 rabbit_notification_exchange = glance
 rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
-<% elsif @notifier_strategy == "qpid" and @mq_service_type == "qpid" %>
+<% elsif @notification_driver == "qpid" and @mq_service_type == "qpid" %>
 ##### QPID #####
 qpid_notification_exchange = glance
 qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>

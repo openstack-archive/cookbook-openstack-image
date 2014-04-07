@@ -310,7 +310,7 @@ describe 'openstack-image::api' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
 
       before do
-        node.set['openstack']['mq']['image']['notifier_strategy'] = 'rabbit'
+        node.set['openstack']['image']['notification_driver'] = 'rabbit'
         node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
         node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
       end
@@ -350,7 +350,7 @@ describe 'openstack-image::api' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
 
       before do
-        node.set['openstack']['mq']['image']['notifier_strategy'] = 'qpid'
+        node.set['openstack']['image']['notification_driver'] = 'qpid'
         node.set['openstack']['mq']['image']['service_type'] = 'qpid'
         node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
         node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'

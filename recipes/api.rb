@@ -186,7 +186,7 @@ template '/etc/glance/glance-api.conf' do
     swift_store_user: swift_store_user,
     swift_store_auth_address: swift_store_auth_address,
     swift_store_auth_version: swift_store_auth_version,
-    notifier_strategy: node['openstack']['mq']['image']['notifier_strategy'],
+    notification_driver: node['openstack']['image']['notification_driver'],
     mq_service_type: mq_service_type,
     mq_password: mq_password
   )
