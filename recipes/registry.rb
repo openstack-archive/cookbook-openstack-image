@@ -110,7 +110,7 @@ end
 # https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
 execute 'glance-manage version_control 0' do
   not_if 'glance-manage db_version'
-  only_if { platform?('ubuntu', 'debian') }
+  only_if { platform_family?('debian') }
 end
 
 execute 'glance-manage db_sync' do
