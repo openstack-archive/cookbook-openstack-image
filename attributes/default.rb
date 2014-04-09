@@ -123,8 +123,8 @@ default['openstack']['image']['api']['vmware']['vmware_api_insecure'] = false
 default['openstack']['image']['cron']['redirection'] = '> /dev/null 2>&1'
 
 # platform-specific settings
-case platform
-when 'fedora', 'redhat', 'centos' # :pragma-foodcritic: ~FC024 - won't fix this
+case platform_family
+when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
@@ -155,7 +155,7 @@ when 'suse'
     'image_api_process_name' => 'glance-api',
     'package_overrides' => ''
   }
-when 'ubuntu'
+when 'debian'
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
