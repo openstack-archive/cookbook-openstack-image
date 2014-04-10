@@ -152,6 +152,18 @@ MQ attributes
 * `openstack['image']['mq']['qpid']['protocol']` - Protocol to use. Default tcp.
 * `openstack['image']['mq']['qpid']['tcp_nodelay']` - Disable the Nagle algorithm. default disabled.
 
+The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
+
+* `openstack['endpoints']['image-api-bind']['host']` - The IP address to bind the api service to
+* `openstack['endpoints']['image-api-bind']['port']` - The port to bind the api service to
+* `openstack['endpoints']['image-api-bind']['bind_interface']` - The interface name to bind the api service to
+
+* `openstack['endpoints']['image-registry-bind']['host']` - The IP address to bind the registry service to
+* `openstack['endpoints']['image-registry-bind']['port']` - The port to bind the registry service to
+* `openstack['endpoints']['image-registry-bind']['bind_interface']` - The interface name to bind the registry service to
+
+If the value of the 'bind_interface' attribute is non-nil, then the image service will be bound to the first IP address on that interface.  If the value of the 'bind_interface' attribute is nil, then the image service will be bound to the IP address specified in the host attribute.
+
 Testing
 =====
 

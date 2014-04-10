@@ -11,7 +11,7 @@ debug = <%= node["openstack"]["image"]["debug"] %>
 bind_host = <%= @registry_bind_address %>
 
 # Port the bind the registry server to
-bind_port = <%= @registry_port %>
+bind_port = <%= @registry_bind_port %>
 
 # Backlog requests when creating socket
 backlog = 4096

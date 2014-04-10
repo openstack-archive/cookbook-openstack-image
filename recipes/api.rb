@@ -132,7 +132,7 @@ elsif mq_service_type == 'qpid'
 end
 
 registry_endpoint = endpoint 'image-registry'
-api_endpoint = endpoint 'image-api'
+api_bind = endpoint 'image-api-bind'
 
 # Possible combinations of options here
 # - default_store=file
@@ -172,8 +172,8 @@ template '/etc/glance/glance-api.conf' do
   group node['openstack']['image']['group']
   mode   00644
   variables(
-    api_bind_address: api_endpoint.host,
-    api_bind_port: api_endpoint.port,
+    api_bind_address: api_bind.host,
+    api_bind_port: api_bind.port,
     registry_ip_address: registry_endpoint.host,
     registry_port: registry_endpoint.port,
     sql_connection: sql_connection,
