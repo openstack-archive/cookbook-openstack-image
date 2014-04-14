@@ -103,6 +103,11 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
+<% if %w(fedora rhel).include? node.platform_family %>
+notifier_strategy = <%= @notification_driver %>
+# notifier_stratey is deprecated, but is still being set in
+# /usr/share/glance/glance-api-dist.conf in RDO openstack-glance package
+<% end %>
 notification_driver = <%= @notification_driver %>
 
 <% if @notification_driver == "rabbit" and @mq_service_type == "rabbitmq" %>
