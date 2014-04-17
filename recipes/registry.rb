@@ -39,7 +39,7 @@ sql_connection = db_uri('image', db_user, db_pass)
 
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
-registry_endpoint = endpoint 'image-registry'
+registry_bind = endpoint 'image-registry-bind'
 service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']
@@ -95,8 +95,8 @@ template '/etc/glance/glance-registry.conf' do
   group  'root'
   mode   00644
   variables(
-    :registry_bind_address => registry_endpoint.host,
-    :registry_port => registry_endpoint.port,
+    :registry_bind_address => registry_bind.host,
+    :registry_bind_port => registry_bind.port,
     :sql_connection => sql_connection,
     :auth_uri => auth_uri,
     'identity_admin_endpoint' => identity_admin_endpoint,
