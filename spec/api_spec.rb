@@ -81,20 +81,8 @@ describe 'openstack-image::api' do
       end
     end
 
-    describe 'policy.json' do
-      let(:file) { chef_run.template('/etc/glance/policy.json') }
-
-      it 'creates policy.json' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'glance',
-          group: 'glance',
-          mode: 00644
-        )
-      end
-
-      it 'notifies glance-api restart' do
-        expect(file).to notify('service[glance-api]').to(:restart)
-      end
+    it 'starts glance api on boot' do
+      expect(chef_run).to enable_service('glance-api')
     end
 
     describe 'glance-api.conf' do

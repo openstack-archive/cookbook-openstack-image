@@ -102,15 +102,6 @@ directory ::File.dirname node['openstack']['image']['api']['auth']['cache_dir'] 
   mode 00700
 end
 
-template '/etc/glance/policy.json' do
-  source 'policy.json.erb'
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode 00644
-
-  notifies :restart, 'service[glance-api]', :immediately
-end
-
 glance = node['openstack']['image']
 
 identity_endpoint = endpoint 'identity-api'
