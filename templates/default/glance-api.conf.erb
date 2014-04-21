@@ -103,15 +103,12 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
-<% if %w(fedora rhel).include? node.platform_family %>
-notifier_strategy = <%= @notification_driver %>
-# notifier_stratey is deprecated, but is still being set in
-# /usr/share/glance/glance-api-dist.conf in RDO openstack-glance package
-<% end %>
+notifier_strategy = default
 notification_driver = <%= @notification_driver %>
 
-<% if @notification_driver == "rabbit" and @mq_service_type == "rabbitmq" %>
+<% if @notification_driver == "messaging" and @mq_service_type == "rabbitmq" %>
 #### RABBITMQ #####
+transport_host = rabbit://
 rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
 rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
 rabbit_use_ssl = false
@@ -120,8 +117,9 @@ rabbit_password = <%= @mq_password %>
 rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 rabbit_notification_exchange = glance
 rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
-<% elsif @notification_driver == "qpid" and @mq_service_type == "qpid" %>
+<% elsif @notification_driver == "messaging" and @mq_service_type == "qpid" %>
 ##### QPID #####
+transport_host = qpid://
 qpid_notification_exchange = glance
 qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
 
