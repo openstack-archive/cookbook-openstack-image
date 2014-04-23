@@ -108,7 +108,7 @@ notification_driver = <%= @notification_driver %>
 
 <% if @notification_driver == "messaging" and @mq_service_type == "rabbitmq" %>
 #### RABBITMQ #####
-transport_host = rabbit://
+transport_url = rabbit://
 rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
 rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
 rabbit_use_ssl = false
@@ -119,7 +119,7 @@ rabbit_notification_exchange = glance
 rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
 <% elsif @notification_driver == "messaging" and @mq_service_type == "qpid" %>
 ##### QPID #####
-transport_host = qpid://
+transport_url = qpid://
 qpid_notification_exchange = glance
 qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
 

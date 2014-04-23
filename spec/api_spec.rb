@@ -315,6 +315,11 @@ describe 'openstack-image::api' do
         node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
       end
 
+      it 'has transport_url' do
+        match = 'transport_url = rabbit://'
+        expect(chef_run).to render_file(file.name).with_content(match)
+      end
+
       it 'has rabbit_host' do
         match = 'rabbit_host = 127.0.0.1'
         expect(chef_run).to render_file(file.name).with_content(match)
@@ -354,6 +359,11 @@ describe 'openstack-image::api' do
         node.set['openstack']['mq']['image']['service_type'] = 'qpid'
         node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
         node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
+      end
+
+      it 'has transport_url' do
+        match = 'transport_url = qpid://'
+        expect(chef_run).to render_file(file.name).with_content(match)
       end
 
       it 'has qpid_hostname' do
