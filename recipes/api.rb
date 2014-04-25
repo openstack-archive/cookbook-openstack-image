@@ -75,7 +75,7 @@ elsif node['openstack']['image']['api']['default_store'] == 'rbd'
     cookbook 'openstack-common'
     owner node['openstack']['image']['user']
     group node['openstack']['image']['group']
-    mode '0600'
+    mode 00600
     variables(
       name: rbd_user,
       key: rbd_key
@@ -106,7 +106,7 @@ template '/etc/glance/policy.json' do
   source 'policy.json.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode   00644
+  mode 00644
 
   notifies :restart, 'service[glance-api]', :immediately
 end

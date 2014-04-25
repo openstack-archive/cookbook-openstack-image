@@ -19,6 +19,10 @@ describe 'openstack-image::api' do
       expect(chef_run).not_to upgrade_package('python-swift')
     end
 
+    it 'starts glance api on boot' do
+      expect(chef_run).to enable_service('glance-api')
+    end
+
     describe 'using swift for default_store' do
       before do
         node.set['openstack']['image']['api']['default_store'] = 'swift'
@@ -58,42 +62,34 @@ describe 'openstack-image::api' do
 
       describe 'cephx client keyring file' do
         let(:file) { chef_run.template('/etc/ceph/ceph.client.glance.keyring') }
+
+        it 'creates /etc/ceph/ceph.client.glance.keyring' do
+          expect(chef_run).to create_template(file.name).with(
+            user: 'glance',
+            group: 'glance',
+            mode: 00600,
+            cookbook: 'openstack-common'
+          )
+        end
+
         it 'has the proper content' do
           [/^\[client\.glance\]$/,
            /^  key = rbd-pass$/].each do |content|
             expect(chef_run).to render_file(file.name).with_content(content)
           end
         end
-
-        it "is created using openstack-common's template" do
-          expect(chef_run).to create_template(file.name).with(cookbook: 'openstack-common')
-        end
-
-        it 'has the correct owner' do
-          expect(file.owner). to eq('glance')
-          expect(file.group). to eq('glance')
-        end
-
-        it 'has the correct mode' do
-          expect(sprintf('%o', file.mode)).to eq '600'
-        end
       end
-    end
-
-    it 'starts glance api on boot' do
-      expect(chef_run).to enable_service('glance-api')
     end
 
     describe 'policy.json' do
       let(:file) { chef_run.template('/etc/glance/policy.json') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+      it 'creates policy.json' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'notifies glance-api restart' do
@@ -104,13 +100,12 @@ describe 'openstack-image::api' do
     describe 'glance-api.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+      it 'creates glance-api.conf' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'has bind host when bind_interface not specified' do
@@ -234,224 +229,118 @@ describe 'openstack-image::api' do
           /^default_store = file$/)
       end
 
-      [
-        /^vmware_server_host = $/,
-        /^vmware_server_username = $/,
-        /^vmware_server_password = $/,
-        /^vmware_datacenter_path = $/,
-        /^vmware_datastore_name = $/,
-        /^vmware_api_retry_count = 10/,
-        /^vmware_task_poll_interval = 5$/,
-        /^vmware_store_image_dir = \/openstack_glance$/,
-        /^vmware_api_insecure = false$/
-      ].each do |content|
-        it "has a #{content.source[1...-1]} line" do
-          expect(chef_run).to render_file(file.name).with_content(content)
+      it 'has default vmware_* settings' do
+        [
+          /^vmware_server_host = $/,
+          /^vmware_server_username = $/,
+          /^vmware_server_password = $/,
+          /^vmware_datacenter_path = $/,
+          /^vmware_datastore_name = $/,
+          /^vmware_api_retry_count = 10/,
+          /^vmware_task_poll_interval = 5$/,
+          /^vmware_store_image_dir = \/openstack_glance$/,
+          /^vmware_api_insecure = false$/
+        ].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
         end
       end
-    end
 
-    describe 'keystone_authtoken' do
-      let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
+      context 'keystone_authtoken' do
+        it 'has correct authtoken settings' do
+          [
+            'auth_uri = http://127.0.0.1:5000/v2.0',
+            'auth_host = 127.0.0.1',
+            'auth_port = 35357',
+            'auth_protocol = http',
+            'admin_tenant_name = service',
+            'admin_user = glance',
+            'admin_tenant_name = service',
+            'admin_password = glance-pass',
+            'signing_dir = /var/cache/glance/api'
+          ].each do |line|
+            expect(chef_run).to render_file(file.name).with_content(
+              /^#{Regexp.quote(line)}$/)
+          end
+        end
 
-      it 'has auth_uri' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^#{Regexp.quote('auth_uri = http://127.0.0.1:5000/v2.0')}$/)
+        it 'has no auth_version' do
+          expect(chef_run).not_to render_file(file.name).with_content(
+            /^auth_version = v2.0$/)
+        end
+
+        it 'has auth_version when auth version is set to v3.0' do
+          chef_run.node.set['openstack']['image']['api']['auth']['version'] = 'v3.0'
+          expect(chef_run).to render_file(file.name).with_content(
+            /^auth_version = v3.0$/)
+        end
       end
 
-      it 'has auth_host' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^#{Regexp.quote('auth_host = 127.0.0.1')}$/)
+      context 'rabbitmq' do
+        before do
+          node.set['openstack']['image']['notification_driver'] = 'messaging'
+          node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
+          node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
+        end
+
+        it 'has default rabbit settings' do
+          [
+            'transport_url = rabbit://',
+            'rabbit_host = 127.0.0.1',
+            'rabbit_port = 5672',
+            'rabbit_userid = guest',
+            'rabbit_password = mq-pass',
+            'rabbit_virtual_host = /',
+            'rabbit_notification_topic = rabbit_topic'
+          ].each do |line|
+            expect(chef_run).to render_file(file.name).with_content(
+              /^#{Regexp.quote(line)}$/)
+          end
+        end
       end
 
-      it 'has auth_port' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^auth_port = 35357$/)
-      end
+      context 'qpid' do
+        before do
+          node.set['openstack']['image']['notification_driver'] = 'messaging'
+          node.set['openstack']['mq']['image']['service_type'] = 'qpid'
+          node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
+          node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
+        end
 
-      it 'has auth_protocol' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^auth_protocol = http$/)
-      end
-
-      it 'has no auth_version' do
-        expect(chef_run).not_to render_file(file.name).with_content(
-          /^auth_version = v2.0$/)
-      end
-
-      it 'has admin_tenant_name' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^admin_tenant_name = service$/)
-      end
-
-      it 'has admin_user' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^admin_user = glance$/)
-      end
-
-      it 'has admin_password' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^admin_password = glance-pass$/)
-      end
-
-      it 'has signing_dir' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^#{Regexp.quote('signing_dir = /var/cache/glance/api')}$/)
-      end
-
-      it 'has auth_version when auth version is set to v3.0' do
-        chef_run.node.set['openstack']['image']['api']['auth']['version'] = 'v3.0'
-        expect(chef_run).to render_file(file.name).with_content(
-          /^auth_version = v3.0$/)
-      end
-    end
-
-    describe 'rabbitmq' do
-      let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
-
-      before do
-        node.set['openstack']['image']['notification_driver'] = 'messaging'
-        node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
-        node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
-      end
-
-      it 'has transport_url' do
-        match = 'transport_url = rabbit://'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_host' do
-        match = 'rabbit_host = 127.0.0.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_port' do
-        match = 'rabbit_port = 5672'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_userid' do
-        match = 'rabbit_userid = guest'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_password' do
-        match = 'rabbit_password = mq-pass'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_virtual_host' do
-        match = 'rabbit_virtual_host = /'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has rabbit_notification_topic' do
-        match = 'rabbit_notification_topic = rabbit_topic'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-    end
-
-    describe 'qpid' do
-      let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
-
-      before do
-        node.set['openstack']['image']['notification_driver'] = 'messaging'
-        node.set['openstack']['mq']['image']['service_type'] = 'qpid'
-        node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
-        node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
-      end
-
-      it 'has transport_url' do
-        match = 'transport_url = qpid://'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_hostname' do
-        match = 'qpid_hostname=127.0.0.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_port' do
-        match = 'qpid_port=5672'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_username' do
-        match = 'qpid_username=guest'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_password' do
-        match = 'qpid_password=mq-pass'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_sasl_mechanisms' do
-        match = 'qpid_sasl_mechanisms='
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect' do
-        match = 'qpid_reconnect=true'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect_timeout' do
-        match = 'qpid_reconnect_timeout=0'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect_limit' do
-        match = 'qpid_reconnect_limit=0'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect_interval_min' do
-        match = 'qpid_reconnect_interval_min=0'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect_interval_max' do
-        match = 'qpid_reconnect_interval_max=0'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_reconnect_interval' do
-        match = 'qpid_reconnect_interval=0'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_heartbeat' do
-        match = 'qpid_heartbeat=60'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_protocol' do
-        match = 'qpid_protocol=tcp'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_tcp_nodelay' do
-        match = 'qpid_tcp_nodelay=true'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
-
-      it 'has qpid_notification_topic' do
-        match = 'qpid_notification_topic = qpid_topic'
-        expect(chef_run).to render_file(file.name).with_content(match)
+        it 'has default qpid settings' do
+          [
+            'transport_url = qpid://',
+            'qpid_hostname=127.0.0.1',
+            'qpid_port=5672',
+            'qpid_username=guest',
+            'qpid_password=mq-pass',
+            'qpid_sasl_mechanisms=',
+            'qpid_reconnect=true',
+            'qpid_reconnect_timeout=0',
+            'qpid_reconnect_limit=0',
+            'qpid_reconnect_interval_min=0',
+            'qpid_reconnect_interval_max=0',
+            'qpid_reconnect_interval=0',
+            'qpid_heartbeat=60',
+            'qpid_protocol=tcp',
+            'qpid_tcp_nodelay=true',
+            'qpid_notification_topic = qpid_topic'
+          ].each do |line|
+            expect(chef_run).to render_file(file.name).with_content(
+              /^#{Regexp.quote(line)}$/)
+          end
+        end
       end
     end
 
     describe 'glance-api-paste.ini' do
       let(:file) { chef_run.template('/etc/glance/glance-api-paste.ini') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+      it 'creates glance-api-paste.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'template contents' do
@@ -466,17 +355,12 @@ describe 'openstack-image::api' do
     describe 'glance-cache.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-cache.conf') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
-      end
-
-      it 'template contents' do
-        pending 'TODO: implement'
+      it 'creates glance-cache.conf' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'notifies glance-api restart' do
@@ -519,19 +403,20 @@ describe 'openstack-image::api' do
           /^image_cache_invalid_entry_grace_period = 42$/)
       end
 
-      [
-        /^vmware_server_host = $/,
-        /^vmware_server_username = $/,
-        /^vmware_server_password = $/,
-        /^vmware_datacenter_path = $/,
-        /^vmware_datastore_name = $/,
-        /^vmware_api_retry_count = 10/,
-        /^vmware_task_poll_interval = 5$/,
-        /^vmware_store_image_dir = \/openstack_glance$/,
-        /^vmware_api_insecure = false$/
-      ].each do |content|
-        it "has a #{content.source[1...-1]} line" do
-          expect(chef_run).to render_file(file.name).with_content(content)
+      it 'has default vmware_* settings' do
+        [
+          'vmware_server_host = ',
+          'vmware_server_username = ',
+          'vmware_server_password = ',
+          'vmware_datacenter_path = ',
+          'vmware_datastore_name = ',
+          'vmware_api_retry_count = 10',
+          'vmware_task_poll_interval = 5',
+          'vmware_store_image_dir = /openstack_glance',
+          'vmware_api_insecure = false'
+        ].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(
+            /^#{Regexp.quote(line)}$/)
         end
       end
     end
@@ -539,18 +424,18 @@ describe 'openstack-image::api' do
     describe 'glance-cache-paste.ini' do
       let(:file) { chef_run.template('/etc/glance/glance-cache-paste.ini') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
+      it 'creates glance-cache-paste.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
-      end
-
-      it 'template contents' do
-        pending 'TODO: implement'
-      end
+      # README(galstrom21): This file currently has no templated variables
+      # it 'template contents' do
+      #   pending 'TODO: implement'
+      # end
 
       it 'notifies glance-api restart' do
         expect(file).to notify('service[glance-api]').to(:restart)
@@ -560,13 +445,12 @@ describe 'openstack-image::api' do
     describe 'glance-scrubber.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-scrubber.conf') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+      it 'creates glance-cache-paste.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'template contents' do
@@ -592,13 +476,12 @@ describe 'openstack-image::api' do
     describe 'glance-scrubber-paste.ini' do
       let(:file) { chef_run.template('/etc/glance/glance-scrubber-paste.ini') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('glance')
-        expect(file.group).to eq('glance')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq '644'
+      it 'creates glance-scrubber-paste.ini' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'glance',
+          group: 'glance',
+          mode: 00644
+        )
       end
 
       it 'template contents' do
