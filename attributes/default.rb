@@ -131,7 +131,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'postgresql_python_packages' => ['python-psycopg2'],
     'mysql_python_packages' => ['MySQL-python'],
     'db2_python_packages' => ['python-ibm-db', 'python-ibm-db-sa'],
-    'image_packages' => %w{openstack-glance cronie python-glanceclient python-anyjson}, # python-anyjson is a temp requirement
+    'image_packages' => %w{openstack-glance cronie python-glanceclient},
     'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['openstack-swift'],
