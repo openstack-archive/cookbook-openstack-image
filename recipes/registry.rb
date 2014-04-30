@@ -29,7 +29,7 @@ end
 
 platform_options = node['openstack']['image']['platform']
 
-package 'python-keystone' do
+package 'python-keystoneclient' do
   options platform_options['package_overrides']
   action :upgrade
 end

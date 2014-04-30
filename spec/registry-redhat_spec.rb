@@ -17,6 +17,10 @@ describe 'openstack-image::registry' do
       expect { chef_run }.to_not raise_error
     end
 
+    it 'does upgrades keystoneclient package' do
+      expect(chef_run).to upgrade_package('python-keystoneclient')
+    end
+
     it 'upgrades mysql python package' do
       expect(chef_run).to upgrade_package('MySQL-python')
     end

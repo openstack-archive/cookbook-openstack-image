@@ -1,6 +1,9 @@
 # CHANGELOG for cookbook-openstack-image
 
 This file is used to list changes made in each version of cookbook-openstack-image.
+## 9.0.3
+* Fix package reference, need keystone client not keystone
+
 ## 9.0.2
 * Fix package action to allow updates
 
