@@ -11,6 +11,10 @@ describe 'openstack-image::api' do
 
     include_context 'image-stubs'
 
+    it 'does upgrade keystone package' do
+      expect(chef_run).to upgrade_package('python-keystone')
+    end
+
     it 'does not upgrade swift packages by default' do
       expect(chef_run).not_to upgrade_package('openstack-swift')
     end

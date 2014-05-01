@@ -30,7 +30,8 @@ end
 platform_options = node['openstack']['image']['platform']
 
 package 'python-keystone' do
-  action :install
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 db_user = node['openstack']['db']['image']['username']
@@ -45,14 +46,15 @@ service_pass = get_password 'service', 'openstack-image'
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']
 
 package 'curl' do
-  action :install
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 pkg_key = "#{node['openstack']['db']['image']['service_type']}_python_packages"
 if platform_options.key?(pkg_key)
   platform_options[pkg_key].each do |pkg|
     package pkg do
-      action :install
+      action :upgrade
       options platform_options['package_overrides']
     end
   end

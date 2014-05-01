@@ -35,11 +35,13 @@ end
 platform_options = node['openstack']['image']['platform']
 
 package 'python-keystone' do
-  action :install
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 package 'curl' do
-  action :install
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 platform_options['image_packages'].each do |pkg|

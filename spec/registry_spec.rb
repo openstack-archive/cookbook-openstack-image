@@ -27,23 +27,23 @@ describe 'openstack-image::registry' do
       expect { chef_run }.to_not raise_error
     end
 
-    it 'installs mysql python packages' do
-      expect(chef_run).to install_package('python-mysqldb')
+    it 'upgrades mysql python package' do
+      expect(chef_run).to upgrade_package('python-mysqldb')
     end
 
     it 'honors package name and option overrides for mysql python packages' do
       node.set['openstack']['image']['platform']['package_overrides'] = '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes'
       node.set['openstack']['image']['platform']['mysql_python_packages'] = ['my-mysql-py']
 
-      expect(chef_run).to install_package('my-mysql-py').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
+      expect(chef_run).to upgrade_package('my-mysql-py').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
     end
 
     %w{db2 postgresql}.each do |service_type|
-      it "installs #{service_type} python packages if chosen" do
+      it "upgrades #{service_type} python packages if chosen" do
         node.set['openstack']['db']['image']['service_type'] = service_type
         node.set['openstack']['image']['platform']["#{service_type}_python_packages"] = ["my-#{service_type}-py"]
 
-        expect(chef_run).to install_package("my-#{service_type}-py")
+        expect(chef_run).to upgrade_package("my-#{service_type}-py")
       end
     end
 

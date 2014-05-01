@@ -11,7 +11,7 @@ describe 'openstack-image::client' do
       runner.converge(described_recipe)
     end
 
-    it 'installs packages' do
+    it 'upgrades python glance client package' do
       expect(chef_run).to upgrade_package('python-glanceclient')
     end
   end

@@ -64,15 +64,15 @@ shared_examples 'common-logging-recipe' do
 end
 
 shared_examples 'common-packages' do
-  it 'installs python-keystone package' do
-    expect(chef_run).to install_package 'python-keystone'
+  it 'upgrades python-keystone package' do
+    expect(chef_run).to upgrade_package 'python-keystone'
   end
 
-  it 'installs curl package' do
-    expect(chef_run).to install_package 'curl'
+  it 'upgrades curl package' do
+    expect(chef_run).to upgrade_package 'curl'
   end
 
-  it 'installs glance packages' do
+  it 'upgrades glance package' do
     expect(chef_run).to upgrade_package 'glance'
   end
 
