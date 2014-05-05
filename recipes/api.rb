@@ -159,6 +159,8 @@ elsif glance['api']['caching']
   glance_flavor += '+caching'
 end
 
+vmware_server_password = get_secret node['openstack']['image']['api']['vmware']['secret_name']
+
 template '/etc/glance/glance-api.conf' do
   source 'glance-api.conf.erb'
   owner node['openstack']['image']['user']
@@ -181,7 +183,8 @@ template '/etc/glance/glance-api.conf' do
     swift_store_auth_version: swift_store_auth_version,
     notification_driver: node['openstack']['image']['notification_driver'],
     mq_service_type: mq_service_type,
-    mq_password: mq_password
+    mq_password: mq_password,
+    vmware_server_password: vmware_server_password
   )
 
   notifies :restart, 'service[glance-api]', :immediately
@@ -203,7 +206,8 @@ template '/etc/glance/glance-cache.conf' do
   mode   00644
   variables(
     registry_ip_address: registry_endpoint.host,
-    registry_port: registry_endpoint.port
+    registry_port: registry_endpoint.port,
+    vmware_server_password: vmware_server_password
   )
 
   notifies :restart, 'service[glance-api]', :immediately
