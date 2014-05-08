@@ -45,6 +45,9 @@ service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']
 
+glance_user = node['openstack']['image']['user']
+glance_group = node['openstack']['image']['group']
+
 package 'curl' do
   options platform_options['package_overrides']
   action :upgrade
@@ -68,8 +71,8 @@ platform_options['image_packages'].each do |pkg|
 end
 
 directory ::File.dirname(node['openstack']['image']['registry']['auth']['cache_dir']) do
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
+  owner glance_user
+  group glance_group
   mode 00700
 end
 
@@ -86,8 +89,8 @@ file '/var/lib/glance/glance.sqlite' do
 end
 
 directory '/etc/glance' do
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
+  owner glance_user
+  group glance_group
   mode  00700
 end
 
@@ -111,11 +114,15 @@ end
 # Having to manually version the database because of Ubuntu bug
 # https://bugs.launchpad.net/ubuntu/+source/glance/+bug/981111
 execute 'glance-manage version_control 0' do
-  not_if 'glance-manage db_version'
+  user glance_user
+  group glance_group
+  not_if 'glance-manage db_version', user: glance_user, group: glance_group
   only_if { platform_family?('debian') }
 end
 
 execute 'glance-manage db_sync' do
+  user glance_user
+  group glance_group
   only_if { node['openstack']['db']['image']['migrate'] }
 end
 

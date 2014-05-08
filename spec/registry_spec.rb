@@ -57,7 +57,7 @@ describe 'openstack-image::registry' do
       it 'versions the database' do
         stub_command('glance-manage db_version').and_return(false)
 
-        expect(chef_run).to run_execute(cmd)
+        expect(chef_run).to run_execute(cmd).with(user: 'glance', group: 'glance')
       end
 
       it 'does not version when glance-manage db_version false' do
@@ -144,7 +144,7 @@ describe 'openstack-image::registry' do
       let(:cmd)  { 'glance-manage db_sync' }
 
       it 'runs migrations' do
-        expect(chef_run).to run_execute(cmd)
+        expect(chef_run).to run_execute(cmd).with(user: 'glance', group: 'glance')
       end
 
       it 'does not run migrations when openstack/image/db/migrate is false' do
