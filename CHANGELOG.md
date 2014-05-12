@@ -1,6 +1,10 @@
 # CHANGELOG for cookbook-openstack-image
 
 This file is used to list changes made in each version of cookbook-openstack-image.
+## 9.1.0
+### Blue print
+* Get VMware vCenter password from databag
+
 ## 9.0.3
 * Fix package reference, need keystone client not keystone
 

@@ -221,7 +221,7 @@ describe 'openstack-image::api' do
         [
           /^vmware_server_host = $/,
           /^vmware_server_username = $/,
-          /^vmware_server_password = $/,
+          /^vmware_server_password = vmware_secret_name$/,
           /^vmware_datacenter_path = $/,
           /^vmware_datastore_name = $/,
           /^vmware_api_retry_count = 10/,
@@ -395,7 +395,7 @@ describe 'openstack-image::api' do
         [
           'vmware_server_host = ',
           'vmware_server_username = ',
-          'vmware_server_password = ',
+          'vmware_server_password = vmware_secret_name',
           'vmware_datacenter_path = ',
           'vmware_datastore_name = ',
           'vmware_api_retry_count = 10',

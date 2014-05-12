@@ -133,6 +133,18 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 TODO: Add DB2 support on other platforms
 * `openstack['image']['platform']['db2_python_packages']` - Array of DB2 python packages, only available on redhat platform
 
+VMWare attributes
+-----------------
+
+* `openstack['image']['api']['vmware']['secret_name']` - VMware databag secret name
+* `openstack['image']['api']['vmware']['vmware_server_host']` - ESX/ESXi or vCenter Server target system. e.g. 127.0.0.1, 127.0.0.1:443, www.vmware-infra.com
+* `openstack['image']['api']['vmware']['vmware_server_username']` - Server username (string value)
+* `openstack['image']['api']['vmware']['vmware_datacenter_path']` - Inventory path to a datacenter (string value)
+* `openstack['image']['api']['vmware']['vmware_datastore_name']` - Datastore associated with the datacenter (string value)
+* `openstack['image']['api']['vmware']['vmware_api_retry_count']` - The number of times we retry on failures (integer value)
+* `openstack['image']['api']['vmware']['vmware_task_poll_interval']` - The interval used for polling remote tasks invoked on VMware ESX/VC server in seconds (integer value)
+* `openstack['image']['api']['vmware']['vmware_store_image_dir']` - Absolute path of the folder containing the images in the datastore (string value)
+* `openstack['image']['api']['vmware']['vmware_api_insecure']` - Allow to perform insecure SSL requests to the target system (boolean value)
 
 MQ attributes
 -------------
@@ -198,6 +210,7 @@ Author:: Mark Vanderwiel (<vanderwl@us.ibm.com>)
 Author:: Salman Baset (<sabaset@us.ibm.com>)
 Author:: Chen Zhiwei (zhiwchen@cn.ibm.com)
 Author:: Eric Zhou (zyouzhou@cn.ibm.com)
+Author:: Jian Hua Geng (gengjh@cn.ibm.com)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.

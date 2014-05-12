@@ -33,6 +33,9 @@ shared_context 'image-stubs' do
     Chef::Recipe.any_instance.stub(:get_secret)
       .with('openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
+    Chef::Recipe.any_instance.stub(:get_secret)
+      .with('openstack_vmware_secret_name')
+      .and_return 'vmware_secret_name'
 
     Chef::Recipe.any_instance.stub(:get_password)
     .with('db', anything)

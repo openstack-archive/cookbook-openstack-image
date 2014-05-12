@@ -109,9 +109,9 @@ default['openstack']['image']['syslog']['facility'] = 'LOG_LOCAL2'
 default['openstack']['image']['syslog']['config_facility'] = 'local2'
 
 # vmware attributes
+default['openstack']['image']['api']['vmware']['secret_name'] = 'openstack_vmware_secret_name'
 default['openstack']['image']['api']['vmware']['vmware_server_host'] = ''
 default['openstack']['image']['api']['vmware']['vmware_server_username'] = ''
-default['openstack']['image']['api']['vmware']['vmware_server_password'] = ''
 default['openstack']['image']['api']['vmware']['vmware_datacenter_path'] = ''
 default['openstack']['image']['api']['vmware']['vmware_datastore_name'] = ''
 default['openstack']['image']['api']['vmware']['vmware_api_retry_count'] = 10

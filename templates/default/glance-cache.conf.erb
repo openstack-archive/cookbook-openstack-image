@@ -62,7 +62,7 @@ vmware_server_host = <%= node['openstack']['image']['api']['vmware']['vmware_ser
 vmware_server_username = <%= node['openstack']['image']['api']['vmware']['vmware_server_username'] %>
 
 # Server password (string value)
-vmware_server_password = <%= node['openstack']['image']['api']['vmware']['vmware_server_password'] %>
+vmware_server_password = <%= @vmware_server_password %>
 
 # Inventory path to a datacenter (string value)
 # Value optional when vmware_server_ip is an ESX/ESXi host: if specified
