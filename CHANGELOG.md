@@ -1,6 +1,11 @@
 # CHANGELOG for cookbook-openstack-image
 
 This file is used to list changes made in each version of cookbook-openstack-image.
+
+## 9.1.1
+### Bug
+* Fix data bag item id issue in recipes/api.rb
+
 ## 9.1.0
 ### Blue print
 * Get VMware vCenter password from databag
