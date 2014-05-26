@@ -96,6 +96,8 @@ describe 'openstack-image::api' do
         )
       end
 
+      include_examples 'vmware config', '/etc/glance/glance-api.conf'
+
       it 'has bind host when bind_interface not specified' do
         match = 'bind_host = 127.0.0.1'
         expect(chef_run).to render_file(file.name).with_content(match)
@@ -217,22 +219,6 @@ describe 'openstack-image::api' do
           /^default_store = file$/)
       end
 
-      it 'has default vmware_* settings' do
-        [
-          /^vmware_server_host = $/,
-          /^vmware_server_username = $/,
-          /^vmware_server_password = vmware_secret_name$/,
-          /^vmware_datacenter_path = $/,
-          /^vmware_datastore_name = $/,
-          /^vmware_api_retry_count = 10/,
-          /^vmware_task_poll_interval = 5$/,
-          /^vmware_store_image_dir = \/openstack_glance$/,
-          /^vmware_api_insecure = false$/
-        ].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(line)
-        end
-      end
-
       context 'keystone_authtoken' do
         it 'has correct authtoken settings' do
           [
@@ -343,6 +329,8 @@ describe 'openstack-image::api' do
     describe 'glance-cache.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-cache.conf') }
 
+      include_examples 'vmware config', '/etc/glance/glance-cache.conf'
+
       it 'creates glance-cache.conf' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
@@ -389,23 +377,6 @@ describe 'openstack-image::api' do
 
         expect(chef_run).to render_file(file.name).with_content(
           /^image_cache_invalid_entry_grace_period = 42$/)
-      end
-
-      it 'has default vmware_* settings' do
-        [
-          'vmware_server_host = ',
-          'vmware_server_username = ',
-          'vmware_server_password = vmware_secret_name',
-          'vmware_datacenter_path = ',
-          'vmware_datastore_name = ',
-          'vmware_api_retry_count = 10',
-          'vmware_task_poll_interval = 5',
-          'vmware_store_image_dir = /openstack_glance',
-          'vmware_api_insecure = false'
-        ].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(
-            /^#{Regexp.quote(line)}$/)
-        end
       end
     end
 

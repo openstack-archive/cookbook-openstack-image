@@ -159,7 +159,9 @@ elsif glance['api']['caching']
   glance_flavor += '+caching'
 end
 
-vmware_server_password = get_secret node['openstack']['image']['api']['vmware']['secret_name']
+unless node['openstack']['image']['api']['vmware']['vmware_server_host'].empty?
+  vmware_server_password = get_secret node['openstack']['image']['api']['vmware']['secret_name']
+end
 
 template '/etc/glance/glance-api.conf' do
   source 'glance-api.conf.erb'

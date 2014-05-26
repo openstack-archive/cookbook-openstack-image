@@ -116,3 +116,49 @@ shared_examples 'glance-directory' do
     end
   end
 end
+
+shared_examples 'vmware config' do |file_name|
+  describe 'vmware settings' do
+    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:node) { runner.node }
+    let(:chef_run) { runner.converge(described_recipe) }
+    let(:file) { chef_run.template(file_name) }
+
+    it 'has default vmware_* settings' do
+      [
+        /^vmware_server_host = $/,
+        /^vmware_server_username = $/,
+        /^vmware_server_password = $/,
+        /^vmware_datacenter_path = $/,
+        /^vmware_datastore_name = $/,
+        /^vmware_api_retry_count = 10/,
+        /^vmware_task_poll_interval = 5$/,
+        /^vmware_store_image_dir = \/openstack_glance$/,
+        /^vmware_api_insecure = false$/
+      ].each do |line|
+        expect(chef_run).to render_file(file.name).with_content(line)
+      end
+    end
+
+    it 'looks up the vmware_server_password when vmware_server_host is set' do
+      node.set['openstack']['image']['api']['vmware']['vmware_server_host'] = 'my-vmware'
+      expect(chef_run).to render_file(file.name).with_content(/^vmware_server_password = vmware_secret_name$/)
+    end
+
+    it 'does set vmware settings when overridden' do
+      %w(
+        vmware_server_host
+        vmware_server_username
+        vmware_datacenter_path
+        vmware_datastore_name
+        vmware_api_retry_count
+        vmware_task_poll_interval
+        vmware_store_image_dir
+        vmware_api_insecure
+      ).each { |key| node.set['openstack']['image']['api']['vmware'][key] = "my_#{key}" }
+       .each do |key|
+        expect(chef_run).to render_file(file.name).with_content(/^#{key} = my_#{key}$/)
+      end
+    end
+  end
+end
