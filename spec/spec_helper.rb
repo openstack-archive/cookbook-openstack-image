@@ -117,48 +117,102 @@ shared_examples 'glance-directory' do
   end
 end
 
-shared_examples 'vmware config' do |file_name|
-  describe 'vmware settings' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
-    let(:node) { runner.node }
-    let(:chef_run) { runner.converge(described_recipe) }
-    let(:file) { chef_run.template(file_name) }
+shared_examples 'custom template banner displayer' do
+  it 'shows the custom banner' do
+    node.set['openstack']['image']['custom_template_banner'] = 'custom_template_banner_value'
+    expect(chef_run).to render_file(file_name).with_content(/^custom_template_banner_value$/)
+  end
+end
 
-    it 'has default vmware_* settings' do
-      [
-        /^vmware_server_host = $/,
-        /^vmware_server_username = $/,
-        /^vmware_server_password = $/,
-        /^vmware_datacenter_path = $/,
-        /^vmware_datastore_name = $/,
-        /^vmware_api_retry_count = 10/,
-        /^vmware_task_poll_interval = 5$/,
-        /^vmware_store_image_dir = \/openstack_glance$/,
-        /^vmware_api_insecure = false$/
-      ].each do |line|
-        expect(chef_run).to render_file(file.name).with_content(line)
-      end
+shared_context 'endpoint-stubs' do
+  before do
+    Chef::Recipe.any_instance.stub(:endpoint)
+      .with('image-registry')
+      .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
+    Chef::Recipe.any_instance.stub(:endpoint)
+      .with('identity-api')
+      .and_return('identity_endpoint_value')
+    identity_admin_endpoint = double(host: 'identity_admin_endpoint_host_value',
+                                     port: 'identity_admin_endpoint_port_value',
+                                     scheme: 'identity_admin_endpoint_protocol_value')
+    Chef::Recipe.any_instance.stub(:endpoint)
+      .with('identity-admin')
+      .and_return(identity_admin_endpoint)
+    Chef::Recipe.any_instance.stub(:endpoint)
+      .with('image-api-bind')
+      .and_return(double(host: 'bind_host_value', port: 'bind_port_value'))
+    Chef::Recipe.any_instance.stub(:auth_uri_transform)
+      .with('identity_endpoint_value', 'v3.0')
+      .and_return('auth_uri_value')
+    Chef::Recipe.any_instance.stub(:auth_uri_transform)
+      .with('identity_endpoint_value', 'v2.0')
+      .and_return('auth_uri_value')
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('service', 'openstack-image')
+      .and_return('admin_password_value')
+  end
+end
+
+shared_context 'sql-stubs' do
+  before do
+    node.set['openstack']['db']['image']['username'] = 'db_username_value'
+    Chef::Recipe.any_instance.stub(:get_password)
+      .with('db', 'glance')
+      .and_return('db_password_value')
+    Chef::Recipe.any_instance.stub(:db_uri)
+      .with('image', 'db_username_value', 'db_password_value')
+      .and_return('sql_connection_value')
+  end
+end
+
+shared_examples 'syslog use' do
+  it 'shows log_config if syslog use is enabled' do
+    node.set['openstack']['image']['syslog']['use'] = true
+    expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+  end
+
+  it 'shows log_file if syslog use is disabled' do
+    node.set['openstack']['image']['syslog']['use'] = false
+    expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/#{log_file_name}$))
+  end
+end
+
+shared_examples 'keystone attribute setter' do |version|
+  it 'sets the auth_uri value' do
+    expect(chef_run).to render_file(file.name).with_content(/^auth_uri = auth_uri_value$/)
+  end
+
+  %w(host port protocol).each do |attr|
+    it "sets the auth #{attr} attribute" do
+      expect(chef_run).to render_file(file.name).with_content(/^auth_#{attr} = identity_admin_endpoint_#{attr}_value$/)
+    end
+  end
+
+  context 'auth version' do
+    it 'shows the version attribute if it is different from v2.0' do
+      node.set['openstack']['image'][version]['auth']['version'] = 'v3.0'
+      expect(chef_run).to render_file(file.name).with_content(/^auth_version = v3.0$/)
     end
 
-    it 'looks up the vmware_server_password when vmware_server_host is set' do
-      node.set['openstack']['image']['api']['vmware']['vmware_server_host'] = 'my-vmware'
-      expect(chef_run).to render_file(file.name).with_content(/^vmware_server_password = vmware_secret_name$/)
+    it 'does not show the version attribute if it is v2.0' do
+      node.set['openstack']['image'][version]['auth']['version'] = 'v2.0'
+      expect(chef_run).not_to render_file(file.name).with_content(/^auth_version = v2.0$/)
     end
+  end
 
-    it 'does set vmware settings when overridden' do
-      %w(
-        vmware_server_host
-        vmware_server_username
-        vmware_datacenter_path
-        vmware_datastore_name
-        vmware_api_retry_count
-        vmware_task_poll_interval
-        vmware_store_image_dir
-        vmware_api_insecure
-      ).each { |key| node.set['openstack']['image']['api']['vmware'][key] = "my_#{key}" }
-       .each do |key|
-        expect(chef_run).to render_file(file.name).with_content(/^#{key} = my_#{key}$/)
-      end
+  %w(tenant_name user).each do |attr|
+    it "sets the auth admin #{attr} attribute" do
+      node.set['openstack']['image']["service_#{attr}"] = "service_#{attr}_value"
+      expect(chef_run).to render_file(file.name).with_content(/^admin_#{attr} = service_#{attr}_value$/)
     end
+  end
+
+  it 'sets the admin password attribute' do
+    expect(chef_run).to render_file(file.name).with_content(/^admin_password = admin_password_value$/)
+  end
+
+  it 'sets the signing dir attribute' do
+    node.set['openstack']['image'][version]['auth']['cache_dir'] = 'cache_dir_value'
+    expect(chef_run).to render_file(file.name).with_content(/^signing_dir = cache_dir_value$/)
   end
 end

@@ -1,6 +1,24 @@
 # encoding: UTF-8
 require_relative 'spec_helper'
 
+shared_context 'vmware settings configurator' do
+  before do
+    node.set['openstack']['image']['api']['vmware']['vmware_server_host'] = 'vmware_server_host_value'
+    node.set['openstack']['image']['api']['vmware']['secret_name'] = 'vmware_secret_name'
+    Chef::Recipe.any_instance.stub(:get_secret)
+      .with('vmware_secret_name')
+      .and_return('vmware_server_password_value')
+  end
+
+  %w(server_host server_username server_password datacenter_path datastore_name api_retry_count
+     task_poll_interval store_image_dir api_insecure).each do |attr|
+    it "sets the vmware #{attr} attribute" do
+      node.set['openstack']['image']['api']['vmware']["vmware_#{attr}"] = "vmware_#{attr}_value"
+      expect(chef_run).to render_file(file_name).with_content(/^vmware_#{attr} = vmware_#{attr}_value$/)
+    end
+  end
+end
+
 describe 'openstack-image::api' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
@@ -96,213 +114,225 @@ describe 'openstack-image::api' do
         )
       end
 
-      include_examples 'vmware config', '/etc/glance/glance-api.conf'
+      context 'template contents' do
+        include_context 'endpoint-stubs'
+        include_context 'sql-stubs'
 
-      it 'has bind host when bind_interface not specified' do
-        match = 'bind_host = 127.0.0.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
 
-      it 'has bind host when bind_interface specified' do
-        node.set['openstack']['endpoints']['image-api-bind']['bind_interface'] = 'lo'
+        context 'commonly named attributes' do
+          %w(verbose debug filesystem_store_datadir notification_driver).each do |attr|
+            it "sets the #{attr} attribute" do
+              node.set['openstack']['image'][attr] = "#{attr}_value"
+              expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
+            end
+          end
+        end
 
-        match = 'bind_host = 127.0.1.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
+        context 'api related attributes' do
+          %w(default_store workers show_image_direct_url).each do |attr|
+            it "sets the #{attr} attribute" do
+              node.set['openstack']['image']['api'][attr] = "#{attr}_value"
+              expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
+            end
+          end
+        end
 
-      it 'has default filesystem_store_datadir setting' do
-        match = 'filesystem_store_datadir = /var/lib/glance/images'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
+        %w(bind registry).each do |type|
+          %w(host port).each do |param|
+            it "has a #{type}_#{param}" do
+              expect(chef_run).to render_file(file.name).with_content(/^#{type}_#{param} = #{type}_#{param}_value$/)
+            end
+          end
+        end
 
-      it 'has configurable filesystem_store_datadir setting' do
-        node.set['openstack']['image']['filesystem_store_datadir'] = 'foo'
+        it 'sets a sql_connection attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^sql_connection = sql_connection_value$/)
+        end
 
-        expect(chef_run).to render_file(file.name).with_content(
-          /^filesystem_store_datadir = foo$/)
+        it_behaves_like 'syslog use' do
+          let(:log_file_name) { 'api.log' }
+        end
+
+        context 'syslog use' do
+          it 'shows log_config if syslog use is enabled' do
+            node.set['openstack']['image']['syslog']['use'] = true
+            expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+          end
+
+          it 'shows log_file if syslog use is disabled' do
+            node.set['openstack']['image']['syslog']['use'] = false
+            expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/api.log$))
+          end
+        end
+
+        context 'messaging' do
+          before do
+            node.set['openstack']['image']['notification_driver'] = 'messaging'
+          end
+
+          context 'rabbitmq' do
+            before do
+              node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
+              node.set['openstack']['mq']['image']['rabbit']['userid'] = 'rabbit_userid_value'
+              Chef::Recipe.any_instance.stub(:get_password)
+                .with('user', 'rabbit_userid_value')
+                .and_return('rabbit_password_value')
+            end
+
+            %w(host port userid notification_topic).each do |attr|
+              it "sets rabbitmq #{attr} attribute" do
+                node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
+                expect(chef_run).to render_file(file.name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
+              end
+            end
+
+            it 'sets the rabbitmq password' do
+              expect(chef_run).to render_file(file.name).with_content(/^rabbit_password = rabbit_password_value$/)
+            end
+
+            it 'sets the rabbitmq vhost' do
+              node.set['openstack']['mq']['image']['rabbit']['vhost'] = 'rabbit_vhost_value'
+              expect(chef_run).to render_file(file.name).with_content(/^rabbit_virtual_host = rabbit_vhost_value$/)
+            end
+          end
+
+          context 'qpid' do
+            before do
+              node.set['openstack']['mq']['image']['service_type'] = 'qpid'
+              node.set['openstack']['mq']['image']['qpid']['username'] = 'qpid_username_value'
+              Chef::Recipe.any_instance.stub(:get_password)
+                .with('user', 'qpid_username_value')
+                .and_return('qpid_password_value')
+            end
+
+            %w(port notification_topic username sasl_mechanisms reconnect reconnect_timeout
+               reconnect_limit reconnect_interval_min reconnect_interval_max reconnect_interval
+               heartbeat protocol tcp_nodelay).each do |attr|
+              it "sets qpid #{attr} attribute" do
+                node.set['openstack']['mq']['image']['qpid'][attr] = "qpid_#{attr}_value"
+                expect(chef_run).to render_file(file.name).with_content(/^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)
+              end
+            end
+          end
+        end
+
+        context 'swift options' do
+          %w(container large_object_size large_object_chunk_size).each do |attr|
+            it "sets swift store #{attr} attribute" do
+              node.set['openstack']['image']['api']['swift'][attr] = "swift_store_#{attr}_value"
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_#{attr} = swift_store_#{attr}_value$/)
+            end
+          end
+
+          context 'store auth enabled' do
+            before do
+              node.set['openstack']['image']['api']['swift_store_auth_address'] = 'swift_store_auth_address_value'
+              node.set['openstack']['image']['api']['swift_store_user'] = 'swift_store_user_value'
+              Chef::Recipe.any_instance.stub(:get_password)
+                .with('service', 'swift_store_user_value')
+                .and_return('swift_store_key_value')
+            end
+
+            %w(auth_address auth_version key).each do |attr|
+              it "sets the swift #{attr} setting to attributes" do
+                node.set['openstack']['image']['api']["swift_store_#{attr}"] = "swift_store_#{attr}_value"
+                expect(chef_run).to render_file(file.name).with_content(/^swift_store_#{attr} = swift_store_#{attr}_value$/)
+              end
+            end
+
+            it 'sets the store_user attribute' do
+              node.set['openstack']['image']['api']['swift_user_tenant'] = 'swift_user_tenant_value'
+              node.set['openstack']['image']['api']['swift_store_user'] = 'swift_store_user_value'
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_user = swift_user_tenant_value:swift_store_user_value$/)
+            end
+
+          end
+
+          context 'store auth disabled' do
+            before do
+              node.set['openstack']['image']['api']['swift_store_auth_address'] = nil
+            end
+
+            it 'sets the auth address' do
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_auth_address = auth_uri_value$/)
+            end
+
+            it 'sets the auth version' do
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_auth_version = 2$/)
+            end
+
+            it 'sets the store user' do
+              node.set['openstack']['image']['service_tenant_name'] = 'service-tenant-name-value'
+              node.set['openstack']['image']['service_user'] = 'service-user-value'
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_user = :service-tenant-name-value_service-user-value$/)
+            end
+
+            it 'sets the store key' do
+              expect(chef_run).to render_file(file.name).with_content(/^swift_store_key = admin_password_value$/)
+            end
+          end
+
+          it 'sets swift enable_snet attribute' do
+            node.set['openstack']['image']['api']['swift']['enable_snet'] = 'swift_enable_snet_value'
+            expect(chef_run).to render_file(file.name).with_content(/^swift_enable_snet = swift_enable_snet_value$/)
+          end
+
+          it 'shows store region attribute if it is enabled' do
+            node.set['openstack']['image']['api']['swift']['store_region'] = 'swift_store_region_value'
+            expect(chef_run).to render_file(file.name).with_content(/^swift_store_region = swift_store_region_value$/)
+          end
+
+          it 'does not show store region attribute if it is disabled' do
+            node.set['openstack']['image']['api']['swift']['store_region'] = nil
+            expect(chef_run).not_to render_file(file.name).with_content(/^swift_store_region =/)
+          end
+        end
+
+        %w(store_ceph_conf store_user store_pool store_chunk_size).each do |attr|
+          it "sets the rbd #{attr} attribute" do
+            node.set['openstack']['image']['api']['rbd']["rbd_#{attr}"] = "rbd_#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^rbd_#{attr} = rbd_#{attr}_value$/)
+          end
+        end
+
+        it_behaves_like 'vmware settings configurator' do
+          let(:file_name) { file.name }
+        end
+
+        it_behaves_like 'keystone attribute setter', 'api'
+
+        context 'flavor attribute' do
+          it 'sets the flavor to keystone with caching disabled' do
+            node.set['openstack']['image']['api']['cache_management'] = nil
+            node.set['openstack']['image']['api']['caching'] = nil
+            expect(chef_run).to render_file(file.name).with_content(/^flavor = keystone$/)
+          end
+
+          it 'sets the flavor to keystone and cachemanagement with cache_management enabled and caching disabled' do
+            node.set['openstack']['image']['api']['cache_management'] = true
+            node.set['openstack']['image']['api']['caching'] = nil
+            expect(chef_run).to render_file(file.name).with_content(/^flavor = keystone\+cachemanagement$/)
+          end
+
+          it 'sets the flavor to keystone and caching with cache_management disabled and caching enabled' do
+            node.set['openstack']['image']['api']['cache_management'] = nil
+            node.set['openstack']['image']['api']['caching'] = true
+            expect(chef_run).to render_file(file.name).with_content(/^flavor = keystone\+caching$/)
+          end
+
+          it 'sets the flavor to keystone and cachemanagement with cache_management and caching enabled' do
+            node.set['openstack']['image']['api']['cache_management'] = true
+            node.set['openstack']['image']['api']['caching'] = true
+            expect(chef_run).to render_file(file.name).with_content(/^flavor = keystone\+cachemanagement$/)
+          end
+        end
       end
 
       it 'notifies glance-api restart' do
         expect(file).to notify('service[glance-api]').to(:restart)
-      end
-
-      it 'does not have caching enabled by default' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^flavor = keystone$/)
-      end
-
-      it 'enables caching when attribute is set' do
-        node.set['openstack']['image']['api']['caching'] = true
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^flavor = keystone\+caching$/)
-      end
-
-      it 'enables cache_management when attribute is set' do
-        node.set['openstack']['image']['api']['cache_management'] = true
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^flavor = keystone\+cachemanagement$/)
-      end
-
-      it 'enables only cache_management when it and the caching attributes are set' do
-        node.set['openstack']['image']['api']['cache_management'] = true
-        node.set['openstack']['image']['api']['caching'] = true
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^flavor = keystone\+cachemanagement$/)
-      end
-
-      it 'has configurable api workers setting' do
-        node.set['openstack']['image']['api']['workers'] = 10
-        expect(chef_run).to render_file(file.name).with_content(
-          /^workers = 10$/)
-      end
-
-      it 'confirms default min value is set' do
-        node.automatic['cpu']['total'] = 10
-        expect(chef_run).to render_file(file.name).with_content(
-          /^workers = 8$/)
-      end
-
-      it 'sets show_image_direct_url appropriately' do
-        node.set['openstack']['image']['api']['show_image_direct_url'] = 'True'
-        expect(chef_run).to render_file(file.name).with_content(
-          /^show_image_direct_url = True$/)
-      end
-
-      it 'sets swift_enable_snet as specified' do
-        node.set['openstack']['image']['api']['swift']['enable_snet'] = 'True'
-        expect(chef_run).to render_file(file.name).with_content(
-          /^swift_enable_snet = True$/)
-      end
-
-      it 'doesnt set swift_store_region if nil' do
-        node.set['openstack']['image']['api']['swift']['store_region'] = nil
-        expect(chef_run).to_not render_file(file.name).with_content(
-          /^swift_store_region/)
-      end
-
-      it 'does set swift_store_region if not nil' do
-        node.set['openstack']['image']['api']['swift']['store_region'] = 'test_region'
-        expect(chef_run).to render_file(file.name).with_content(
-          /^swift_store_region = test_region$/)
-      end
-
-      it 'does set the default rbd_store settings' do
-        [%r|^rbd_store_ceph_conf = /etc/ceph/ceph\.conf$|,
-         /^rbd_store_user = glance$/,
-         /^rbd_store_pool = images$/,
-         /^rbd_store_chunk_size = 8$/
-        ].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(line)
-        end
-      end
-
-      it 'does set the rbd_store settings when overridden' do
-        node.set['openstack']['image']['api']['rbd']['rbd_store_ceph_conf'] = '/etc/ceph.conf'
-        node.set['openstack']['image']['api']['rbd']['rbd_store_user'] = 'openstack-image'
-        node.set['openstack']['image']['api']['rbd']['rbd_store_pool'] = 'bootimages'
-        node.set['openstack']['image']['api']['rbd']['rbd_store_chunk_size'] = 4
-
-        [%r|^rbd_store_ceph_conf = /etc/ceph\.conf$|,
-         /^rbd_store_user = openstack-image$/,
-         /^rbd_store_pool = bootimages$/,
-         /^rbd_store_chunk_size = 4$/
-        ].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(line)
-        end
-      end
-
-      it 'has default_store setting' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^default_store = file$/)
-      end
-
-      context 'keystone_authtoken' do
-        it 'has correct authtoken settings' do
-          [
-            'auth_uri = http://127.0.0.1:5000/v2.0',
-            'auth_host = 127.0.0.1',
-            'auth_port = 35357',
-            'auth_protocol = http',
-            'admin_tenant_name = service',
-            'admin_user = glance',
-            'admin_tenant_name = service',
-            'admin_password = glance-pass',
-            'signing_dir = /var/cache/glance/api'
-          ].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(
-              /^#{Regexp.quote(line)}$/)
-          end
-        end
-
-        it 'has no auth_version' do
-          expect(chef_run).not_to render_file(file.name).with_content(
-            /^auth_version = v2.0$/)
-        end
-
-        it 'has auth_version when auth version is set to v3.0' do
-          chef_run.node.set['openstack']['image']['api']['auth']['version'] = 'v3.0'
-          expect(chef_run).to render_file(file.name).with_content(
-            /^auth_version = v3.0$/)
-        end
-      end
-
-      context 'rabbitmq' do
-        before do
-          node.set['openstack']['image']['notification_driver'] = 'messaging'
-          node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
-          node.set['openstack']['mq']['image']['notification_topic'] = 'rabbit_topic'
-        end
-
-        it 'has default rabbit settings' do
-          [
-            'transport_url = rabbit://',
-            'rabbit_host = 127.0.0.1',
-            'rabbit_port = 5672',
-            'rabbit_userid = guest',
-            'rabbit_password = mq-pass',
-            'rabbit_virtual_host = /',
-            'rabbit_notification_topic = rabbit_topic'
-          ].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(
-              /^#{Regexp.quote(line)}$/)
-          end
-        end
-      end
-
-      context 'qpid' do
-        before do
-          node.set['openstack']['image']['notification_driver'] = 'messaging'
-          node.set['openstack']['mq']['image']['service_type'] = 'qpid'
-          node.set['openstack']['mq']['image']['notification_topic'] = 'qpid_topic'
-          node.set['openstack']['mq']['image']['qpid']['username'] = 'guest'
-        end
-
-        it 'has default qpid settings' do
-          [
-            'transport_url = qpid://',
-            'qpid_hostname=127.0.0.1',
-            'qpid_port=5672',
-            'qpid_username=guest',
-            'qpid_password=mq-pass',
-            'qpid_sasl_mechanisms=',
-            'qpid_reconnect=true',
-            'qpid_reconnect_timeout=0',
-            'qpid_reconnect_limit=0',
-            'qpid_reconnect_interval_min=0',
-            'qpid_reconnect_interval_max=0',
-            'qpid_reconnect_interval=0',
-            'qpid_heartbeat=60',
-            'qpid_protocol=tcp',
-            'qpid_tcp_nodelay=true',
-            'qpid_notification_topic = qpid_topic'
-          ].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(
-              /^#{Regexp.quote(line)}$/)
-          end
-        end
       end
     end
 
@@ -317,8 +347,10 @@ describe 'openstack-image::api' do
         )
       end
 
-      it 'template contents' do
-        pending 'TODO: implement'
+      context 'template contents' do
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
       end
 
       it 'notifies glance-api restart' do
@@ -329,8 +361,6 @@ describe 'openstack-image::api' do
     describe 'glance-cache.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-cache.conf') }
 
-      include_examples 'vmware config', '/etc/glance/glance-cache.conf'
-
       it 'creates glance-cache.conf' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
@@ -339,44 +369,64 @@ describe 'openstack-image::api' do
         )
       end
 
+      context 'template contents' do
+        include_context 'endpoint-stubs'
+
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
+
+        %w(verbose debug).each do |attr|
+          it "sets the #{attr} attribute" do
+            node.set['openstack']['image'][attr] = "#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
+          end
+        end
+
+        context 'cache attributes' do
+          %w(dir stall_time).each do |attr|
+            it "sets the #{attr} cache attribute" do
+              node.set['openstack']['image']['cache'][attr] = "image_cache_#{attr}_value"
+              expect(chef_run).to render_file(file.name).with_content(/^image_cache_#{attr} = image_cache_#{attr}_value$/)
+            end
+          end
+
+          it 'sets the image_cache_invalid_entry_grace_period attribute' do
+            node.set['openstack']['image']['cache']['grace_period'] = 'grace_period_value'
+            expect(chef_run).to render_file(file.name).with_content(/^image_cache_invalid_entry_grace_period = grace_period_value$/)
+          end
+
+          it 'sets the image_cache_max_size attribute' do
+            node.set['openstack']['image']['api']['cache']['image_cache_max_size'] = 'max_size_value'
+            expect(chef_run).to render_file(file.name).with_content(/^image_cache_max_size = max_size_value$/)
+          end
+        end
+
+        context 'syslog options' do
+          it 'sets the log_config attribute if syslog use is enabled' do
+            node.set['openstack']['image']['syslog']['use'] = true
+            expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+          end
+
+          it 'sets the log_file attribute if syslog use is disabled' do
+            node.set['openstack']['image']['syslog']['use'] = false
+            expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/image-cache.log$))
+          end
+        end
+
+        %w(host port).each do |attr|
+          it "sets the registry #{attr} attribute" do
+            expect(chef_run).to render_file(file.name).with_content(/^registry_#{attr} = registry_#{attr}_value$/)
+          end
+        end
+
+        it_behaves_like 'vmware settings configurator' do
+          let(:file_name) { file.name }
+        end
+      end
+
       it 'notifies glance-api restart' do
         expect(file).to notify('service[glance-api]').to(:restart)
-      end
-
-      it 'has the default image_cache_dir setting' do
-        expect(chef_run).to render_file(file.name).with_content(
-          %r{^image_cache_dir = /var/lib/glance/image-cache/$})
-      end
-
-      it 'has a configurable image_cache_dir setting' do
-        node.set['openstack']['image']['cache']['dir'] = 'foo'
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^image_cache_dir = foo$/)
-      end
-
-      it 'has the default cache stall_time setting' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^image_cache_stall_time = 86400$/)
-      end
-
-      it 'has a configurable stall_time setting' do
-        node.set['openstack']['image']['cache']['stall_time'] = '42'
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^image_cache_stall_time = 42$/)
-      end
-
-      it 'has the default grace_period setting' do
-        expect(chef_run).to render_file(file.name).with_content(
-          /^image_cache_invalid_entry_grace_period = 3600$/)
-      end
-
-      it 'has a configurable grace_period setting' do
-        node.set['openstack']['image']['cache']['grace_period'] = '42'
-
-        expect(chef_run).to render_file(file.name).with_content(
-          /^image_cache_invalid_entry_grace_period = 42$/)
       end
     end
 
@@ -391,10 +441,9 @@ describe 'openstack-image::api' do
         )
       end
 
-      # README(galstrom21): This file currently has no templated variables
-      # it 'template contents' do
-      #   pending 'TODO: implement'
-      # end
+      it_behaves_like 'custom template banner displayer' do
+        let(:file_name) { file.name }
+      end
 
       it 'notifies glance-api restart' do
         expect(file).to notify('service[glance-api]').to(:restart)
@@ -404,7 +453,7 @@ describe 'openstack-image::api' do
     describe 'glance-scrubber.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-scrubber.conf') }
 
-      it 'creates glance-cache-paste.ini' do
+      it 'creates glance-scrubber.conf' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
           group: 'glance',
@@ -412,8 +461,14 @@ describe 'openstack-image::api' do
         )
       end
 
-      it 'template contents' do
-        pending 'TODO: implement'
+      context 'template contents' do
+        include_context 'endpoint-stubs'
+
+        %w(host port).each do |attr|
+          it "sets the registry #{attr} attribute" do
+            expect(chef_run).to render_file(file.name).with_content(/^registry_#{attr} = registry_#{attr}_value$/)
+          end
+        end
       end
     end
 
@@ -443,8 +498,8 @@ describe 'openstack-image::api' do
         )
       end
 
-      it 'template contents' do
-        pending 'TODO: implement'
+      it_behaves_like 'custom template banner displayer' do
+        let(:file_name) { file.name }
       end
     end
   end
