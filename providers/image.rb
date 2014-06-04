@@ -48,6 +48,8 @@ def _determine_type(url)
     return 'ami'
   when '.qcow2', '.img'
     return 'qcow'
+  else
+    fail ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for .ami and .qcow2 and .img for .qcow"
   end
 end
 

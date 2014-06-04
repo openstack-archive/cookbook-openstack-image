@@ -51,6 +51,7 @@ shared_context 'image-stubs' do
       .and_return('rbd-pass')
 
     Chef::Application.stub(:fatal!)
+    stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return('')
   end
 end
 

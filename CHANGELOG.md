@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 9.1.2
+### Bug
+* Fix image upload to provide error message when type not supported
+
 ## 9.1.1
 ### Bug
 * Fix data bag item id issue in recipes/api.rb
