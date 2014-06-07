@@ -88,55 +88,46 @@ describe 'openstack-image::registry' do
         )
       end
 
-      it 'has bind host when bind_interface not specified' do
-        match = 'bind_host = 127.0.0.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
-      end
+      context 'template contents' do
+        include_context 'endpoint-stubs'
+        include_context 'sql-stubs'
 
-      it 'has bind host when bind_interface specified' do
-        node.set['openstack']['endpoints']['image-registry-bind']['bind_interface'] = 'lo'
+        before do
+          Chef::Recipe.any_instance.stub(:endpoint)
+            .with('image-registry-bind')
+            .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
+        end
 
-        match = 'bind_host = 127.0.1.1'
-        expect(chef_run).to render_file(file.name).with_content(match)
+        it_behaves_like 'custom template banner displayer' do
+          let(:file_name) { file.name }
+        end
+
+        %w(verbose debug data_api).each do |attr|
+          it "sets the #{attr} attrinbute" do
+            node.set['openstack']['image'][attr] = "#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
+          end
+        end
+
+        %w(host port).each do |attr|
+          it "sets the registry #{attr} attribute" do
+            expect(chef_run).to render_file(file.name).with_content(/^bind_#{attr} = registry_#{attr}_value$/)
+          end
+        end
+
+        it 'sets the sql connection attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^sql_connection = sql_connection_value$/)
+        end
+
+        it_behaves_like 'syslog use' do
+          let(:log_file_name) { 'registry.log' }
+        end
+
+        it_behaves_like 'keystone attribute setter', 'registry'
       end
 
       it 'notifies glance-registry restart' do
         expect(file).to notify('service[glance-registry]').to(:restart)
-      end
-
-      context 'keystone_authtoken' do
-        it 'has correct authtoken settings' do
-          [
-            'auth_uri = http://127.0.0.1:5000/v2.0',
-            'auth_host = 127.0.0.1',
-            'auth_port = 35357',
-            'auth_protocol = http',
-            'admin_tenant_name = service',
-            'admin_user = glance',
-            'admin_tenant_name = service',
-            'admin_password = glance-pass',
-            'signing_dir = /var/cache/glance/registry'
-          ].each do |line|
-            expect(chef_run).to render_file(file.name).with_content(
-              /^#{Regexp.quote(line)}$/)
-          end
-        end
-
-        it 'has no auth_version' do
-          expect(chef_run).not_to render_file(file.name).with_content(
-            /^auth_version = v2.0$/)
-        end
-
-        it 'has signing_dir' do
-          expect(chef_run).to render_file(file.name).with_content(
-            /^#{Regexp.quote('signing_dir = /var/cache/glance/registry')}$/)
-        end
-
-        it 'has auth_version when auth version is set to v3.0' do
-          chef_run.node.set['openstack']['image']['registry']['auth']['version'] = 'v3.0'
-          expect(chef_run).to render_file(file.name).with_content(
-            /^auth_version = v3.0$/)
-        end
       end
     end
 
@@ -166,8 +157,8 @@ describe 'openstack-image::registry' do
         )
       end
 
-      it 'template contents' do
-        pending 'TODO: implement'
+      it_behaves_like 'custom template banner displayer' do
+        let(:file_name) { file.name }
       end
 
       it 'notifies glance-registry restart' do
