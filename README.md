@@ -93,6 +93,8 @@ Action: `:upload`
 - `:identity_tenant`: Name of the Keystone admin user's tenant.
 - `:identity_uri`: URI of the Identity API endpoint.
 
+For testing this provider with ChefSpec, a custom matcher was added to `libraries/matchers.rb`.
+
 Attributes
 ==========
 
