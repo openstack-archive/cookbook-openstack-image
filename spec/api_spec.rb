@@ -173,6 +173,13 @@ describe 'openstack-image::api' do
             node.set['openstack']['image']['notification_driver'] = 'messaging'
           end
 
+          it 'has RPC/AMQP defaults set' do
+            [/^amqp_durable_queues=false$/,
+             /^amqp_auto_delete=false$/].each do |line|
+              expect(chef_run).to render_file(file.name).with_content(line)
+            end
+          end
+
           context 'rabbitmq' do
             before do
               node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
@@ -210,7 +217,7 @@ describe 'openstack-image::api' do
 
             %w(port notification_topic username sasl_mechanisms reconnect reconnect_timeout
                reconnect_limit reconnect_interval_min reconnect_interval_max reconnect_interval
-               heartbeat protocol tcp_nodelay).each do |attr|
+               heartbeat protocol tcp_nodelay topology_version).each do |attr|
               it "sets qpid #{attr} attribute" do
                 node.set['openstack']['mq']['image']['qpid'][attr] = "qpid_#{attr}_value"
                 expect(chef_run).to render_file(file.name).with_content(/^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)

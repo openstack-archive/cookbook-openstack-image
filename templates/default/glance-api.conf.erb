@@ -106,8 +106,13 @@ registry_client_protocol = http
 notifier_strategy = default
 notification_driver = <%= @notification_driver %>
 
-<% if @notification_driver == "messaging" and @mq_service_type == "rabbitmq" %>
-#### RABBITMQ #####
+<% if @notification_driver == "messaging" %>
+##### AMQP #####
+amqp_durable_queues=<%= node["openstack"]["mq"]["image"]["durable_queues"] %>
+amqp_auto_delete=<%= node["openstack"]["mq"]["image"]["auto_delete"] %>
+
+<% if @mq_service_type == "rabbitmq" %>
+##### RABBITMQ #####
 transport_url = rabbit://
 rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
 rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
@@ -117,15 +122,13 @@ rabbit_password = <%= @mq_password %>
 rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 rabbit_notification_exchange = glance
 rabbit_notification_topic = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
-<% elsif @notification_driver == "messaging" and @mq_service_type == "qpid" %>
+<% elsif @mq_service_type == "qpid" %>
 ##### QPID #####
 transport_url = qpid://
 qpid_notification_exchange = glance
 qpid_notification_topic = <%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
-
 qpid_hostname=<%= node["openstack"]["mq"]["image"]["qpid"]["host"] %>
 qpid_port=<%= node["openstack"]["mq"]["image"]["qpid"]["port"] %>
-
 qpid_password=<%= @mq_password %>
 qpid_username=<%= node["openstack"]["mq"]["image"]["qpid"]["username"] %>
 qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["image"]["qpid"]["sasl_mechanisms"] %>
@@ -139,6 +142,8 @@ qpid_heartbeat=<%= node["openstack"]["mq"]["image"]["qpid"]["heartbeat"] %>
 # qpid protocol. default 'tcp'. set to 'ssl' to enable SSL
 qpid_protocol=<%= node["openstack"]["mq"]["image"]["qpid"]["protocol"] %>
 qpid_tcp_nodelay=<%= node["openstack"]["mq"]["image"]["qpid"]["tcp_nodelay"] %>
+qpid_topology_version=<%= node["openstack"]["mq"]["image"]["qpid"]["topology_version"] %>
+<% end %>
 <% end %>
 
 # ============ Filesystem Store Options ========================
