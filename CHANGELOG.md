@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 9.2.0
+* python_packages database client attributes have been migrated to the -common cookbook
+
 ## 9.1.2
 ### Bug
 * Fix image upload to provide error message when type not supported

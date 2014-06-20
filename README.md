@@ -133,7 +133,6 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['rbd']['key_name']` - The data bag item name used for the Cephx key of the rbd_store_user.
 * `openstack['image']['cron']['redirection']` - Redirection of cron output
 TODO: Add DB2 support on other platforms
-* `openstack['image']['platform']['db2_python_packages']` - Array of DB2 python packages, only available on redhat platform
 
 VMWare attributes
 -----------------
@@ -213,12 +212,14 @@ Author:: Salman Baset (<sabaset@us.ibm.com>)
 Author:: Chen Zhiwei (zhiwchen@cn.ibm.com)
 Author:: Eric Zhou (zyouzhou@cn.ibm.com)
 Author:: Jian Hua Geng (gengjh@cn.ibm.com)
+Author:: Ionut Artarisi (iartarisi@suse.cz)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.
 Copyright 2012-2013, AT&T Services, Inc.
 Copyright 2013, Craig Tracey <craigtracey@gmail.com>
 Copyright 2013-2014, IBM Corp.
+Copyright 2014, SUSE Linux, GmbH.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

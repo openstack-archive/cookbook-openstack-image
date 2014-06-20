@@ -128,9 +128,6 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'postgresql_python_packages' => ['python-psycopg2'],
-    'mysql_python_packages' => ['MySQL-python'],
-    'db2_python_packages' => ['python-ibm-db', 'python-ibm-db-sa'],
     'image_packages' => %w{openstack-glance cronie python-glanceclient},
     'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => ['python-ceph'],
@@ -144,8 +141,6 @@ when 'suse'
   default['openstack']['image']['user'] = 'openstack-glance'
   default['openstack']['image']['group'] = 'openstack-glance'
   default['openstack']['image']['platform'] = {
-    'postgresql_python_packages' => ['python-psycopg2'],
-    'mysql_python_packages' => ['python-mysql'],
     'image_packages' => ['openstack-glance', 'python-glanceclient'],
     'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => [],
@@ -159,8 +154,6 @@ when 'debian'
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'postgresql_python_packages' => ['python-psycopg2'],
-    'mysql_python_packages' => ['python-mysqldb'],
     'image_packages' => ['glance'],
     'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => ['python-ceph'],

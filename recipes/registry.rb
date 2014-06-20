@@ -5,6 +5,7 @@
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2013, Opscode, Inc.
+# Copyright 2014, SUSE Linux, GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,13 +54,11 @@ package 'curl' do
   action :upgrade
 end
 
-pkg_key = "#{node['openstack']['db']['image']['service_type']}_python_packages"
-if platform_options.key?(pkg_key)
-  platform_options[pkg_key].each do |pkg|
-    package pkg do
-      action :upgrade
-      options platform_options['package_overrides']
-    end
+db_type = node['openstack']['db']['image']['service_type']
+node['openstack']['db']['python_packages'][db_type].each do |pkg|
+  package pkg do
+    action :upgrade
+    options platform_options['package_overrides']
   end
 end
 
