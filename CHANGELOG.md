@@ -4,6 +4,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook
+* bump berkshelf to 2.0.18 to allow Supermarket support
 
 ## 9.1.2
 ### Bug
