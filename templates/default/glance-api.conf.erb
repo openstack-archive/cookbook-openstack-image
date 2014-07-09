@@ -103,7 +103,7 @@ registry_client_protocol = http
 # There are three methods of sending notifications, logging (via the
 # log_file directive), rabbit (via a rabbitmq queue), qpid (via a Qpid
 # message queue), or noop (no notifications sent, the default)
-notifier_strategy = default
+notifier_strategy = <%= node["openstack"]["mq"]["image"]["notifier_strategy"] %>
 notification_driver = <%= @notification_driver %>
 
 <% if @notification_driver == "messaging" %>

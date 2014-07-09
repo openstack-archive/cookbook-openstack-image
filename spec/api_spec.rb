@@ -131,6 +131,11 @@ describe 'openstack-image::api' do
           end
         end
 
+        it 'sets the notifier_strategy attribute' do
+          node.set['openstack']['mq']['image']['notifier_strategy'] = 'default'
+          expect(chef_run).to render_file(file.name).with_content(/^notifier_strategy = default$/)
+        end
+
         context 'api related attributes' do
           %w(default_store workers show_image_direct_url).each do |attr|
             it "sets the #{attr} attribute" do
