@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'rspec/expectations'
 require 'chefspec'
 require 'chefspec/berkshelf'
 require 'chef/application'
@@ -110,9 +111,5 @@ shared_examples 'glance-directory' do
     end
   end
 end
-
-# README(galstrom21): This will remove any coverage warnings from
-#   dependent cookbooks
-ChefSpec::Coverage.filters << '*/openstack-image'
 
 at_exit { ChefSpec::Coverage.report! }
