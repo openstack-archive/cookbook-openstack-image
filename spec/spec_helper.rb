@@ -9,13 +9,18 @@ require 'chef/application'
 LOG_LEVEL = :fatal
 REDHAT_OPTS = {
   platform: 'redhat',
-  version: '6.3',
+  version: '6.5',
   log_level: LOG_LEVEL
 }
 UBUNTU_OPTS = {
   platform: 'ubuntu',
   version: '12.04',
   log_level: LOG_LEVEL
+}
+SUSE_OPTS = {
+  platform: 'suse',
+  version: '11.3',
+  log_lovel: LOG_LEVEL
 }
 
 shared_context 'image-stubs' do
