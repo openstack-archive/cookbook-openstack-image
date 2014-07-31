@@ -131,6 +131,15 @@ describe 'openstack-image::api' do
           end
         end
 
+        it 'uses default filesystem_store_metadata_file attribute' do
+          expect(chef_run).not_to render_file(file.name).with_content(/^filesystem_store_metadata_file =/)
+        end
+
+        it 'sets the filesystem_store_metadata_file attribute' do
+          node.set['openstack']['image']['filesystem_store_metadata_file'] = '/etc/glance/images.json'
+          expect(chef_run).to render_file(file.name).with_content(%r(^filesystem_store_metadata_file = /etc/glance/images.json$))
+        end
+
         it 'sets the notifier_strategy attribute' do
           node.set['openstack']['mq']['image']['notifier_strategy'] = 'default'
           expect(chef_run).to render_file(file.name).with_content(/^notifier_strategy = default$/)

@@ -66,7 +66,7 @@ default['openstack']['image']['api']['cache_management'] = false
 default['openstack']['image']['api']['default_store'] = 'file'
 
 default['openstack']['image']['filesystem_store_datadir'] = '/var/lib/glance/images'
-
+default['openstack']['image']['filesystem_store_metadata_file'] = nil
 default['openstack']['image']['api']['swift']['container'] = 'glance'
 default['openstack']['image']['api']['swift']['large_object_size'] = '200'
 default['openstack']['image']['api']['swift']['large_object_chunk_size'] = '200'
