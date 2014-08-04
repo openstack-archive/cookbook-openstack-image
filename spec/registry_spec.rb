@@ -93,7 +93,7 @@ describe 'openstack-image::registry' do
         include_context 'sql-stubs'
 
         before do
-          Chef::Recipe.any_instance.stub(:endpoint)
+          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
             .with('image-registry-bind')
             .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
         end
@@ -115,8 +115,8 @@ describe 'openstack-image::registry' do
           end
         end
 
-        it 'sets the sql connection attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^sql_connection = sql_connection_value$/)
+        it 'sets the connection attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^connection = sql_connection_value$/)
         end
 
         it_behaves_like 'syslog use' do

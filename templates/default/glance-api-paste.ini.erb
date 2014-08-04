@@ -24,6 +24,18 @@ pipeline = versionnegotiation authtoken context cache rootapp
 [pipeline:glance-api-keystone+cachemanagement]
 pipeline = versionnegotiation authtoken context cache cachemanage rootapp
 
+# Use this pipeline for authZ only. This means that the registry will treat a
+# user as authenticated without making requests to keystone to reauthenticate
+# the user.
+[pipeline:glance-api-trusted-auth]
+pipeline = versionnegotiation context rootapp
+
+# Use this pipeline for authZ only. This means that the registry will treat a
+# user as authenticated without making requests to keystone to reauthenticate
+# the user and uses cache management
+[pipeline:glance-api-trusted-auth+cachemanagement]
+pipeline = versionnegotiation context cache cachemanage rootapp
+
 [composite:rootapp]
 paste.composite_factory = glance.api:root_app_factory
 /: apiversions
@@ -55,5 +67,8 @@ paste.filter_factory = glance.api.middleware.context:ContextMiddleware.factory
 paste.filter_factory = glance.api.middleware.context:UnauthenticatedContextMiddleware.factory
 
 [filter:authtoken]
-paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+paste.filter_factory = keystonemiddleware.auth_token:filter_factory
 delay_auth_decision = true
+
+[filter:gzip]
+paste.filter_factory = glance.api.middleware.gzip:GzipMiddleware.factory

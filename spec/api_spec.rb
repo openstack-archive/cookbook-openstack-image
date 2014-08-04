@@ -5,7 +5,7 @@ shared_context 'vmware settings configurator' do
   before do
     node.set['openstack']['image']['api']['vmware']['vmware_server_host'] = 'vmware_server_host_value'
     node.set['openstack']['image']['api']['vmware']['secret_name'] = 'vmware_secret_name'
-    Chef::Recipe.any_instance.stub(:get_secret)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
       .with('vmware_secret_name')
       .and_return('vmware_server_password_value')
   end
@@ -162,8 +162,8 @@ describe 'openstack-image::api' do
           end
         end
 
-        it 'sets a sql_connection attribute' do
-          expect(chef_run).to render_file(file.name).with_content(/^sql_connection = sql_connection_value$/)
+        it 'sets a connection attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^connection = sql_connection_value$/)
         end
 
         it_behaves_like 'syslog use' do
@@ -198,7 +198,7 @@ describe 'openstack-image::api' do
             before do
               node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
               node.set['openstack']['mq']['image']['rabbit']['userid'] = 'rabbit_userid_value'
-              Chef::Recipe.any_instance.stub(:get_password)
+              allow_any_instance_of(Chef::Recipe).to receive(:get_password)
                 .with('user', 'rabbit_userid_value')
                 .and_return('rabbit_password_value')
             end
@@ -224,7 +224,7 @@ describe 'openstack-image::api' do
             before do
               node.set['openstack']['mq']['image']['service_type'] = 'qpid'
               node.set['openstack']['mq']['image']['qpid']['username'] = 'qpid_username_value'
-              Chef::Recipe.any_instance.stub(:get_password)
+              allow_any_instance_of(Chef::Recipe).to receive(:get_password)
                 .with('user', 'qpid_username_value')
                 .and_return('qpid_password_value')
             end
@@ -252,7 +252,7 @@ describe 'openstack-image::api' do
             before do
               node.set['openstack']['image']['api']['swift_store_auth_address'] = 'swift_store_auth_address_value'
               node.set['openstack']['image']['api']['swift_store_user'] = 'swift_store_user_value'
-              Chef::Recipe.any_instance.stub(:get_password)
+              allow_any_instance_of(Chef::Recipe).to receive(:get_password)
                 .with('service', 'swift_store_user_value')
                 .and_return('swift_store_key_value')
             end
