@@ -1,6 +1,8 @@
+source "https://supermarket.getchef.com"
+
 metadata
 
 cookbook "openstack-identity",
-  git: "git://github.com/stackforge/cookbook-openstack-identity.git"
+  github: "stackforge/cookbook-openstack-identity"
 cookbook "openstack-common",
-  git: "git://github.com/stackforge/cookbook-openstack-common.git"
+  github: "stackforge/cookbook-openstack-common"

@@ -6,6 +6,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Upgrading to Juno
 * filesystem_store_metadata_file in glance-api.conf configurable with node attribute
 * Enable rabbit_use_ssl be configurable
+* Upgrading berkshelf from 2.0.18 to 3.1.5
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook
