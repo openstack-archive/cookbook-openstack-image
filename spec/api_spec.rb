@@ -203,7 +203,7 @@ describe 'openstack-image::api' do
                 .and_return('rabbit_password_value')
             end
 
-            %w(host port userid notification_topic).each do |attr|
+            %w(host port userid use_ssl notification_topic).each do |attr|
               it "sets rabbitmq #{attr} attribute" do
                 node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
                 expect(chef_run).to render_file(file.name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
