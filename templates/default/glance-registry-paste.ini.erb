@@ -1,6 +1,5 @@
 <%= node["openstack"]["image"]["custom_template_banner"] %>
 
-# Default minimal pipeline
 # Use this pipeline for no auth - DEFAULT
 [pipeline:glance-registry]
 pipeline = unauthenticated-context registryapp
@@ -9,8 +8,14 @@ pipeline = unauthenticated-context registryapp
 [pipeline:glance-registry-keystone]
 pipeline = authtoken context registryapp
 
+# Use this pipeline for authZ only. This means that the registry will treat a
+# user as authenticated without making requests to keystone to reauthenticate
+# the user.
+[pipeline:glance-registry-trusted-auth]
+pipeline = context registryapp
+
 [app:registryapp]
-paste.app_factory = glance.registry.api.v1:API.factory
+paste.app_factory = glance.registry.api:API.factory
 
 [filter:context]
 paste.filter_factory = glance.api.middleware.context:ContextMiddleware.factory
@@ -19,5 +24,4 @@ paste.filter_factory = glance.api.middleware.context:ContextMiddleware.factory
 paste.filter_factory = glance.api.middleware.context:UnauthenticatedContextMiddleware.factory
 
 [filter:authtoken]
-paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-delay_auth_decision = true
+paste.filter_factory = keystonemiddleware.auth_token:filter_factory

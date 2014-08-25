@@ -25,37 +25,37 @@ SUSE_OPTS = {
 
 shared_context 'image-stubs' do
   before do
-    Chef::Recipe.any_instance.stub(:address_for)
+    allow_any_instance_of(Chef::Recipe).to receive(:address_for)
       .with('lo')
       .and_return('127.0.1.1')
 
-    Chef::Recipe.any_instance.stub(:config_by_role)
+    allow_any_instance_of(Chef::Recipe).to receive(:config_by_role)
       .with('rabbitmq-server', 'queue')
       .and_return(
         'host' => 'rabbit-host', 'port' => 'rabbit-port'
       )
 
-    Chef::Recipe.any_instance.stub(:get_secret)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
       .with('openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
-    Chef::Recipe.any_instance.stub(:get_secret)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
       .with('openstack_vmware_secret_name')
       .and_return 'vmware_secret_name'
 
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
     .with('db', anything)
     .and_return('')
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'openstack-image')
       .and_return('glance-pass')
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('user', 'guest')
       .and_return('mq-pass')
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'rbd-image')
       .and_return('rbd-pass')
 
-    Chef::Application.stub(:fatal!)
+    allow(Chef::Application).to receive(:fatal!)
     stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return('')
   end
 end
@@ -132,28 +132,28 @@ end
 
 shared_context 'endpoint-stubs' do
   before do
-    Chef::Recipe.any_instance.stub(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('image-registry')
       .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
-    Chef::Recipe.any_instance.stub(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('identity-api')
       .and_return('identity_endpoint_value')
     identity_admin_endpoint = double(host: 'identity_admin_endpoint_host_value',
                                      port: 'identity_admin_endpoint_port_value',
                                      scheme: 'identity_admin_endpoint_protocol_value')
-    Chef::Recipe.any_instance.stub(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('identity-admin')
       .and_return(identity_admin_endpoint)
-    Chef::Recipe.any_instance.stub(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
       .with('image-api-bind')
       .and_return(double(host: 'bind_host_value', port: 'bind_port_value'))
-    Chef::Recipe.any_instance.stub(:auth_uri_transform)
+    allow_any_instance_of(Chef::Recipe).to receive(:auth_uri_transform)
       .with('identity_endpoint_value', 'v3.0')
       .and_return('auth_uri_value')
-    Chef::Recipe.any_instance.stub(:auth_uri_transform)
+    allow_any_instance_of(Chef::Recipe).to receive(:auth_uri_transform)
       .with('identity_endpoint_value', 'v2.0')
       .and_return('auth_uri_value')
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'openstack-image')
       .and_return('admin_password_value')
   end
@@ -162,10 +162,10 @@ end
 shared_context 'sql-stubs' do
   before do
     node.set['openstack']['db']['image']['username'] = 'db_username_value'
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('db', 'glance')
       .and_return('db_password_value')
-    Chef::Recipe.any_instance.stub(:db_uri)
+    allow_any_instance_of(Chef::Recipe).to receive(:db_uri)
       .with('image', 'db_username_value', 'db_password_value')
       .and_return('sql_connection_value')
   end
