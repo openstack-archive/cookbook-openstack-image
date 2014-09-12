@@ -40,6 +40,7 @@ data_api = <%= node["openstack"]["image"]["data_api"] %>
 # created to service Registry requests. The default will be
 # equal to the number of CPUs available. (integer value)
 #workers = None
+workers = <%= node["openstack"]["image"]["registry"]["workers"] %>
 
 # Enable Registry API versions individually or simultaneously
 #enable_v1_registry = True

@@ -103,16 +103,21 @@ describe 'openstack-image::registry' do
         end
 
         %w(verbose debug data_api).each do |attr|
-          it "sets the #{attr} attrinbute" do
+          it "sets the #{attr} attribute" do
             node.set['openstack']['image'][attr] = "#{attr}_value"
             expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
           end
         end
 
         %w(host port).each do |attr|
-          it "sets the registry #{attr} attribute" do
+          it "sets the registry bind #{attr} attribute" do
             expect(chef_run).to render_file(file.name).with_content(/^bind_#{attr} = registry_#{attr}_value$/)
           end
+        end
+
+        it 'sets the workers attribute' do
+          node.set['openstack']['image']['registry']['workers'] = 123
+          expect(chef_run).to render_file(file.name).with_content(/^workers = 123$/)
         end
 
         it 'sets the connection attribute' do
