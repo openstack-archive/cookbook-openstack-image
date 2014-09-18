@@ -118,6 +118,18 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['api']['show_image_direct_url']` - Allow glance to return URL referencing where data is stored on the backend. Default 'False'
 * `openstack['image']['api']['auth']['cache_dir']` - Defaults to `/var/cache/glance/api`. Directory where `auth_token` middleware writes certificates for glance-api
 * `openstack['image']['registry']['auth']['cache_dir']` - Defaults to `/var/cache/glance/registry`. Directory where `auth_token` middleware writes certificates for glance-registry
+* `openstack['image']['api']['auth']['memcached_servers']` - A list of memcached server(s) to use for caching
+* `openstack['image']['registry']['auth']['memcached_servers']` - A list of memcached server(s) to use for caching
+* `openstack['image']['api']['auth']['memcache_security_strategy']` - Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT
+* `openstack['image']['registry']['auth']['memcache_security_strategy']` - Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT
+* `openstack['image']['api']['auth']['memcache_secret_key']` - This string is used for key derivation
+* `openstack['image']['registry']['auth']['memcache_secret_key']` - This string is used for key derivation
+* `openstack['image']['api']['auth']['hash_algorithms']` - Hash algorithms to use for hashing PKI tokens
+* `openstack['image']['registry']['auth']['hash_algorithms']` - Hash algorithms to use for hashing PKI tokens
+* `openstack['image']['api']['auth']['cafile']` - A PEM encoded Certificate Authority to use when verifying HTTPs connections.
+* `openstack['image']['registry']['auth']['cafile']` - A PEM encoded Certificate Authority to use when verifying HTTPs connections
+* `openstack['image']['api']['auth']['insecure']` - Set whether to verify HTTPS connections
+* `openstack['image']['registry']['auth']['insecure']` - Set whether to verify HTTPS connections
 * `openstack['image']['upload_images']` - Default list of images to upload to the glance repository as part of the install
 * `openstack['image']['upload_image']['<imagename>']` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `openstack['image']['upload_image']['natty']` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"

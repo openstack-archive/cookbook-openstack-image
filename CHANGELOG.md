@@ -8,6 +8,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Enable rabbit_use_ssl be configurable
 * Upgrading berkshelf from 2.0.18 to 3.1.5
 * Sync conf files with Juno
+* Enable authtoken configurations - including cafile, insecure, memcached_servers, memcache_security_strategy, memcache_secret_key and hash_algorithms
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

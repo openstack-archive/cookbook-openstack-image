@@ -59,6 +59,30 @@ default['openstack']['image']['registry']['auth']['version'] = node['openstack']
 default['openstack']['image']['api']['auth']['cache_dir'] = '/var/cache/glance/api'
 default['openstack']['image']['registry']['auth']['cache_dir'] = '/var/cache/glance/registry'
 
+# A list of memcached server(s) to use for caching
+default['openstack']['image']['api']['auth']['memcached_servers'] = nil
+default['openstack']['image']['registry']['auth']['memcached_servers'] = nil
+
+# Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT
+default['openstack']['image']['api']['auth']['memcache_security_strategy'] = nil
+default['openstack']['image']['registry']['auth']['memcache_security_strategy'] = nil
+
+# This string is used for key derivation
+default['openstack']['image']['api']['auth']['memcache_secret_key'] = nil
+default['openstack']['image']['registry']['auth']['memcache_secret_key'] = nil
+
+# Hash algorithms to use for hashing PKI tokens
+default['openstack']['image']['api']['auth']['hash_algorithms'] = 'md5'
+default['openstack']['image']['registry']['auth']['hash_algorithms'] = 'md5'
+
+# A PEM encoded Certificate Authority to use when verifying HTTPs connections
+default['openstack']['image']['api']['auth']['cafile'] = nil
+default['openstack']['image']['registry']['auth']['cafile'] = nil
+
+# Verify HTTPS connections
+default['openstack']['image']['api']['auth']['insecure'] = false
+default['openstack']['image']['registry']['auth']['insecure'] = false
+
 # Whether to use any of the default caching pipelines from the paste configuration file
 default['openstack']['image']['api']['caching'] = false
 default['openstack']['image']['api']['cache_management'] = false

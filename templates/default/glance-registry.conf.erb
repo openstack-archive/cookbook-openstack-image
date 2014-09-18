@@ -220,6 +220,32 @@ admin_user = <%= node["openstack"]["image"]["service_user"] %>
 admin_password = <%= @service_pass %>
 signing_dir = <%= node["openstack"]["image"]["registry"]["auth"]["cache_dir"] %>
 
+# A list of memcached server(s) to use for caching.
+<% if node['openstack']['image']['registry']['auth']['memcached_servers'] %>
+memcached_servers = <%= node['openstack']['image']['registry']['auth']['memcached_servers'] %>
+<% end %>
+
+# Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT.
+<% if node['openstack']['image']['registry']['auth']['memcache_security_strategy'] %>
+memcache_security_strategy = <%= node['openstack']['image']['registry']['auth']['memcache_security_strategy'] %>
+<% end %>
+
+# This string is used for key derivation.
+<% if node['openstack']['image']['registry']['auth']['memcache_secret_key'] %>
+memcache_secret_key = <%= node['openstack']['image']['registry']['auth']['memcache_secret_key'] %>
+<% end %>
+
+# Hash algorithms to use for hashing PKI tokens.
+hash_algorithms = <%= node['openstack']['image']['registry']['auth']['hash_algorithms'] %>
+
+# A PEM encoded Certificate Authority to use when verifying HTTPs connections.
+<% if node['openstack']['image']['registry']['auth']['cafile'] %>
+cafile = <%= node['openstack']['image']['registry']['auth']['cafile'] %>
+<% end %>
+
+# Verify HTTPS connections. (boolean value)
+insecure = <%= node['openstack']['image']['registry']['auth']['insecure'] %>
+
 [paste_deploy]
 # Name of the paste configuration file that defines the available pipelines
 #config_file = glance-registry-paste.ini
