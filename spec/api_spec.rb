@@ -110,7 +110,7 @@ describe 'openstack-image::api' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
           group: 'glance',
-          mode: 00644
+          mode: 00640
         )
       end
 
@@ -444,7 +444,7 @@ describe 'openstack-image::api' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
           group: 'glance',
-          mode: 00644
+          mode: 00640
         )
       end
 
@@ -536,7 +536,7 @@ describe 'openstack-image::api' do
         expect(chef_run).to create_template(file.name).with(
           user: 'glance',
           group: 'glance',
-          mode: 00644
+          mode: 00640
         )
       end
 

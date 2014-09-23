@@ -84,7 +84,7 @@ describe 'openstack-image::registry' do
         expect(chef_run).to create_template(file.name).with(
           user: 'root',
           group: 'root',
-          mode: 00644
+          mode: 00640
         )
       end
 

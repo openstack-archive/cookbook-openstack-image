@@ -97,7 +97,7 @@ template '/etc/glance/glance-registry.conf' do
   source 'glance-registry.conf.erb'
   owner  'root'
   group  'root'
-  mode   00644
+  mode   00640
   variables(
     :registry_bind_address => registry_bind.host,
     :registry_bind_port => registry_bind.port,

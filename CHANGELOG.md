@@ -10,6 +10,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Sync conf files with Juno
 * Enable authtoken configurations - including cafile, insecure, memcached_servers, memcache_security_strategy, memcache_secret_key and hash_algorithms
 * Fix metadata version constraint for common
+* Update conf files with scerect information from mode 644 to 640
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook
