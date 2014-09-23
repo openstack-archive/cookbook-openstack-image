@@ -14,5 +14,5 @@ recipe            'openstack-image::image_upload', 'Upload image using glance im
   supports os
 end
 
-depends           'openstack-common', '~> 10.0.1'
+depends           'openstack-common', '~> 10.0'
 depends           'openstack-identity', '~> 10.0'
