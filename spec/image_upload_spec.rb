@@ -29,5 +29,18 @@ describe 'openstack-image::image_upload' do
       node.set['openstack']['image']['upload_image']['image1'] = 'http://download.net/image.xxx'
       expect { chef_run }.to raise_error(ArgumentError)
     end
+
+    it 'uploads the tar image' do
+      node.set['openstack']['image']['upload_images'] = ['imageName']
+      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-uec.tar.gz'
+      stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep imageName').and_return(false)
+      expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
+        image_url: 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-uec.tar.gz',
+        image_name: 'imageName'
+      )
+      expect(chef_run).to run_bash('Uploading AMI image imageName')
+    end
+
+    # TODO(MRV) Need to add provider method testers in here.
   end
 end

@@ -106,8 +106,8 @@ def _upload_ami(name, api, url) # rubocop:disable MethodLength
 
         kernel=$(ls *.img | head -n1)
 
-        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public true #{aki_fmt} < ${kernel_file} | cut -d: -f2 | sed 's/ //')
-        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public true #{ari_fmt} < ${ramdisk} | cut -d: -f2 | sed 's/ //')
+        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public true #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
+        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public true #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
         #{glance_cmd} image-create --name "#{name}" --is-public true #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"
