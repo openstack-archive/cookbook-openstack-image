@@ -1,6 +1,8 @@
 # CHANGELOG for cookbook-openstack-image
 
 This file is used to list changes made in each version of cookbook-openstack-image.
+## 9.2.1
+* Updated Berksfile.lock for the UTF8 issue in common
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook
