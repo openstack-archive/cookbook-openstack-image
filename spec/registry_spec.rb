@@ -82,8 +82,8 @@ describe 'openstack-image::registry' do
 
       it 'creates glance-registry.conf' do
         expect(chef_run).to create_template(file.name).with(
-          user: 'root',
-          group: 'root',
+          user: 'glance',
+          group: 'glance',
           mode: 00640
         )
       end
@@ -214,8 +214,8 @@ describe 'openstack-image::registry' do
 
       it 'creates glance-registry-paste.ini' do
         expect(chef_run).to create_template(file.name).with(
-          user: 'root',
-          group: 'root',
+          user: 'glance',
+          group: 'glance',
           mode: 00644
         )
       end

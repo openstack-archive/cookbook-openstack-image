@@ -12,6 +12,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Fix metadata version constraint for common
 * Update conf files with scerect information from mode 644 to 640
 * Add attribute for glance-registry workers
+* Fix glance registry owner/group to glance
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

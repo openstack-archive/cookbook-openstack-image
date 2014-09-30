@@ -95,8 +95,8 @@ end
 
 template '/etc/glance/glance-registry.conf' do
   source 'glance-registry.conf.erb'
-  owner  'root'
-  group  'root'
+  owner node['openstack']['image']['user']
+  group node['openstack']['image']['group']
   mode   00640
   variables(
     :registry_bind_address => registry_bind.host,
@@ -127,8 +127,8 @@ end
 
 template '/etc/glance/glance-registry-paste.ini' do
   source 'glance-registry-paste.ini.erb'
-  owner  'root'
-  group  'root'
+  owner node['openstack']['image']['user']
+  group node['openstack']['image']['group']
   mode   00644
 
   notifies :restart, 'service[glance-registry]', :immediately
