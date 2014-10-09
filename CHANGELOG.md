@@ -16,6 +16,8 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 
 * Fix image upload for tar kernel/initrd images
 
+* Bump Chef gem to 11.16
+
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook
 * bump berkshelf to 2.0.18 to allow Supermarket support
