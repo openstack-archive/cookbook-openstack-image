@@ -162,6 +162,7 @@ VMWare attributes
 
 MQ attributes
 -------------
+
 * `openstack['image']['mq']['service_type']` - Select qpid or rabbitmq. default rabbitmq
 * `openstack['image']['mq']['qpid']['host']` - The qpid host to use
 * `openstack['image']['mq']['qpid']['port']` - The qpid port to use
@@ -177,6 +178,15 @@ MQ attributes
 * `openstack['image']['mq']['qpid']['heartbeat']` - Seconds between heartbeat messages sent to ensure that the connection is still alive.
 * `openstack['image']['mq']['qpid']['protocol']` - Protocol to use. Default tcp.
 * `openstack['image']['mq']['qpid']['tcp_nodelay']` - Disable the Nagle algorithm. default disabled.
+
+Messaging Common attributes
+---------------------------
+
+* `openstack['image']["control_exchange"]` - The AMQP exchange to connect to if using RabbitMQ or Qpid, defaults to openstack
+* `openstack['image']['rpc_backend']` - The messaging module to use
+* `openstack['image']['rpc_thread_pool_size']` - Size of RPC thread pool
+* `openstack['image']['rpc_conn_pool_size']` - Size of RPC connection pool
+* `openstack['image']['rpc_response_timeout']` - Seconds to wait for a response from call or multicall
 
 The following attributes are defined in attributes/default.rb of the common cookbook, but are documented here due to their relevance:
 

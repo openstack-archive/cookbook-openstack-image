@@ -222,3 +222,88 @@ shared_examples 'keystone attribute setter' do |version|
     expect(chef_run).to render_file(file.name).with_content(/^signing_dir = cache_dir_value$/)
   end
 end
+
+shared_examples 'messaging' do
+  context 'messaging' do
+    before do
+      node.set['openstack']['image']['notification_driver'] = 'messaging'
+    end
+
+    it 'sets the notifier_strategy attribute' do
+      node.set['openstack']['mq']['image']['notifier_strategy'] = 'default'
+      expect(chef_run).to render_file(file.name).with_content(/^notifier_strategy=default$/)
+    end
+
+    it 'has RPC/AMQP defaults set' do
+      [/^amqp_durable_queues=false$/,
+       /^amqp_auto_delete=false$/].each do |line|
+        expect(chef_run).to render_file(file_name).with_content(line)
+      end
+    end
+
+    context 'commonly named attributes' do
+      %w(notification_driver rpc_backend rpc_thread_pool_size
+         rpc_conn_pool_size rpc_response_timeout control_exchange).each do |attr|
+        it "sets the #{attr} attribute" do
+          node.set['openstack']['image'][attr] = "#{attr}_value"
+          expect(chef_run).to render_file(file.name).with_content(/^#{attr}=#{attr}_value$/)
+        end
+      end
+    end
+
+    context 'rabbitmq' do
+      before do
+        node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
+        node.set['openstack']['mq']['image']['rabbit']['userid'] = 'rabbit_userid_value'
+        allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+          .with('user', 'rabbit_userid_value')
+          .and_return('rabbit_password_value')
+      end
+
+      %w(host port userid use_ssl).each do |attr|
+        it "sets the rabbitmq #{attr} attribute" do
+          node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
+          expect(chef_run).to render_file(file_name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
+        end
+      end
+
+      it 'sets the rabbitmq password' do
+        expect(chef_run).to render_file(file_name).with_content(/^rabbit_password = rabbit_password_value$/)
+      end
+
+      it 'sets the rabbitmq vhost' do
+        node.set['openstack']['mq']['image']['rabbit']['vhost'] = 'rabbit_vhost_value'
+        expect(chef_run).to render_file(file_name).with_content(/^rabbit_virtual_host = rabbit_vhost_value$/)
+      end
+
+      it 'sets the rabbitmq notification topics' do
+        node.set['openstack']['mq']['image']['rabbit']['notification_topic'] = 'helloworld'
+        expect(chef_run).to render_file(file_name).with_content(/^notification_topics = helloworld$/)
+      end
+    end
+
+    context 'qpid' do
+      before do
+        node.set['openstack']['mq']['image']['service_type'] = 'qpid'
+        node.set['openstack']['mq']['image']['qpid']['username'] = 'qpid_username_value'
+        allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+          .with('user', 'qpid_username_value')
+          .and_return('qpid_password_value')
+      end
+
+      %w(port username sasl_mechanisms reconnect reconnect_timeout
+         reconnect_limit reconnect_interval_min reconnect_interval_max reconnect_interval
+         heartbeat protocol tcp_nodelay topology_version).each do |attr|
+        it "sets the qpid #{attr} attribute" do
+          node.set['openstack']['mq']['image']['qpid'][attr] = "qpid_#{attr}_value"
+          expect(chef_run).to render_file(file_name).with_content(/^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)
+        end
+      end
+
+      it 'sets the qpid notification topics' do
+        node.set['openstack']['mq']['image']['qpid']['notification_topic'] = 'helloworld'
+        expect(chef_run).to render_file(file_name).with_content(/^notification_topics=helloworld$/)
+      end
+    end
+  end
+end

@@ -99,14 +99,76 @@ log_file = /var/log/glance/registry.log
 # Driver or drivers to handle sending notifications. Set to
 # 'messaging' to send notifications to a message queue.
 # notification_driver = noop
+notifier_strategy=<%= node["openstack"]["mq"]["image"]["notifier_strategy"] %>
+notification_driver=<%= @notification_driver %>
 
+<% if @notification_driver == "messaging" %>
 # Default publisher_id for outgoing notifications.
 # default_publisher_id = image.localhost
 
 # Messaging driver used for 'messaging' notifications driver
-# rpc_backend = 'rabbit'
+#rpc_backend=rabbit
+rpc_backend=<%= node["openstack"]["image"]["rpc_backend"] %>
 
+# Size of RPC greenthread pool. (integer value)
+#rpc_thread_pool_size=64
+rpc_thread_pool_size=<%= node["openstack"]["image"]["rpc_thread_pool_size"] %>
 
+# Size of RPC connection pool. (integer value)
+#rpc_conn_pool_size=30
+rpc_conn_pool_size=<%= node["openstack"]["image"]["rpc_conn_pool_size"] %>
+
+# Seconds to wait for a response from a call. (integer value)
+#rpc_response_timeout=60
+rpc_response_timeout=<%= node["openstack"]["image"]["rpc_response_timeout"] %>
+
+##### AMQP #####
+amqp_durable_queues=<%= node["openstack"]["mq"]["image"]["durable_queues"] %>
+amqp_auto_delete=<%= node["openstack"]["mq"]["image"]["auto_delete"] %>
+
+# The default exchange under which topics are scoped. May be
+# overridden by an exchange name specified in the
+# transport_url option. (string value)
+#control_exchange=openstack
+control_exchange=<%= node["openstack"]["image"]["control_exchange"] %>
+
+# AMQP topic used for OpenStack notifications. (list value)
+notification_topics=<%= node["openstack"]["image"]["notification_topics"] %>
+
+<% if @mq_service_type == "rabbitmq" %>
+# Configuration options if sending notifications via rabbitmq (these are
+# the defaults)
+transport_url = rabbit://
+rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
+rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
+rabbit_use_ssl = <%= node["openstack"]["mq"]["image"]["rabbit"]["use_ssl"] %>
+rabbit_userid = <%= node["openstack"]["mq"]["image"]["rabbit"]["userid"] %>
+rabbit_password = <%= @mq_password %>
+rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
+notification_topics = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
+<% elsif @mq_service_type == "qpid" %>
+# Configuration options if sending notifications via Qpid (these are
+# the defaults)
+transport_url = qpid://
+notification_topics=<%= node["openstack"]["mq"]["image"]["qpid"]["notification_topic"] %>
+qpid_hostname=<%= node["openstack"]["mq"]["image"]["qpid"]["host"] %>
+qpid_port=<%= node["openstack"]["mq"]["image"]["qpid"]["port"] %>
+qpid_username=<%= node["openstack"]["mq"]["image"]["qpid"]["username"] %>
+qpid_password=<%= @mq_password %>
+qpid_sasl_mechanisms=<%= node["openstack"]["mq"]["image"]["qpid"]["sasl_mechanisms"] %>
+qpid_reconnect=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect"] %>
+qpid_reconnect_timeout=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect_timeout"] %>
+qpid_reconnect_limit=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect_limit"] %>
+qpid_reconnect_interval_min=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect_interval_min"] %>
+qpid_reconnect_interval_max=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect_interval_max"] %>
+qpid_reconnect_interval=<%= node["openstack"]["mq"]["image"]["qpid"]["reconnect_interval"] %>
+qpid_heartbeat=<%= node["openstack"]["mq"]["image"]["qpid"]["heartbeat"] %>
+# Set to 'ssl' to enable SSL
+qpid_protocol=<%= node["openstack"]["mq"]["image"]["qpid"]["protocol"] %>
+qpid_tcp_nodelay=<%= node["openstack"]["mq"]["image"]["qpid"]["tcp_nodelay"] %>
+qpid_topology_version=<%= node["openstack"]["mq"]["image"]["qpid"]["topology_version"] %>
+<% end %>
+<% end %>
 
 # ================= Database Options ==========================
 
