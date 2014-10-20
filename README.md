@@ -87,7 +87,7 @@ Action: `:upload`
 
 - `:image_url`: Location of the image to be loaded into Glance.
 - `:image_name`: A name for the image.
-- `:image_type`: `qcow2` or `ami`. Defaults to `qcow2`.
+- `:image_type`: `unknown`, `qcow`, `ami`, `vhd`, `vmdk`, `vdi`, `iso`, `raw`. Defaults of `unknown` will use file extension '.gz', '.tgz' = ami, '.qcow2', '.img' = qcow.
 - `:identity_user`: Username of the Keystone admin user.
 - `:identity_pass`: Password for the Keystone admin user.
 - `:identity_tenant`: Name of the Keystone admin user's tenant.

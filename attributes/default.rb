@@ -145,6 +145,10 @@ default['openstack']['image']['upload_image']['natty'] = 'http://cloud-images.ub
 default['openstack']['image']['upload_image']['cirros'] = 'http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img'
 # more images available at https://github.com/rackerjoe/oz-image-build
 default['openstack']['image']['upload_image']['centos'] = 'http://c250663.r63.cf1.rackcdn.com/centos60_x86_64.qcow2'
+# To override image type
+# The following disk format types are supported: qcow vhd vmdk vdi iso raw
+# Bare container format will be used.
+default['openstack']['image']['upload_image_type']['cirros'] = 'qcow'
 
 # logging attribute
 default['openstack']['image']['syslog']['use'] = false

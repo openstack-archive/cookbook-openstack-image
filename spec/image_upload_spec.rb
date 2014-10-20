@@ -19,8 +19,9 @@ describe 'openstack-image::image_upload' do
 
     it 'uploads the cirros image' do
       expect(chef_run).to upload_openstack_image_image('Image setup for cirros').with(
-      image_url: 'http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img',
-      image_name: 'cirros'
+        image_url: 'http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img',
+        image_name: 'cirros',
+        image_type: 'qcow'
       )
     end
 
@@ -36,9 +37,44 @@ describe 'openstack-image::image_upload' do
       stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
         image_url: 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-uec.tar.gz',
-        image_name: 'imageName'
+        image_name: 'imageName',
+        image_type: 'unknown'
       )
       expect(chef_run).to run_bash('Uploading AMI image imageName')
+    end
+
+    %w(vhd vmdk vdi iso raw).each do |image_type|
+      it "uploads the #{image_type} image" do
+        node.set['openstack']['image']['upload_images'] = ["#{image_type}_imageName"]
+        node.set['openstack']['image']['upload_image']["#{image_type}_imageName"] = "image_file.#{image_type}"
+        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = "#{image_type}"
+        stub_command("glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep #{image_type}_imageName").and_return(false)
+        expect(chef_run).to upload_openstack_image_image("Image setup for #{image_type}_imageName").with(
+          image_url: "image_file.#{image_type}",
+          image_name: "#{image_type}_imageName",
+          image_type: "#{image_type}"
+        )
+      end
+    end
+
+    it 'uploads the raw and vdi images' do
+      node.set['openstack']['image']['upload_images'] = ['raw_imageName', 'vdi_imageName']
+      node.set['openstack']['image']['upload_image']['raw_imageName'] = 'image_file.raw'
+      node.set['openstack']['image']['upload_image_type']['raw_imageName'] = 'raw'
+      node.set['openstack']['image']['upload_image']['vdi_imageName'] = 'image_file.vdi'
+      node.set['openstack']['image']['upload_image_type']['vdi_imageName'] = 'vdi'
+      stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep raw_imageName').and_return(false)
+      stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep vdi_imageName').and_return(false)
+      expect(chef_run).to upload_openstack_image_image('Image setup for raw_imageName').with(
+        image_url: 'image_file.raw',
+        image_name: 'raw_imageName',
+        image_type: 'raw'
+      )
+      expect(chef_run).to upload_openstack_image_image('Image setup for vdi_imageName').with(
+        image_url: 'image_file.vdi',
+        image_name: 'vdi_imageName',
+        image_type: 'vdi'
+      )
     end
 
     # TODO(MRV) Need to add provider method testers in here.

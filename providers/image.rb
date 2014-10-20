@@ -49,7 +49,7 @@ def _determine_type(url)
   when '.qcow2', '.img'
     return 'qcow'
   else
-    fail ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for .ami and .qcow2 and .img for .qcow"
+    fail ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for ami and .qcow2 and .img for qcow"
   end
 end
 
@@ -58,16 +58,18 @@ def _upload_image(type, name, api, url)
   when 'ami'
     _upload_ami(name, api, url)
   when 'qcow'
-    _upload_qcow(name, api, url)
+    _upload_image_bare(name, api, url, 'qcow2')
+  else
+    _upload_image_bare(name, api, url, type)
   end
 end
 
-def _upload_qcow(name, api, url)
+def _upload_image_bare(name, api, url, type)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
   c_fmt = '--container-format bare'
-  d_fmt = '--disk-format qcow2'
+  d_fmt = "--disk-format #{type}"
 
-  execute "Uploading QCOW2 image #{name}" do
+  execute "Uploading #{type} image #{name}" do
     cwd '/tmp'
     command "#{glance_cmd} image-create --name #{name} --is-public true #{c_fmt} #{d_fmt} --location #{url}"
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"

@@ -45,9 +45,13 @@ service_tenant_name = node['openstack']['image']['service_tenant_name']
 service_user = node['openstack']['image']['service_user']
 
 node['openstack']['image']['upload_images'].each do |img|
+  type = 'unknown'
+  type = node['openstack']['image']['upload_image_type'][img.to_sym] if node['openstack']['image']['upload_image_type'][img.to_sym]
+
   openstack_image_image "Image setup for #{img.to_s}" do
     image_url node['openstack']['image']['upload_image'][img.to_sym]
     image_name img
+    image_type type
     identity_user service_user
     identity_pass service_pass
     identity_tenant service_tenant_name
