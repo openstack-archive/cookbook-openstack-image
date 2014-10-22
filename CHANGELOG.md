@@ -17,6 +17,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Bump Chef gem to 11.16
 * Add oslo.messaging attributes for api and registry conf files
 * Add support for upload of vhd vmdk vdi iso raw disk formats
+* Allow some attributes for cinder storage backend to be configurable
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

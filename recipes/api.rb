@@ -126,6 +126,7 @@ end
 
 registry_endpoint = endpoint 'image-registry'
 api_bind = endpoint 'image-api-bind'
+cinder_endpoint = endpoint 'block-storage-api'
 
 # Possible combinations of options here
 # - default_store=file
@@ -176,6 +177,7 @@ template '/etc/glance/glance-api.conf' do
     sql_connection: sql_connection,
     glance_flavor: glance_flavor,
     auth_uri: auth_uri,
+    cinder_endpoint: cinder_endpoint,
     identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     swift_store_key: swift_store_key,

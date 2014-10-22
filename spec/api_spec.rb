@@ -181,6 +181,25 @@ describe 'openstack-image::api' do
           let(:file_name) { file.name }
         end
 
+        context 'cinder storage options' do
+          it 'sets default attributes' do
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_catalog_info = volume:cinder:publicURL$/)
+            expect(chef_run).to render_file(file.name).with_content(%r{^cinder_endpoint_template = scheme://host:port/path$})
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_ca_certificates_file = $/)
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_api_insecure = false$/)
+          end
+
+          it 'uses insecure mode' do
+            node.set['openstack']['image']['api']['block-storage']['cinder_api_insecure'] = true
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_api_insecure = true$/)
+          end
+
+          it 'uses cafile' do
+            node.set['openstack']['image']['api']['block-storage']['cinder_ca_certificates_file'] = 'dir/to/path'
+            expect(chef_run).to render_file(file.name).with_content(%r{^cinder_ca_certificates_file = dir/to/path$})
+          end
+        end
+
         context 'swift options' do
           %w(container large_object_size large_object_chunk_size).each do |attr|
             it "sets swift store #{attr} attribute" do
