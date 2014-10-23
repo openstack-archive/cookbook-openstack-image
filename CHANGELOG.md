@@ -15,6 +15,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Fix glance registry owner/group to glance
 * Fix image upload for tar kernel/initrd images
 * Bump Chef gem to 11.16
+* Add oslo.messaging attributes for api and registry conf files
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

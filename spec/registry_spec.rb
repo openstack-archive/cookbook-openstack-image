@@ -128,6 +128,9 @@ describe 'openstack-image::registry' do
           let(:log_file_name) { 'registry.log' }
         end
 
+        it_behaves_like 'messaging' do
+          let(:file_name) { file.name }
+        end
         it_behaves_like 'keystone attribute setter', 'registry'
 
         context 'keystone authtoken attributes with default values' do

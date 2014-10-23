@@ -45,6 +45,22 @@ default['openstack']['image']['service_role'] = 'admin'
 
 default['openstack']['image']['notification_driver'] = 'noop'
 
+# RPC attributes
+# The AMQP exchange to connect to if using RabbitMQ or Qpid
+default['openstack']['image']['control_exchange'] = 'openstack'
+# Size of RPC thread pool
+default['openstack']['image']['rpc_thread_pool_size'] = 64
+# Size of RPC connection pool
+default['openstack']['image']['rpc_conn_pool_size'] = 30
+# Seconds to wait for a response from call or multicall
+default['openstack']['image']['rpc_response_timeout'] = 60
+case node['openstack']['mq']['service_type']
+when 'rabbitmq'
+  default['openstack']['image']['rpc_backend'] = 'rabbit'
+when 'qpid'
+  default['openstack']['image']['rpc_backend'] = 'qpid'
+end
+
 # Set the number of api workers
 default['openstack']['image']['api']['workers'] = [8, node['cpu']['total'].to_i].min
 

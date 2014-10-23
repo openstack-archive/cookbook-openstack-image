@@ -123,7 +123,7 @@ describe 'openstack-image::api' do
         end
 
         context 'commonly named attributes' do
-          %w(verbose debug filesystem_store_datadir notification_driver).each do |attr|
+          %w(verbose debug filesystem_store_datadir).each do |attr|
             it "sets the #{attr} attribute" do
               node.set['openstack']['image'][attr] = "#{attr}_value"
               expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value$/)
@@ -138,11 +138,6 @@ describe 'openstack-image::api' do
         it 'sets the filesystem_store_metadata_file attribute' do
           node.set['openstack']['image']['filesystem_store_metadata_file'] = '/etc/glance/images.json'
           expect(chef_run).to render_file(file.name).with_content(%r(^filesystem_store_metadata_file = /etc/glance/images.json$))
-        end
-
-        it 'sets the notifier_strategy attribute' do
-          node.set['openstack']['mq']['image']['notifier_strategy'] = 'default'
-          expect(chef_run).to render_file(file.name).with_content(/^notifier_strategy = default$/)
         end
 
         context 'api related attributes' do
@@ -182,62 +177,8 @@ describe 'openstack-image::api' do
           end
         end
 
-        context 'messaging' do
-          before do
-            node.set['openstack']['image']['notification_driver'] = 'messaging'
-          end
-
-          it 'has RPC/AMQP defaults set' do
-            [/^amqp_durable_queues=false$/,
-             /^amqp_auto_delete=false$/].each do |line|
-              expect(chef_run).to render_file(file.name).with_content(line)
-            end
-          end
-
-          context 'rabbitmq' do
-            before do
-              node.set['openstack']['mq']['image']['service_type'] = 'rabbitmq'
-              node.set['openstack']['mq']['image']['rabbit']['userid'] = 'rabbit_userid_value'
-              allow_any_instance_of(Chef::Recipe).to receive(:get_password)
-                .with('user', 'rabbit_userid_value')
-                .and_return('rabbit_password_value')
-            end
-
-            %w(host port userid use_ssl notification_topic).each do |attr|
-              it "sets rabbitmq #{attr} attribute" do
-                node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
-                expect(chef_run).to render_file(file.name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
-              end
-            end
-
-            it 'sets the rabbitmq password' do
-              expect(chef_run).to render_file(file.name).with_content(/^rabbit_password = rabbit_password_value$/)
-            end
-
-            it 'sets the rabbitmq vhost' do
-              node.set['openstack']['mq']['image']['rabbit']['vhost'] = 'rabbit_vhost_value'
-              expect(chef_run).to render_file(file.name).with_content(/^rabbit_virtual_host = rabbit_vhost_value$/)
-            end
-          end
-
-          context 'qpid' do
-            before do
-              node.set['openstack']['mq']['image']['service_type'] = 'qpid'
-              node.set['openstack']['mq']['image']['qpid']['username'] = 'qpid_username_value'
-              allow_any_instance_of(Chef::Recipe).to receive(:get_password)
-                .with('user', 'qpid_username_value')
-                .and_return('qpid_password_value')
-            end
-
-            %w(port notification_topic username sasl_mechanisms reconnect reconnect_timeout
-               reconnect_limit reconnect_interval_min reconnect_interval_max reconnect_interval
-               heartbeat protocol tcp_nodelay topology_version).each do |attr|
-              it "sets qpid #{attr} attribute" do
-                node.set['openstack']['mq']['image']['qpid'][attr] = "qpid_#{attr}_value"
-                expect(chef_run).to render_file(file.name).with_content(/^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)
-              end
-            end
-          end
+        it_behaves_like 'messaging' do
+          let(:file_name) { file.name }
         end
 
         context 'swift options' do

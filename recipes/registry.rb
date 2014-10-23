@@ -39,6 +39,14 @@ db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 sql_connection = db_uri('image', db_user, db_pass)
 
+mq_service_type = node['openstack']['mq']['image']['service_type']
+
+if mq_service_type == 'rabbitmq'
+  mq_password = get_password 'user', node['openstack']['mq']['image']['rabbit']['userid']
+elsif mq_service_type == 'qpid'
+  mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
+end
+
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
 registry_bind = endpoint 'image-registry-bind'
@@ -104,6 +112,9 @@ template '/etc/glance/glance-registry.conf' do
     :sql_connection => sql_connection,
     :auth_uri => auth_uri,
     'identity_admin_endpoint' => identity_admin_endpoint,
+    notification_driver: node['openstack']['image']['notification_driver'],
+    mq_service_type: mq_service_type,
+    mq_password: mq_password,
     'service_pass' => service_pass
   )
 
