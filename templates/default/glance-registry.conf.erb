@@ -132,15 +132,19 @@ amqp_auto_delete=<%= node["openstack"]["mq"]["image"]["auto_delete"] %>
 #control_exchange=openstack
 control_exchange=<%= node["openstack"]["image"]["control_exchange"] %>
 
-# AMQP topic used for OpenStack notifications. (list value)
-notification_topics=<%= node["openstack"]["image"]["notification_topics"] %>
-
 <% if @mq_service_type == "rabbitmq" %>
 # Configuration options if sending notifications via rabbitmq (these are
 # the defaults)
 transport_url = rabbit://
+
+<% if node["openstack"]["mq"]["image"]["rabbit"]["ha"] -%>
+rabbit_hosts=<%= @rabbit_hosts %>
+rabbit_ha_queues=True
+<% else -%>
 rabbit_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["host"] %>
 rabbit_port = <%= node["openstack"]["mq"]["image"]["rabbit"]["port"] %>
+<% end -%>
+
 rabbit_use_ssl = <%= node["openstack"]["mq"]["image"]["rabbit"]["use_ssl"] %>
 rabbit_userid = <%= node["openstack"]["mq"]["image"]["rabbit"]["userid"] %>
 rabbit_password = <%= @mq_password %>

@@ -35,6 +35,9 @@ shared_context 'image-stubs' do
         'host' => 'rabbit-host', 'port' => 'rabbit-port'
       )
 
+    allow_any_instance_of(Chef::Recipe).to receive(:rabbit_servers)
+      .and_return '1.1.1.1:5672,2.2.2.2:5672'
+
     allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
       .with('openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
@@ -267,6 +270,25 @@ shared_examples 'messaging' do
         it "sets the rabbitmq #{attr} attribute" do
           node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
           expect(chef_run).to render_file(file_name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
+        end
+      end
+
+      it 'does not have ha rabbit options set by default' do
+        [/^rabbit_hosts=/,
+         /^rabbit_ha_queues=/].each do |line|
+          expect(chef_run).not_to render_file(file.name).with_content(line)
+        end
+      end
+
+      it 'has ha rabbit options set' do
+        node.set['openstack']['mq']['image']['rabbit']['ha'] = true
+        [/^rabbit_hosts=1.1.1.1:5672,2.2.2.2:5672$/,
+         /^rabbit_ha_queues=True/].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
+        end
+        [/^rabbit_host=/,
+         /^rabbit_port=/].each do |line|
+          expect(chef_run).not_to render_file(file.name).with_content(line)
         end
       end
 

@@ -42,6 +42,7 @@ sql_connection = db_uri('image', db_user, db_pass)
 mq_service_type = node['openstack']['mq']['image']['service_type']
 
 if mq_service_type == 'rabbitmq'
+  node['openstack']['mq']['image']['rabbit']['ha'] && (rabbit_hosts = rabbit_servers)
   mq_password = get_password 'user', node['openstack']['mq']['image']['rabbit']['userid']
 elsif mq_service_type == 'qpid'
   mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
@@ -115,7 +116,8 @@ template '/etc/glance/glance-registry.conf' do
     notification_driver: node['openstack']['image']['notification_driver'],
     mq_service_type: mq_service_type,
     mq_password: mq_password,
-    'service_pass' => service_pass
+    'service_pass' => service_pass,
+    rabbit_hosts: rabbit_hosts
   )
 
   notifies :restart, 'service[glance-registry]', :immediately
