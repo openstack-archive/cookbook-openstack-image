@@ -19,6 +19,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Add support for upload of vhd vmdk vdi iso raw disk formats
 * Allow some attributes for cinder storage backend to be configurable
 * Add support for multiple rabbit mq hosts
+* Make auth_version to be v2.0 in configuration file
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

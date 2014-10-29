@@ -154,6 +154,10 @@ describe 'openstack-image::registry' do
             expect(chef_run).to render_file(file.name).with_content(/^insecure = false$/)
           end
 
+          it 'sets registry auth version to the default v2.0' do
+            expect(chef_run).to render_file(file.name).with_content(/^auth_version = v2.0$/)
+          end
+
           it 'sets token hash algorithms' do
             expect(chef_run).to render_file(file.name).with_content(/^hash_algorithms = md5$/)
           end
@@ -178,6 +182,11 @@ describe 'openstack-image::registry' do
           it 'sets cafile' do
             node.set['openstack']['image']['registry']['auth']['cafile'] = 'dir/to/path'
             expect(chef_run).to render_file(file.name).with_content(%r{^cafile = dir/to/path$})
+          end
+
+          it 'sets registry auth version' do
+            node.set['openstack']['image']['registry']['auth']['version'] = 'v3.0'
+            expect(chef_run).to render_file(file.name).with_content(/^auth_version = v3.0$/)
           end
 
           it 'sets insecure' do

@@ -328,6 +328,10 @@ describe 'openstack-image::api' do
             expect(chef_run).not_to render_file(file.name).with_content(/^cafile = $/)
           end
 
+          it 'sets auth version to the default v2.0' do
+            expect(chef_run).to render_file(file.name).with_content(/^auth_version = v2.0$/)
+          end
+
           it 'sets insecure' do
             expect(chef_run).to render_file(file.name).with_content(/^insecure = false$/)
           end
@@ -356,6 +360,11 @@ describe 'openstack-image::api' do
           it 'sets cafile' do
             node.set['openstack']['image']['api']['auth']['cafile'] = 'dir/to/path'
             expect(chef_run).to render_file(file.name).with_content(%r{^cafile = dir/to/path$})
+          end
+
+          it 'sets auth version' do
+            node.set['openstack']['image']['api']['auth']['version'] = 'v3.0'
+            expect(chef_run).to render_file(file.name).with_content(/^auth_version = v3.0$/)
           end
 
           it 'sets insecure' do

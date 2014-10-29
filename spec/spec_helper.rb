@@ -205,11 +205,6 @@ shared_examples 'keystone attribute setter' do |version|
       node.set['openstack']['image'][version]['auth']['version'] = 'v3.0'
       expect(chef_run).to render_file(file.name).with_content(/^auth_version = v3.0$/)
     end
-
-    it 'does not show the version attribute if it is v2.0' do
-      node.set['openstack']['image'][version]['auth']['version'] = 'v2.0'
-      expect(chef_run).not_to render_file(file.name).with_content(/^auth_version = v2.0$/)
-    end
   end
 
   %w(tenant_name user).each do |attr|
