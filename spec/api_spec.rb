@@ -131,6 +131,15 @@ describe 'openstack-image::api' do
           end
         end
 
+        it 'uses default stores attribute' do
+          expect(chef_run).to render_file(file.name).with_content(/^stores = file, http$/)
+        end
+
+        it 'sets the stores attribute' do
+          node.set['openstack']['image']['api']['stores'] = ['swift']
+          expect(chef_run).to render_file(file.name).with_content(/^stores = swift$/)
+        end
+
         it 'uses default filesystem_store_metadata_file attribute' do
           expect(chef_run).not_to render_file(file.name).with_content(/^filesystem_store_metadata_file =/)
         end

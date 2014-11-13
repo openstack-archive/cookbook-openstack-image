@@ -9,26 +9,6 @@ verbose = <%= node["openstack"]["image"]["verbose"] %>
 #debug = False
 debug = <%= node["openstack"]["image"]["debug"] %>
 
-# Which backend scheme should Glance use by default is not specified
-# in a request to add a new image to Glance? Known schemes are determined
-# by the known_stores option below.
-# Default: 'file'
-default_store = <%= node["openstack"]["image"]["api"]["default_store"] %>
-
-# List of which store classes and store class locations are
-# currently known to glance at startup.
-# Existing but disabled stores:
-#      glance.store.rbd.Store,
-#      glance.store.s3.Store,
-#      glance.store.swift.Store,
-#      glance.store.sheepdog.Store,
-#      glance.store.cinder.Store,
-#      glance.store.gridfs.Store,
-#      glance.store.vmware_datastore.Store,
-#known_stores = glance.store.filesystem.Store,
-#               glance.store.http.Store
-
-
 # Maximum image size (in bytes) that may be uploaded through the
 # Glance API server. Defaults to 1 TB.
 # WARNING: this value should only be increased after careful consideration
@@ -319,6 +299,26 @@ qpid_tcp_nodelay=<%= node["openstack"]["mq"]["image"]["qpid"]["tcp_nodelay"] %>
 qpid_topology_version=<%= node["openstack"]["mq"]["image"]["qpid"]["topology_version"] %>
 <% end %>
 <% end %>
+
+[glance_store]
+# Which backend scheme should Glance use by default is not specified
+# in a request to add a new image to Glance? Known schemes are determined
+# by the stores option below.
+# Default: 'file'
+default_store = <%= node["openstack"]["image"]["api"]["default_store"] %>
+
+# List of which store classes and store class locations are
+# currently known to glance at startup.
+# Existing but disabled stores:
+#      rbd,
+#      s3,
+#      swift,
+#      sheepdog,
+#      cinder,
+#      gridfs,
+#      vmware_datastore,
+#stores = file, http
+stores = <%= node["openstack"]["image"]["api"]["stores"].join(', ') %>
 
 # ============ Filesystem Store Options ========================
 

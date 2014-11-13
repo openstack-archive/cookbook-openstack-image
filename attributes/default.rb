@@ -107,6 +107,8 @@ default['openstack']['image']['api']['caching'] = false
 default['openstack']['image']['api']['cache_management'] = false
 
 default['openstack']['image']['api']['default_store'] = 'file'
+# List of which store classes and store class locations are currently known to glance at startup
+default['openstack']['image']['api']['stores'] = ['file', 'http']
 
 default['openstack']['image']['filesystem_store_datadir'] = '/var/lib/glance/images'
 default['openstack']['image']['filesystem_store_metadata_file'] = nil

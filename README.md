@@ -134,6 +134,7 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['upload_image']['<imagename>']` - URL location of the `<imagename>` image. There can be multiple instances of this line to define multiple imagess (eg natty, maverick, fedora17 etc)
 --- example `openstack['image']['upload_image']['natty']` - "http://c250663.r63.cf1.rackcdn.com/ubuntu-11.04-server-uec-amd64-multinic.tar.gz"
 * `openstack['image']['api']['default_store']` - Toggles the backend storage type.  Currently supported is "file", "swift" and "rbd".
+* `openstack['image']['api']['stores']` - List of which store classes and store class locations are currently known to glance at startup
 * `openstack['image']['api']['block-storage']['cinder_catalog_info']` - Info to match when looking for cinder in the service catalog
 * `openstack['image']['api']['block-storage']['cinder_api_insecure']` - Allow to perform insecure SSL requests to cinder (boolean value)
 * `openstack['image']['api']['block-storage']['cinder_ca_certificates_file']` - Location of ca certicates file to use for cinder client requests
