@@ -183,7 +183,7 @@ describe 'openstack-image::api' do
 
         context 'cinder storage options' do
           it 'sets default attributes' do
-            expect(chef_run).to render_file(file.name).with_content(/^cinder_catalog_info = volume:cinder:publicURL$/)
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_catalog_info = volumev2:cinderv2:publicURL$/)
             expect(chef_run).to render_file(file.name).with_content(%r{^cinder_endpoint_template = scheme://host:port/path$})
             expect(chef_run).to render_file(file.name).with_content(/^cinder_ca_certificates_file = $/)
             expect(chef_run).to render_file(file.name).with_content(/^cinder_api_insecure = false$/)
@@ -197,6 +197,11 @@ describe 'openstack-image::api' do
           it 'uses cafile' do
             node.set['openstack']['image']['api']['block-storage']['cinder_ca_certificates_file'] = 'dir/to/path'
             expect(chef_run).to render_file(file.name).with_content(%r{^cinder_ca_certificates_file = dir/to/path$})
+          end
+
+          it 'sets cinder_catalog_info' do
+            node.set['openstack']['image']['api']['block-storage']['cinder_catalog_info'] = 'volume:cinder:publicURL'
+            expect(chef_run).to render_file(file.name).with_content(/^cinder_catalog_info = volume:cinder:publicURL$/)
           end
         end
 

@@ -20,6 +20,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 * Allow some attributes for cinder storage backend to be configurable
 * Add support for multiple rabbit mq hosts
 * Make auth_version to be v2.0 in configuration file
+* Set the default cinder version to be v2
 
 ## 9.2.0
 * python_packages database client attributes have been migrated to the -common cookbook

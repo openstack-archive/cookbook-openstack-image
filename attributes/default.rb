@@ -118,7 +118,7 @@ default['openstack']['image']['api']['swift']['store_region'] = nil
 default['openstack']['image']['api']['cache']['image_cache_max_size'] = '10737418240'
 
 # Info to match when looking for cinder in the service catalog
-default['openstack']['image']['api']['block-storage']['cinder_catalog_info'] = 'volume:cinder:publicURL'
+default['openstack']['image']['api']['block-storage']['cinder_catalog_info'] = 'volumev2:cinderv2:publicURL'
 # Allow to perform insecure SSL requests to cinder (boolean value)
 default['openstack']['image']['api']['block-storage']['cinder_api_insecure'] = false
 # Location of ca certicates file to use for cinder client requests
