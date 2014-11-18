@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cookbook-openstack-image.
 
+## 10.1.0
+### Blue print
+* Make container_formats and disk_formats configurable
+
 ## 10.0.0
 * Upgrading to Juno
 * filesystem_store_metadata_file in glance-api.conf configurable with node attribute

@@ -82,10 +82,10 @@ show_image_direct_url = <%= node["openstack"]["image"]["api"]["show_image_direct
 #send_identity_headers = False
 
 # Supported values for the 'container_format' image attribute
-#container_formats=ami,ari,aki,bare,ovf,ova
+container_formats = <%= node["openstack"]["image"]["api"]["container_formats"].join(",") %>
 
 # Supported values for the 'disk_format' image attribute
-#disk_formats=ami,ari,aki,vhd,vmdk,raw,qcow2,vdi,iso
+disk_formats = <%= node["openstack"]["image"]["api"]["disk_formats"].join(",") %>
 
 # Directory to use for lock files. Default to a temp directory
 # (string value). This setting needs to be the same for both

@@ -158,6 +158,13 @@ describe 'openstack-image::api' do
           end
         end
 
+        it 'sets container and disk formats attributes' do
+          %w(container_formats disk_formats).each do |attr|
+            node.set['openstack']['image']['api'][attr] = ["#{attr}_value1", "#{attr}_value2"]
+            expect(chef_run).to render_file(file.name).with_content(/^#{attr} = #{attr}_value1,#{attr}_value2$/)
+          end
+        end
+
         %w(bind registry).each do |type|
           %w(host port).each do |param|
             it "has a #{type}_#{param}" do
