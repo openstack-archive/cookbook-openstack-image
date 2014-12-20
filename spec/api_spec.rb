@@ -61,41 +61,11 @@ describe 'openstack-image::api' do
     describe 'using rbd for default_store' do
       before do
         node.set['openstack']['image']['api']['default_store'] = 'rbd'
+        node.set['ceph']['config']['fsid'] = '00000000-0000-0000-0000-000000000000'
       end
 
-      it 'upgrades python-ceph package' do
-        expect(chef_run).to upgrade_package('python-ceph')
-      end
-
-      it 'honors platform package name and option overrides for ceph packages' do
-        node.set['openstack']['image']['platform']['package_overrides'] = '--override1 --override2'
-        node.set['openstack']['image']['platform']['ceph_packages'] = ['my-ceph']
-
-        expect(chef_run).to upgrade_package('my-ceph').with(options: '--override1 --override2')
-      end
-
-      it 'includes the ceph_client recipe from openstack-common' do
-        expect(chef_run).to include_recipe('openstack-common::ceph_client')
-      end
-
-      describe 'cephx client keyring file' do
-        let(:file) { chef_run.template('/etc/ceph/ceph.client.glance.keyring') }
-
-        it 'creates /etc/ceph/ceph.client.glance.keyring' do
-          expect(chef_run).to create_template(file.name).with(
-            user: 'glance',
-            group: 'glance',
-            mode: 00600,
-            cookbook: 'openstack-common'
-          )
-        end
-
-        it 'has the proper content' do
-          [/^\[client\.glance\]$/,
-           /^  key = rbd-pass$/].each do |content|
-            expect(chef_run).to render_file(file.name).with_content(content)
-          end
-        end
+      it 'includes the ceph package' do
+        expect(chef_run).to include_recipe('ceph')
       end
     end
 
@@ -293,10 +263,10 @@ describe 'openstack-image::api' do
           end
         end
 
-        %w(store_ceph_conf store_user store_pool store_chunk_size).each do |attr|
+        %w(ceph_conf user pool chunk_size).each do |attr|
           it "sets the rbd #{attr} attribute" do
-            node.set['openstack']['image']['api']['rbd']["rbd_#{attr}"] = "rbd_#{attr}_value"
-            expect(chef_run).to render_file(file.name).with_content(/^rbd_#{attr} = rbd_#{attr}_value$/)
+            node.set['openstack']['image']['api']['rbd']["#{attr}"] = "rbd_#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/^rbd_store_#{attr} = rbd_#{attr}_value$/)
           end
         end
 

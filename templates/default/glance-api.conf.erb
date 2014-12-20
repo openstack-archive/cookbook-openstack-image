@@ -501,22 +501,22 @@ s3_store_create_bucket_on_put = False
 # include a reference to the right keyring
 # in a client.<USER> section
 #rbd_store_ceph_conf = /etc/ceph/ceph.conf
-rbd_store_ceph_conf = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_ceph_conf"] %>
+rbd_store_ceph_conf = <%= node["openstack"]["image"]["api"]["rbd"]["ceph_conf"] %>
 
 # RADOS user to authenticate as (only applicable if using cephx)
 # If <None>, a default will be chosen based on the client. section
 # in rbd_store_ceph_conf
 #rbd_store_user = <None>
-rbd_store_user = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_user"] %>
+rbd_store_user = <%= node["openstack"]["image"]["api"]["rbd"]["user"] %>
 
 # RADOS pool in which images are stored
 #rbd_store_pool = images
-rbd_store_pool = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_pool"] %>
+rbd_store_pool = <%= node["openstack"]["image"]["api"]["rbd"]["pool"] %>
 
 # RADOS images will be chunked into objects of this size (in megabytes).
 # For best performance, this should be a power of two
 #rbd_store_chunk_size = 8
-rbd_store_chunk_size = <%= node["openstack"]["image"]["api"]["rbd"]["rbd_store_chunk_size"] %>
+rbd_store_chunk_size = <%= node["openstack"]["image"]["api"]["rbd"]["chunk_size"] %>
 
 # ============ Sheepdog Store Options =============================
 
