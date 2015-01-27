@@ -33,7 +33,7 @@ platform_options['image_client_packages'].each do |pkg|
   end
 end
 
-identity_endpoint = endpoint 'identity-api'
+identity_endpoint = internal_endpoint 'identity-internal'
 
 # For glance client, only identity v2 is supported. See discussion on
 # https://bugs.launchpad.net/openstack-chef/+bug/1207504

@@ -26,12 +26,14 @@ class ::Chef::Recipe # rubocop:disable Documentation
   include ::Openstack
 end
 
-identity_admin_endpoint = endpoint 'identity-admin'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
 
 token = get_secret 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
-api_endpoint = endpoint 'image-api'
+api_internal_endpoint = internal_endpoint 'image-api'
+api_public_endpoint = public_endpoint 'image-api'
+api_admin_endpoint = admin_endpoint 'image-api'
 
 service_pass = get_password 'service', 'openstack-image'
 service_tenant_name = node['openstack']['image']['service_tenant_name']
@@ -56,9 +58,9 @@ openstack_identity_register 'Register Image Endpoint' do
   bootstrap_token token
   service_type 'image'
   endpoint_region region
-  endpoint_adminurl api_endpoint.to_s
-  endpoint_internalurl api_endpoint.to_s
-  endpoint_publicurl api_endpoint.to_s
+  endpoint_adminurl api_admin_endpoint.to_s
+  endpoint_internalurl api_internal_endpoint.to_s
+  endpoint_publicurl api_public_endpoint.to_s
 
   action :create_endpoint
 end

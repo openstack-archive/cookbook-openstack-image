@@ -48,9 +48,9 @@ elsif mq_service_type == 'qpid'
   mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
 end
 
-identity_endpoint = endpoint 'identity-api'
-identity_admin_endpoint = endpoint 'identity-admin'
-registry_bind = endpoint 'image-registry-bind'
+identity_endpoint = internal_endpoint 'identity-internal'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
+registry_bind = internal_endpoint 'image-registry-bind'
 service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']

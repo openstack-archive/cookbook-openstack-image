@@ -57,6 +57,93 @@ describe 'openstack-image::identity_registration' do
         action: [:create_endpoint]
       )
     end
+
+    it 'with different public url' do
+      public_url = 'https://public.host:123/public_path'
+      node.set['openstack']['endpoints']['public']['image-api']['uri'] = public_url
+      resource = chef_run.find_resource(
+        'openstack-identity_register',
+        'Register Image Endpoint'
+      ).to_hash
+
+      expect(resource).to include(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        service_type: 'image',
+        endpoint_region: 'RegionOne',
+        endpoint_adminurl: 'http://127.0.0.1:9292',
+        endpoint_internalurl: 'http://127.0.0.1:9292',
+        endpoint_publicurl: public_url,
+        action: [:create_endpoint]
+      )
+    end
+
+    it 'with different admin url' do
+      admin_url = 'http://admin.host:456/admin_path'
+      node.set['openstack']['endpoints']['admin']['image-api']['uri'] = admin_url
+      node.set['openstack']['endpoints']['identity-admin']['uri'] = 'http://127.0.0.1:35357/v2.0'
+      resource = chef_run.find_resource(
+        'openstack-identity_register',
+        'Register Image Endpoint'
+      ).to_hash
+
+      expect(resource).to include(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        service_type: 'image',
+        endpoint_region: 'RegionOne',
+        endpoint_adminurl: admin_url,
+        endpoint_internalurl: 'http://127.0.0.1:9292',
+        endpoint_publicurl: 'http://127.0.0.1:9292',
+        action: [:create_endpoint]
+      )
+    end
+
+    it 'with different internal url' do
+      internal_url = 'http://internal.host:789/internal_path'
+      node.set['openstack']['endpoints']['internal']['image-api']['uri'] = internal_url
+      resource = chef_run.find_resource(
+        'openstack-identity_register',
+        'Register Image Endpoint'
+      ).to_hash
+
+      expect(resource).to include(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        service_type: 'image',
+        endpoint_region: 'RegionOne',
+        endpoint_adminurl: 'http://127.0.0.1:9292',
+        endpoint_internalurl: internal_url,
+        endpoint_publicurl: 'http://127.0.0.1:9292',
+        action: [:create_endpoint]
+      )
+    end
+
+    it 'with different admin,internal,public urls' do
+      internal_url = 'http://internal.host:789/internal_path'
+      admin_url = 'http://admin.host:456/admin_path'
+      public_url = 'https://public.host:123/public_path'
+      node.set['openstack']['endpoints']['internal']['image-api']['uri'] = internal_url
+      node.set['openstack']['endpoints']['admin']['image-api']['uri'] = admin_url
+      node.set['openstack']['endpoints']['identity-admin']['uri'] = 'http://127.0.0.1:35357/v2.0'
+
+      node.set['openstack']['endpoints']['public']['image-api']['uri'] = public_url
+      resource = chef_run.find_resource(
+        'openstack-identity_register',
+        'Register Image Endpoint'
+      ).to_hash
+
+      expect(resource).to include(
+        auth_uri: 'http://127.0.0.1:35357/v2.0',
+        bootstrap_token: 'bootstrap-token',
+        service_type: 'image',
+        endpoint_region: 'RegionOne',
+        endpoint_adminurl: admin_url,
+        endpoint_internalurl: internal_url,
+        endpoint_publicurl: public_url,
+        action: [:create_endpoint]
+      )
+    end
   end
 
   it 'registers service tenant' do

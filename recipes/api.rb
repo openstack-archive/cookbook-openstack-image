@@ -99,8 +99,8 @@ end
 
 glance = node['openstack']['image']
 
-identity_endpoint = endpoint 'identity-api'
-identity_admin_endpoint = endpoint 'identity-admin'
+identity_endpoint = internal_endpoint 'identity-internal'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
 service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
@@ -118,9 +118,9 @@ elsif mq_service_type == 'qpid'
   mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
 end
 
-registry_endpoint = endpoint 'image-registry'
-api_bind = endpoint 'image-api-bind'
-cinder_endpoint = endpoint 'block-storage-api'
+registry_endpoint = internal_endpoint 'image-registry'
+api_bind = internal_endpoint 'image-api-bind'
+cinder_endpoint = internal_endpoint 'block-storage-api'
 
 # Possible combinations of options here
 # - default_store=file

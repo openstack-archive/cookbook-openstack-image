@@ -93,7 +93,7 @@ describe 'openstack-image::registry' do
         include_context 'sql-stubs'
 
         before do
-          allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+          allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
             .with('image-registry-bind')
             .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
         end

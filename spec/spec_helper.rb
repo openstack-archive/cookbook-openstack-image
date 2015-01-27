@@ -154,22 +154,22 @@ end
 
 shared_context 'endpoint-stubs' do
   before do
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
       .with('image-registry')
       .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
-      .with('identity-api')
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
+      .with('identity-internal')
       .and_return('identity_endpoint_value')
     identity_admin_endpoint = double(host: 'identity_admin_endpoint_host_value',
                                      port: 'identity_admin_endpoint_port_value',
                                      scheme: 'identity_admin_endpoint_protocol_value')
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:admin_endpoint)
       .with('identity-admin')
       .and_return(identity_admin_endpoint)
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
       .with('image-api-bind')
       .and_return(double(host: 'bind_host_value', port: 'bind_port_value'))
-    allow_any_instance_of(Chef::Recipe).to receive(:endpoint)
+    allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
       .with('block-storage-api')
       .and_return(double(scheme: 'scheme', host: 'host', port: 'port', path: '/path'))
     allow_any_instance_of(Chef::Recipe).to receive(:auth_uri_transform)
