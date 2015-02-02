@@ -5,6 +5,7 @@ This file is used to list changes made in each version of cookbook-openstack-ima
 ## 10.1.0
 ### Blue print
 * Make container_formats and disk_formats configurable
+* Set the owner/group of openstack image cache directory to glance/glance.
 
 ## 10.0.0
 * Upgrading to Juno

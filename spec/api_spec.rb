@@ -31,6 +31,7 @@ describe 'openstack-image::api' do
     include_examples 'common-logging-recipe'
     include_examples 'common-packages'
     include_examples 'cache-directory'
+    include_examples 'image-lib-cache-directory'
     include_examples 'glance-directory'
 
     it 'does not upgrade swift package by default' do
