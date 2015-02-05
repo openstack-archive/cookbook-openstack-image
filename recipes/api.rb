@@ -60,28 +60,21 @@ if node['openstack']['image']['api']['default_store'] == 'swift'
   end
 
 elsif node['openstack']['image']['api']['default_store'] == 'rbd'
-  rbd_user = node['openstack']['image']['api']['rbd']['rbd_store_user']
-  rbd_key = get_password 'service', node['openstack']['image']['api']['rbd']['key_name']
+  include_recipe 'ceph'
 
-  include_recipe 'openstack-common::ceph_client'
+  caps = { 'mon' => 'allow r',
+           'osd' => "allow class-read object_prefix rbd_children, allow rwx pool=#{node['openstack']['image']['api']['rbd']['pool']}" }
 
-  platform_options['ceph_packages'].each do |pkg|
-    package pkg do
-      options platform_options['package_overrides']
-      action :upgrade
-    end
-  end
-
-  template "/etc/ceph/ceph.client.#{rbd_user}.keyring" do
-    source 'ceph.client.keyring.erb'
-    cookbook 'openstack-common'
+  ceph_client node['openstack']['image']['api']['rbd']['user'] do
+    name node['openstack']['image']['api']['rbd']['user']
+    caps caps
+    keyname "client.#{node['openstack']['image']['api']['rbd']['user']}"
+    filename "/etc/ceph/ceph.client.#{node['openstack']['image']['api']['rbd']['user']}.keyring"
     owner node['openstack']['image']['user']
     group node['openstack']['image']['group']
-    mode 00600
-    variables(
-      name: rbd_user,
-      key: rbd_key
-    )
+
+    action :add
+    notifies :restart, 'service[glance-api]'
   end
 end
 

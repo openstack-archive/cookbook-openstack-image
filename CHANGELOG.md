@@ -3,6 +3,7 @@
 This file is used to list changes made in each version of cookbook-openstack-image.
 
 ## 10.1.0
+* Add dependency on upstream ceph cookbook for better key management
 ### Blue print
 * Make container_formats and disk_formats configurable
 

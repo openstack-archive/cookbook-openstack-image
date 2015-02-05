@@ -141,12 +141,10 @@ default['openstack']['image']['cache']['stall_time'] = 86400
 default['openstack']['image']['cache']['grace_period'] = 3600
 
 # Ceph Options
-default['openstack']['image']['api']['rbd']['rbd_store_ceph_conf'] = '/etc/ceph/ceph.conf'
-default['openstack']['image']['api']['rbd']['rbd_store_user'] = 'glance'
-default['openstack']['image']['api']['rbd']['rbd_store_pool'] = 'images'
-default['openstack']['image']['api']['rbd']['rbd_store_chunk_size'] = '8'
-# The name used for the data bag item containing the Cephx user's password
-default['openstack']['image']['api']['rbd']['key_name'] = 'rbd-image'
+default['openstack']['image']['api']['rbd']['ceph_conf'] = '/etc/ceph/ceph.conf'
+default['openstack']['image']['api']['rbd']['user'] = 'glance'
+default['openstack']['image']['api']['rbd']['pool'] = 'images'
+default['openstack']['image']['api']['rbd']['chunk_size'] = '8'
 
 # API to use for accessing data. Default value points to sqlalchemy
 # package.
