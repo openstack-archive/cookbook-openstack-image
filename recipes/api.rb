@@ -247,6 +247,14 @@ cron 'glance-cache-cleaner' do
   command "/usr/bin/glance-cache-cleaner #{node['openstack']['image']['cron']['redirection']}"
 end
 
+# Ensure the owner/group of image cache directory is correct
+directory node['openstack']['image']['cache']['dir'] do
+  owner node['openstack']['image']['user']
+  group node['openstack']['image']['group']
+  recursive true
+  mode 00755
+end
+
 template '/etc/glance/glance-scrubber-paste.ini' do
   source 'glance-scrubber-paste.ini.erb'
   owner node['openstack']['image']['user']

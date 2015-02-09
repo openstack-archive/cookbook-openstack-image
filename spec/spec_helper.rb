@@ -111,6 +111,25 @@ shared_examples 'cache-directory' do
   end
 end
 
+shared_examples 'image-lib-cache-directory' do
+  describe '/var/lib/glance/image-cache/' do
+    let(:dir) { chef_run.directory('/var/lib/glance/image-cache/') }
+
+    it 'has proper owner' do
+      expect(dir.owner).to eq('glance')
+      expect(dir.group).to eq('glance')
+    end
+
+    it 'has proper modes' do
+      expect(sprintf('%o', dir.mode)).to eq '755'
+    end
+
+    it 'creates directory recursively' do
+      expect(dir.recursive).to eq(true)
+    end
+  end
+end
+
 shared_examples 'glance-directory' do
   describe '/etc/glance' do
     let(:dir) { chef_run.directory('/etc/glance') }
