@@ -1,5 +1,6 @@
 name              'openstack-image'
 maintainer        'Opscode, Inc.'
+maintainer_email  'opscode-chef-openstack@googlegroups.com'
 license           'Apache 2.0'
 description       'Installs and configures the Glance Image Registry and Delivery Service'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
