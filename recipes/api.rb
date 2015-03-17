@@ -189,15 +189,6 @@ template '/etc/glance/glance-api.conf' do
   notifies :restart, 'service[glance-api]', :immediately
 end
 
-template '/etc/glance/glance-api-paste.ini' do
-  source 'glance-api-paste.ini.erb'
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode   00644
-
-  notifies :restart, 'service[glance-api]', :immediately
-end
-
 template '/etc/glance/glance-cache.conf' do
   source 'glance-cache.conf.erb'
   owner node['openstack']['image']['user']
@@ -208,17 +199,6 @@ template '/etc/glance/glance-cache.conf' do
     registry_port: registry_endpoint.port,
     vmware_server_password: vmware_server_password
   )
-
-  notifies :restart, 'service[glance-api]', :immediately
-end
-
-# TODO(jaypipes) I don't think this even exists or at least isn't
-# used, since the Glance cache middleware goes in the api-paste.ini...
-template '/etc/glance/glance-cache-paste.ini' do
-  source 'glance-cache-paste.ini.erb'
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode   00644
 
   notifies :restart, 'service[glance-api]', :immediately
 end
@@ -253,13 +233,6 @@ directory node['openstack']['image']['cache']['dir'] do
   group node['openstack']['image']['group']
   recursive true
   mode 00755
-end
-
-template '/etc/glance/glance-scrubber-paste.ini' do
-  source 'glance-scrubber-paste.ini.erb'
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode   00644
 end
 
 if node['openstack']['image']['api']['default_store'] == 'file'
