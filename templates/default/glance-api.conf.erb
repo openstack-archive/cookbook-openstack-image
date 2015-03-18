@@ -259,6 +259,9 @@ amqp_auto_delete=<%= node["openstack"]["mq"]["image"]["auto_delete"] %>
 control_exchange=<%= node["openstack"]["image"]["control_exchange"] %>
 
 <% if @mq_service_type == "rabbitmq" %>
+<% if node["openstack"]["mq"]["image"]["rabbit"]["use_ssl"] && node["openstack"]["mq"]["image"]["rabbit"]["kombu_ssl_version"] %>
+kombu_ssl_version=<%= node["openstack"]["mq"]["image"]["rabbit"]["kombu_ssl_version"] %>
+<% end -%>
 # Configuration options if sending notifications via rabbitmq (these are
 # the defaults)
 transport_url = rabbit://
