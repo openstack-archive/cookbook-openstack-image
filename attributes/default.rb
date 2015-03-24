@@ -41,7 +41,7 @@ default['openstack']['image']['rabbit_server_chef_role'] = 'os-ops-messaging'
 
 default['openstack']['image']['service_tenant_name'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
-default['openstack']['image']['service_role'] = 'admin'
+default['openstack']['image']['service_role'] = 'service'
 
 default['openstack']['image']['notification_driver'] = 'noop'
 
