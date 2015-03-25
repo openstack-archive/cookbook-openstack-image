@@ -71,7 +71,7 @@ default['openstack']['image']['registry']['workers'] = [8, node['cpu']['total'].
 default['openstack']['image']['api']['show_image_direct_url'] = 'False'
 
 # Supported values for the 'container_format' image attribute
-default['openstack']['image']['api']['container_formats'] = %w(ami ari aki bare ovf ova)
+default['openstack']['image']['api']['container_formats'] = %w(ami ari aki bare ovf ova docker dockerref)
 
 # Supported values for the 'disk_format' image attribute
 default['openstack']['image']['api']['disk_formats'] = %w(ami ari aki vhd vmdk raw qcow2 vdi iso)
