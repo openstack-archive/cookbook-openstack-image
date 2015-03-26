@@ -104,6 +104,7 @@ identity_admin_endpoint = admin_endpoint 'identity-admin'
 service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
+identity_uri = identity_uri_transform(identity_admin_endpoint)
 
 db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
@@ -171,8 +172,8 @@ template '/etc/glance/glance-api.conf' do
     sql_connection: sql_connection,
     glance_flavor: glance_flavor,
     auth_uri: auth_uri,
+    identity_uri: identity_uri,
     cinder_endpoint: cinder_endpoint,
-    identity_admin_endpoint: identity_admin_endpoint,
     service_pass: service_pass,
     rabbit_hosts: rabbit_hosts,
     swift_store_key: swift_store_key,

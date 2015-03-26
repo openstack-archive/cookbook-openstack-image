@@ -54,6 +54,7 @@ registry_bind = internal_endpoint 'image-registry-bind'
 service_pass = get_password 'service', 'openstack-image'
 
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['registry']['auth']['version']
+identity_uri = identity_uri_transform(identity_admin_endpoint)
 
 glance_user = node['openstack']['image']['user']
 glance_group = node['openstack']['image']['group']
@@ -112,7 +113,7 @@ template '/etc/glance/glance-registry.conf' do
     :registry_bind_port => registry_bind.port,
     :sql_connection => sql_connection,
     :auth_uri => auth_uri,
-    'identity_admin_endpoint' => identity_admin_endpoint,
+    :identity_uri => identity_uri,
     notification_driver: node['openstack']['image']['notification_driver'],
     mq_service_type: mq_service_type,
     mq_password: mq_password,
