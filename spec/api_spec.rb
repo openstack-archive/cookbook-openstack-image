@@ -376,28 +376,6 @@ describe 'openstack-image::api' do
       end
     end
 
-    describe 'glance-api-paste.ini' do
-      let(:file) { chef_run.template('/etc/glance/glance-api-paste.ini') }
-
-      it 'creates glance-api-paste.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'glance',
-          group: 'glance',
-          mode: 00644
-        )
-      end
-
-      context 'template contents' do
-        it_behaves_like 'custom template banner displayer' do
-          let(:file_name) { file.name }
-        end
-      end
-
-      it 'notifies glance-api restart' do
-        expect(file).to notify('service[glance-api]').to(:restart)
-      end
-    end
-
     describe 'glance-cache.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-cache.conf') }
 
@@ -470,26 +448,6 @@ describe 'openstack-image::api' do
       end
     end
 
-    describe 'glance-cache-paste.ini' do
-      let(:file) { chef_run.template('/etc/glance/glance-cache-paste.ini') }
-
-      it 'creates glance-cache-paste.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'glance',
-          group: 'glance',
-          mode: 00644
-        )
-      end
-
-      it_behaves_like 'custom template banner displayer' do
-        let(:file_name) { file.name }
-      end
-
-      it 'notifies glance-api restart' do
-        expect(file).to notify('service[glance-api]').to(:restart)
-      end
-    end
-
     describe 'glance-scrubber.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-scrubber.conf') }
 
@@ -525,22 +483,6 @@ describe 'openstack-image::api' do
       expect(cron.command).to eq '/usr/bin/glance-cache-cleaner > /dev/null 2>&1'
       expect(cron.minute).to eq '01'
       expect(cron.hour).to eq '00'
-    end
-
-    describe 'glance-scrubber-paste.ini' do
-      let(:file) { chef_run.template('/etc/glance/glance-scrubber-paste.ini') }
-
-      it 'creates glance-scrubber-paste.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'glance',
-          group: 'glance',
-          mode: 00644
-        )
-      end
-
-      it_behaves_like 'custom template banner displayer' do
-        let(:file_name) { file.name }
-      end
     end
   end
 end

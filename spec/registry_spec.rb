@@ -220,25 +220,5 @@ describe 'openstack-image::registry' do
         expect(chef_run).not_to run_execute(cmd)
       end
     end
-
-    describe 'glance-registry-paste.ini' do
-      let(:file) { chef_run.template('/etc/glance/glance-registry-paste.ini') }
-
-      it 'creates glance-registry-paste.ini' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'glance',
-          group: 'glance',
-          mode: 00644
-        )
-      end
-
-      it_behaves_like 'custom template banner displayer' do
-        let(:file_name) { file.name }
-      end
-
-      it 'notifies glance-registry restart' do
-        expect(file).to notify('service[glance-registry]').to(:restart)
-      end
-    end
   end
 end

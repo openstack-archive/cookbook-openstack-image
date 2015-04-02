@@ -137,12 +137,3 @@ execute 'glance-manage db_sync' do
   group glance_group
   only_if { node['openstack']['db']['image']['migrate'] }
 end
-
-template '/etc/glance/glance-registry-paste.ini' do
-  source 'glance-registry-paste.ini.erb'
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode   00644
-
-  notifies :restart, 'service[glance-registry]', :immediately
-end
