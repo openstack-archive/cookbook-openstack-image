@@ -283,14 +283,14 @@ shared_examples 'messaging' do
       %w(host port userid use_ssl).each do |attr|
         it "sets the rabbitmq #{attr} attribute" do
           node.set['openstack']['mq']['image']['rabbit'][attr] = "rabbit_#{attr}_value"
-          expect(chef_run).to render_file(file_name).with_content(/^rabbit_#{attr} = rabbit_#{attr}_value$/)
+          expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_rabbit', /^rabbit_#{attr} = rabbit_#{attr}_value$/)
         end
       end
 
       it 'does not have ha rabbit options set by default' do
         [/^rabbit_hosts=/,
          /^rabbit_ha_queues=/].each do |line|
-          expect(chef_run).not_to render_file(file.name).with_content(line)
+          expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
         end
       end
 
@@ -298,37 +298,37 @@ shared_examples 'messaging' do
         node.set['openstack']['mq']['image']['rabbit']['ha'] = true
         [/^rabbit_hosts=1.1.1.1:5672,2.2.2.2:5672$/,
          /^rabbit_ha_queues=True/].each do |line|
-          expect(chef_run).to render_file(file.name).with_content(line)
+          expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
         end
         [/^rabbit_host=/,
          /^rabbit_port=/].each do |line|
-          expect(chef_run).not_to render_file(file.name).with_content(line)
+          expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', line)
         end
       end
 
       it 'sets the rabbitmq password' do
-        expect(chef_run).to render_file(file_name).with_content(/^rabbit_password = rabbit_password_value$/)
+        expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_rabbit', /^rabbit_password = rabbit_password_value$/)
       end
 
       it 'sets the rabbitmq vhost' do
         node.set['openstack']['mq']['image']['rabbit']['vhost'] = 'rabbit_vhost_value'
-        expect(chef_run).to render_file(file_name).with_content(/^rabbit_virtual_host = rabbit_vhost_value$/)
+        expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_rabbit', /^rabbit_virtual_host = rabbit_vhost_value$/)
       end
 
       it 'sets the rabbitmq notification topics' do
         node.set['openstack']['mq']['image']['rabbit']['notification_topic'] = 'helloworld'
-        expect(chef_run).to render_file(file_name).with_content(/^notification_topics = helloworld$/)
+        expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_rabbit', /^notification_topics = helloworld$/)
       end
 
       it 'does not have kombu ssl version set' do
-        expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', /^kombu_ssl_version=TLSv1.2$/)
+        expect(chef_run).not_to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
       end
 
       it 'sets kombu ssl version' do
         node.set['openstack']['mq']['image']['rabbit']['use_ssl'] = true
         node.set['openstack']['mq']['image']['rabbit']['kombu_ssl_version'] = 'TLSv1.2'
 
-        expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^kombu_ssl_version=TLSv1.2$/)
+        expect(chef_run).to render_config_file(file.name).with_section_content('oslo_messaging_rabbit', /^kombu_ssl_version=TLSv1.2$/)
       end
     end
 
@@ -346,13 +346,13 @@ shared_examples 'messaging' do
          heartbeat protocol tcp_nodelay topology_version).each do |attr|
         it "sets the qpid #{attr} attribute" do
           node.set['openstack']['mq']['image']['qpid'][attr] = "qpid_#{attr}_value"
-          expect(chef_run).to render_file(file_name).with_content(/^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)
+          expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_qpid', /^qpid_#{attr}\s?=\s?qpid_#{attr}_value$/)
         end
       end
 
       it 'sets the qpid notification topics' do
         node.set['openstack']['mq']['image']['qpid']['notification_topic'] = 'helloworld'
-        expect(chef_run).to render_file(file_name).with_content(/^notification_topics=helloworld$/)
+        expect(chef_run).to render_config_file(file_name).with_section_content('oslo_messaging_qpid', /^notification_topics=helloworld$/)
       end
     end
   end
