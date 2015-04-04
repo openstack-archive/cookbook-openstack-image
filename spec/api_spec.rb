@@ -136,11 +136,15 @@ describe 'openstack-image::api' do
           end
         end
 
-        %w(bind registry).each do |type|
-          %w(host port).each do |param|
-            it "has a #{type}_#{param}" do
-              expect(chef_run).to render_file(file.name).with_content(/^#{type}_#{param} = #{type}_#{param}_value$/)
-            end
+        it 'sets port and host attributes' do
+          [
+            /^bind_port = 9292$/,
+            /^bind_host = 127.0.0.1$/,
+            /^registry_port = 9191$/,
+            /^registry_host = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name)\
+              .with_section_content('DEFAULT', line)
           end
         end
 
@@ -171,7 +175,7 @@ describe 'openstack-image::api' do
         context 'cinder storage options' do
           it 'sets default attributes' do
             expect(chef_run).to render_file(file.name).with_content(/^cinder_catalog_info = volumev2:cinderv2:publicURL$/)
-            expect(chef_run).to render_file(file.name).with_content(%r{^cinder_endpoint_template = scheme://host:port/path$})
+            expect(chef_run).to render_file(file.name).with_content(%r{^cinder_endpoint_template = http://127.0.0.1:8776/v2/%\(tenant_id\)s$})
             expect(chef_run).to render_file(file.name).with_content(/^cinder_ca_certificates_file = $/)
             expect(chef_run).to render_file(file.name).with_content(/^cinder_api_insecure = false$/)
           end
@@ -230,7 +234,7 @@ describe 'openstack-image::api' do
             end
 
             it 'sets the auth address' do
-              expect(chef_run).to render_file(file.name).with_content(/^swift_store_auth_address = auth_uri_value$/)
+              expect(chef_run).to render_file(file.name).with_content(%r(^swift_store_auth_address = http://127.0.0.1:5000/v2.0$))
             end
 
             it 'sets the auth version' do
@@ -432,9 +436,13 @@ describe 'openstack-image::api' do
           end
         end
 
-        %w(host port).each do |attr|
-          it "sets the registry #{attr} attribute" do
-            expect(chef_run).to render_file(file.name).with_content(/^registry_#{attr} = registry_#{attr}_value$/)
+        it 'sets port and host attributes' do
+          [
+            /^registry_port = 9191$/,
+            /^registry_host = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name)\
+              .with_section_content('DEFAULT', line)
           end
         end
 
@@ -462,9 +470,13 @@ describe 'openstack-image::api' do
       context 'template contents' do
         include_context 'endpoint-stubs'
 
-        %w(host port).each do |attr|
-          it "sets the registry #{attr} attribute" do
-            expect(chef_run).to render_file(file.name).with_content(/^registry_#{attr} = registry_#{attr}_value$/)
+        it 'sets port and host attributes' do
+          [
+            /^registry_port = 9191$/,
+            /^registry_host = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name)\
+              .with_section_content('DEFAULT', line)
           end
         end
       end

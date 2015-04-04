@@ -92,12 +92,6 @@ describe 'openstack-image::registry' do
         include_context 'endpoint-stubs'
         include_context 'sql-stubs'
 
-        before do
-          allow_any_instance_of(Chef::Recipe).to receive(:internal_endpoint)
-            .with('image-registry-bind')
-            .and_return(double(host: 'registry_host_value', port: 'registry_port_value'))
-        end
-
         it_behaves_like 'custom template banner displayer' do
           let(:file_name) { file.name }
         end
@@ -109,12 +103,15 @@ describe 'openstack-image::registry' do
           end
         end
 
-        %w(host port).each do |attr|
-          it "sets the registry bind #{attr} attribute" do
-            expect(chef_run).to render_file(file.name).with_content(/^bind_#{attr} = registry_#{attr}_value$/)
+        it 'sets port and host attributes' do
+          [
+            /^bind_port = 9191$/,
+            /^bind_host = 127.0.0.1$/
+          ].each do |line|
+            expect(chef_run).to render_config_file(file.name)\
+              .with_section_content('DEFAULT', line)
           end
         end
-
         it 'sets the workers attribute' do
           node.set['openstack']['image']['registry']['workers'] = 123
           expect(chef_run).to render_file(file.name).with_content(/^workers = 123$/)

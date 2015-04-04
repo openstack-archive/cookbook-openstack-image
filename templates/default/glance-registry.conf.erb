@@ -229,9 +229,7 @@ connection = <%= @sql_connection %>
 # ================= Keystone authtoken ===============================
 [keystone_authtoken]
 auth_uri = <%= @auth_uri %>
-auth_host = <%= @identity_admin_endpoint.host %>
-auth_port = <%= @identity_admin_endpoint.port %>
-auth_protocol = <%= @identity_admin_endpoint.scheme %>
+identity_uri = <%= @identity_uri %>
 auth_version = <%= node['openstack']['image']['registry']['auth']['version'] %>
 admin_tenant_name = <%= node["openstack"]["image"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["image"]["service_user"] %>
