@@ -179,17 +179,17 @@ describe 'openstack-image::identity_registration' do
     )
   end
 
-  it 'grants admin role to service user for service tenant' do
+  it 'grants service role to service user for service tenant' do
     resource = chef_run.find_resource(
       'openstack-identity_register',
-      "Grant 'admin' Role to glance User for service Tenant"
+      "Grant 'service' Role to glance User for service Tenant"
     ).to_hash
 
     expect(resource).to include(
       auth_uri: 'http://127.0.0.1:35357/v2.0',
       bootstrap_token: 'bootstrap-token',
       tenant_name: 'service',
-      role_name: 'admin',
+      role_name: 'service',
       user_name: 'glance',
       action: [:grant_role]
     )
