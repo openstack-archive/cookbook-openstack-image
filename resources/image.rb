@@ -27,9 +27,12 @@ def initialize(*args)
   @action = :upload
 end
 
+BOOLEAN = [TrueClass, FalseClass]
+
 attribute :image_url, kind_of: String
 attribute :image_type, kind_of: String, default: 'unknown', equal_to: %w(unknown ami qcow vhd vmdk vdi iso raw)
 attribute :image_name, kind_of: String, default: 'default'
+attribute :image_public, kind_of: BOOLEAN, default: true
 attribute :identity_user, kind_of: String
 attribute :identity_pass, kind_of: String
 attribute :identity_tenant, kind_of: String

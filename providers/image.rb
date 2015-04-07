@@ -29,13 +29,14 @@ action :upload do
 
   name = new_resource.image_name
   url = new_resource.image_url
+  public = new_resource.image_public
 
   ep = endpoint 'image-api'
   api = ep.to_s.gsub(ep.path, '') # remove trailing /v2
 
   type = new_resource.image_type
   type = _determine_type(url) if type == 'unknown'
-  _upload_image(type, name, api, url)
+  _upload_image(type, name, api, url, public)
   new_resource.updated_by_last_action(true)
 end
 
@@ -53,31 +54,31 @@ def _determine_type(url)
   end
 end
 
-def _upload_image(type, name, api, url)
+def _upload_image(type, name, api, url, public)
   case type
   when 'ami'
-    _upload_ami(name, api, url)
+    _upload_ami(name, api, url, public)
   when 'qcow'
-    _upload_image_bare(name, api, url, 'qcow2')
+    _upload_image_bare(name, api, url, public, 'qcow2')
   else
-    _upload_image_bare(name, api, url, type)
+    _upload_image_bare(name, api, url, public, type)
   end
 end
 
-def _upload_image_bare(name, api, url, type)
+def _upload_image_bare(name, api, url, public, type)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
   c_fmt = '--container-format bare'
   d_fmt = "--disk-format #{type}"
 
   execute "Uploading #{type} image #{name}" do
     cwd '/tmp'
-    command "#{glance_cmd} image-create --name #{name} --is-public true #{c_fmt} #{d_fmt} --location #{url}"
+    command "#{glance_cmd} image-create --name #{name} --is-public #{public} #{c_fmt} #{d_fmt} --location #{url}"
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end
 end
 
 # TODO(chrislaco) This refactor is in the works via Craig Tracey
-def _upload_ami(name, api, url) # rubocop:disable MethodLength
+def _upload_ami(name, api, url, public) # rubocop:disable MethodLength
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
   aki_fmt = '--container-format aki --disk-format aki'
   ari_fmt = '--container-format ari --disk-format ari'
@@ -108,9 +109,9 @@ def _upload_ami(name, api, url) # rubocop:disable MethodLength
 
         kernel=$(ls *.img | head -n1)
 
-        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public true #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
-        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public true #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
-        #{glance_cmd} image-create --name "#{name}" --is-public true #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
+        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public #{public} #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
+        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public #{public} #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
+        #{glance_cmd} image-create --name "#{name}" --is-public #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
     not_if "#{glance_cmd} image-list | grep #{name.to_s}"
   end

@@ -40,9 +40,9 @@ identity_endpoint = internal_endpoint 'identity-internal'
 # So here auth_uri can not be transformed.
 auth_uri = identity_endpoint.to_s
 
-service_pass = get_password 'service', 'openstack-image'
-service_tenant_name = node['openstack']['image']['service_tenant_name']
-service_user = node['openstack']['image']['service_user']
+admin_user = node['openstack']['identity']['admin_user']
+admin_pass = get_password 'user', admin_user
+admin_tenant = node['openstack']['identity']['admin_tenant_name']
 
 node['openstack']['image']['upload_images'].each do |img|
   type = 'unknown'
@@ -52,9 +52,10 @@ node['openstack']['image']['upload_images'].each do |img|
     image_url node['openstack']['image']['upload_image'][img.to_sym]
     image_name img
     image_type type
-    identity_user service_user
-    identity_pass service_pass
-    identity_tenant service_tenant_name
+    image_public true
+    identity_user admin_user
+    identity_pass admin_pass
+    identity_tenant admin_tenant
     identity_uri auth_uri
     action :upload
   end

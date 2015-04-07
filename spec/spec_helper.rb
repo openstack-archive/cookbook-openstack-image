@@ -57,9 +57,12 @@ shared_context 'image-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'rbd-image')
       .and_return('rbd-pass')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('user', 'admin')
+      .and_return('admin-pass')
 
     allow(Chef::Application).to receive(:fatal!)
-    stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return('')
+    stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return('')
   end
 end
 
