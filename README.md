@@ -153,6 +153,16 @@ Attributes for the Image service are in the ['openstack']['image'] namespace.
 * `openstack['image']['cron']['redirection']` - Redirection of cron output
 TODO: Add DB2 support on other platforms
 
+SSL attributes
+---------------
+
+* `openstack['image']['ssl']['enabled']` - Enable SSL for Glance API and registry endpoints. NOTE: Once enabled, Glance service endpoint must be configured to use https on Keystone. Default is false.
+* `openstack['image']['ssl']['basedir']` -  Base directory for SSL certficate and key file.
+* `openstack['image']['ssl']['cert_file']` - Path of the cert file for SSL.
+* `openstack['image']['ssl']['key_file']` - Path of the keyfile for SSL.
+* `openstack['image']['ssl']['cert_required']` - Client certificate required. Default is False.
+* `openstack['image']['ssl']['ca_file']` -  Path of the CA cert file
+
 VMWare attributes
 -----------------
 
@@ -242,6 +252,7 @@ Author:: Chen Zhiwei (zhiwchen@cn.ibm.com)
 Author:: Eric Zhou (zyouzhou@cn.ibm.com)
 Author:: Jian Hua Geng (gengjh@cn.ibm.com)
 Author:: Ionut Artarisi (iartarisi@suse.cz)
+Author:: Imtiaz Chowdhury (<imtiaz.chowdhury@workday.com>)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.

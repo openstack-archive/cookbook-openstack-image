@@ -27,6 +27,21 @@ default['openstack']['image']['custom_template_banner'] = '
 # Do not edit, changes will be overwritten
 '
 
+# SSL Options
+# Enable SSL for glance-api endpoint. NOTE: Once enabled, Glance service endpoint
+# must be set to https on Keystone
+default['openstack']['image']['ssl']['enabled'] = false
+# Base directory for SSL certficate and key
+default['openstack']['image']['ssl']['basedir'] = '/etc/glance/ssl'
+# Path of the cert file for SSL.
+default['openstack']['image']['ssl']['cert_file'] = "#{node['openstack']['image']['ssl']['basedir']}/certs/sslcert.pem"
+# Path of the keyfile for SSL.
+default['openstack']['image']['ssl']['key_file'] = "#{node['openstack']['image']['ssl']['basedir']}/private/sslkey.pem"
+# Specify server whether SSL certificate is required
+default['openstack']['image']['ssl']['cert_required'] = false
+# Path of the CA cert file for SSL. Only use if client certificate is required
+default['openstack']['image']['ssl']['ca_file'] = "#{node['openstack']['image']['ssl']['basedir']}/certs/sslca.pem"
+
 default['openstack']['image']['verbose'] = 'False'
 default['openstack']['image']['debug'] = 'False'
 # This is the name of the Chef role that will install the Keystone Service API

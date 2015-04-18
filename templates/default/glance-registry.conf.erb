@@ -85,15 +85,18 @@ log_file = /var/log/glance/registry.log
 
 # ================= SSL Options ===============================
 
+<% if node['openstack']['image']['ssl']['enabled'] -%>
 # Certificate file to use when starting registry server securely
-#cert_file = /path/to/certfile
+cert_file = <%= node['openstack']['image']['ssl']['cert_file'] %>
 
 # Private key file to use when starting registry server securely
-#key_file = /path/to/keyfile
+key_file = <%= node['openstack']['image']['ssl']['key_file'] %>
 
+<% if node['openstack']['image']['ssl']['cert_required'] -%>
 # CA certificate file to use to verify connecting clients
-#ca_file = /path/to/cafile
-
+ca_file = <%= node['openstack']['image']['ssl']['ca_file'] %>
+<% end -%>
+<% end -%>
 # ============ Notification System Options =====================
 
 # Driver or drivers to handle sending notifications. Set to
@@ -235,6 +238,7 @@ admin_tenant_name = <%= node["openstack"]["image"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["image"]["service_user"] %>
 admin_password = <%= @service_pass %>
 signing_dir = <%= node["openstack"]["image"]["registry"]["auth"]["cache_dir"] %>
+insecure = <%= node['openstack']['image']['registry']['auth']['insecure'] %>
 
 # A list of memcached server(s) to use for caching.
 <% if node['openstack']['image']['registry']['auth']['memcached_servers'] %>

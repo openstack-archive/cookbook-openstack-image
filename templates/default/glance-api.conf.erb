@@ -130,14 +130,18 @@ log_file = /var/log/glance/api.log
 # ================= SSL Options ===============================
 
 # Certificate file to use when starting API server securely
-#cert_file = /path/to/certfile
+
+<% if node['openstack']['image']['ssl']['enabled'] -%>
+cert_file = <%= node['openstack']['image']['ssl']['cert_file'] %>
 
 # Private key file to use when starting API server securely
-#key_file = /path/to/keyfile
+key_file = <%= node['openstack']['image']['ssl']['key_file'] %>
 
+<% if node['openstack']['image']['ssl']['cert_required'] -%>
 # CA certificate file to use to verify connecting clients
-#ca_file = /path/to/cafile
-
+ca_file = <%=node['openstack']['image']['ssl']['ca_file'] %>
+<% end -%>
+<% end -%>
 # ================= Security Options ==========================
 
 # AES key for encrypting store 'location' metadata, including
@@ -152,33 +156,40 @@ log_file = /var/log/glance/api.log
 registry_host = <%= @registry_ip_address %>
 
 # Port the registry server is listening on
-#registry_port = 9191
+
 registry_port = <%= @registry_port %>
 
 # What protocol to use when connecting to the registry server?
+
+<% if node['openstack']['image']['ssl']['enabled'] -%>
 # Set to https for secure HTTP communication
-registry_client_protocol = http
+registry_client_protocol = https
 
 # The path to the key file to use in SSL connections to the
 # registry server, if any. Alternately, you may set the
 # GLANCE_CLIENT_KEY_FILE environ variable to a filepath of the key file
-#registry_client_key_file = /path/to/key/file
+registry_client_key_file = <%= node['openstack']['image']['ssl']['key_file'] %>
 
 # The path to the cert file to use in SSL connections to the
 # registry server, if any. Alternately, you may set the
 # GLANCE_CLIENT_CERT_FILE environ variable to a filepath of the cert file
-#registry_client_cert_file = /path/to/cert/file
-
+registry_client_cert_file = <%= node['openstack']['image']['ssl']['cert_file'] %>
+  <% if node['openstack']['image']['ssl']['cert_required'] %>
 # The path to the certifying authority cert file to use in SSL connections
 # to the registry server, if any. Alternately, you may set the
 # GLANCE_CLIENT_CA_FILE environ variable to a filepath of the CA cert file
-#registry_client_ca_file = /path/to/ca/file
+registry_client_ca_file = <%= node['openstack']['image']['registry']['auth']['cafile'] %>
+
+  <% end %>
 
 # When using SSL in connections to the registry server, do not require
 # validation via a certifying authority. This is the registry's equivalent of
 # specifying --insecure on the command line using glanceclient for the API
 # Default: False
-#registry_client_insecure = False
+registry_client_insecure = <%= node['openstack']['image']['registry']['auth']['insecure'] %>
+<% else -%>
+registry_client_protocol = http
+<% end -%>
 
 # The period of time, in seconds, that the API server will wait for a registry
 # request to complete. A value of '0' implies no timeout.

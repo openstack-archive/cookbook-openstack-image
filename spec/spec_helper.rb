@@ -23,6 +23,18 @@ SUSE_OPTS = {
   log_lovel: LOG_LEVEL
 }
 
+# Helper methods
+module Helpers
+  # Create an anchored regex to exactly match the entire line
+  # (name borrowed from grep --line-regexp)
+  #
+  # @param [String] str The whole line to match
+  # @return [Regexp] The anchored/escaped regular expression
+  def line_regexp(str)
+    /^#{Regexp.quote(str)}$/
+  end
+end
+
 shared_context 'image-stubs' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:address_for)

@@ -15,6 +15,7 @@ describe 'openstack-image::registry' do
       runner.converge(described_recipe)
     end
 
+    include Helpers
     include_context 'image-stubs'
     include_examples 'common-logging-recipe'
     include_examples 'common-packages'
@@ -196,6 +197,53 @@ describe 'openstack-image::registry' do
             expect(chef_run).to render_file(file.name).with_content(/^hash_algorithms = sha2$/)
           end
         end
+
+        context 'glance-registry configuration with ssl disabled' do
+          default_opts = {
+            cert_file: '/etc/glance/ssl/certs/sslcert.pem',
+            key_file: '/etc/glance/ssl/private/sslkey.pem'
+          }
+          it 'does not set cert or key file' do
+            default_opts.each do |key, val|
+              r = line_regexp("#{key} = #{val}")
+              expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+        end
+
+        context 'glance-registry configuration with ssl enabled' do
+          default_opts = {
+            cert_file: '/etc/glance/ssl/certs/sslcert.pem',
+            key_file: '/etc/glance/ssl/private/sslkey.pem'
+          }
+          cert = { 'ca_file' => '/etc/glance/ssl/certs/sslca.pem' }
+
+          it 'configures SSL cert and key file' do
+            node.set['openstack']['image']['ssl']['enabled'] = true
+            default_opts.each do |key, val|
+              r = line_regexp("#{key} = #{val}")
+              expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+          context 'with cert required' do
+            it 'configures CA cert ' do
+              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['image']['ssl']['cert_required'] = true
+              r = line_regexp("ca_file = #{cert['ca_file']}")
+              expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+
+          context 'with cert not required' do
+            it 'configures CA cert ' do
+              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['image']['ssl']['cert_required'] = false
+              r = line_regexp("ca_file = #{cert['ca_file']}")
+              expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+        end
+
       end
 
       it 'notifies glance-registry restart' do
