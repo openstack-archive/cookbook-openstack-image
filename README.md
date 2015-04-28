@@ -253,6 +253,7 @@ Author:: Eric Zhou (zyouzhou@cn.ibm.com)
 Author:: Jian Hua Geng (gengjh@cn.ibm.com)
 Author:: Ionut Artarisi (iartarisi@suse.cz)
 Author:: Imtiaz Chowdhury (<imtiaz.chowdhury@workday.com>)
+Author:: Jan Klare (j.klare@x-ion.de)
 
 Copyright 2012, Rackspace US, Inc.
 Copyright 2012-2013, Opscode, Inc.

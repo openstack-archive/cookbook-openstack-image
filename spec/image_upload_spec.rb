@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 
 describe 'openstack-image::image_upload' do
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS.merge(step_into: ['openstack_image_image'])) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS.merge(step_into: ['openstack_image_image'])) }
     let(:node) { runner.node }
     let(:chef_run) do
       runner.converge(described_recipe)

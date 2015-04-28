@@ -9,7 +9,7 @@ describe 'openstack-image::registry' do
       stub_command('glance-manage db_version').and_return(true)
     end
 
-    let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
       runner.converge(described_recipe)
