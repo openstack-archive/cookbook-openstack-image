@@ -100,14 +100,14 @@ end
 directory '/etc/glance' do
   owner glance_user
   group glance_group
-  mode  00700
+  mode 00700
 end
 
 template '/etc/glance/glance-registry.conf' do
   source 'glance-registry.conf.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode   00640
+  mode 00640
   variables(
     :registry_bind_address => registry_bind.host,
     :registry_bind_port => registry_bind.port,

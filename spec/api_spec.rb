@@ -199,7 +199,7 @@ describe 'openstack-image::api' do
 
         it 'sets the filesystem_store_metadata_file attribute' do
           node.set['openstack']['image']['filesystem_store_metadata_file'] = '/etc/glance/images.json'
-          expect(chef_run).to render_file(file.name).with_content(%r(^filesystem_store_metadata_file = /etc/glance/images.json$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^filesystem_store_metadata_file = /etc/glance/images.json$})
         end
 
         context 'api related attributes' do
@@ -241,12 +241,12 @@ describe 'openstack-image::api' do
         context 'syslog use' do
           it 'shows log_config if syslog use is enabled' do
             node.set['openstack']['image']['syslog']['use'] = true
-            expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^log_config = /etc/openstack/logging.conf$})
           end
 
           it 'shows log_file if syslog use is disabled' do
             node.set['openstack']['image']['syslog']['use'] = false
-            expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/api.log$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^log_file = /var/log/glance/api.log$})
           end
         end
 
@@ -307,7 +307,6 @@ describe 'openstack-image::api' do
               node.set['openstack']['image']['api']['swift_store_user'] = 'swift_store_user_value'
               expect(chef_run).to render_file(file.name).with_content(/^swift_store_user = swift_user_tenant_value:swift_store_user_value$/)
             end
-
           end
 
           context 'store auth disabled' do
@@ -316,7 +315,7 @@ describe 'openstack-image::api' do
             end
 
             it 'sets the auth address' do
-              expect(chef_run).to render_file(file.name).with_content(%r(^swift_store_auth_address = http://127.0.0.1:5000/v2.0$))
+              expect(chef_run).to render_file(file.name).with_content(%r{^swift_store_auth_address = http://127.0.0.1:5000/v2.0$})
             end
 
             it 'sets the auth version' do
@@ -509,12 +508,12 @@ describe 'openstack-image::api' do
         context 'syslog options' do
           it 'sets the log_config attribute if syslog use is enabled' do
             node.set['openstack']['image']['syslog']['use'] = true
-            expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^log_config = /etc/openstack/logging.conf$})
           end
 
           it 'sets the log_file attribute if syslog use is disabled' do
             node.set['openstack']['image']['syslog']['use'] = false
-            expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/image-cache.log$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^log_file = /var/log/glance/image-cache.log$})
           end
         end
 

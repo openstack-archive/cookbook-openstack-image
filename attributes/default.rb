@@ -203,7 +203,7 @@ when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'image_packages' => %w{openstack-glance cronie python-glanceclient},
+    'image_packages' => %w(openstack-glance cronie python-glanceclient),
     'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['openstack-swift'],

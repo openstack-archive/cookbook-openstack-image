@@ -58,8 +58,8 @@ shared_context 'image-stubs' do
       .and_return 'vmware_secret_name'
 
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
-    .with('db', anything)
-    .and_return('')
+      .with('db', anything)
+      .and_return('')
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('service', 'openstack-image')
       .and_return('glance-pass')
@@ -115,13 +115,12 @@ shared_examples 'cache-directory' do
   describe '/var/cache/glance' do
     let(:dir) { chef_run.directory('/var/cache/glance') }
 
-    it 'has proper owner' do
-      expect(dir.owner).to eq('glance')
-      expect(dir.group).to eq('glance')
-    end
-
-    it 'has proper modes' do
-      expect(sprintf('%o', dir.mode)).to eq '700'
+    it 'creates directory /var/cache/glance' do
+      expect(chef_run).to create_directory(dir.name).with(
+        user: 'glance',
+        group: 'glance',
+        mode: 00700
+      )
     end
   end
 end
@@ -130,17 +129,13 @@ shared_examples 'image-lib-cache-directory' do
   describe '/var/lib/glance/image-cache/' do
     let(:dir) { chef_run.directory('/var/lib/glance/image-cache/') }
 
-    it 'has proper owner' do
-      expect(dir.owner).to eq('glance')
-      expect(dir.group).to eq('glance')
-    end
-
-    it 'has proper modes' do
-      expect(sprintf('%o', dir.mode)).to eq '755'
-    end
-
-    it 'creates directory recursively' do
-      expect(dir.recursive).to eq(true)
+    it 'creates directory /var/lib/glance/image-cache' do
+      expect(chef_run).to create_directory(dir.name).with(
+        user: 'glance',
+        group: 'glance',
+        mode: 00755,
+        recursive: true
+      )
     end
   end
 end
@@ -149,13 +144,12 @@ shared_examples 'glance-directory' do
   describe '/etc/glance' do
     let(:dir) { chef_run.directory('/etc/glance') }
 
-    it 'has proper owner' do
-      expect(dir.owner).to eq('glance')
-      expect(dir.group).to eq('glance')
-    end
-
-    it 'has proper modes' do
-      expect(sprintf('%o', dir.mode)).to eq '700'
+    it 'creates directory /etc/glance' do
+      expect(chef_run).to create_directory(dir.name).with(
+        user: 'glance',
+        group: 'glance',
+        mode: 00700
+      )
     end
   end
 end
@@ -190,22 +184,22 @@ end
 shared_examples 'syslog use' do
   it 'shows log_config if syslog use is enabled' do
     node.set['openstack']['image']['syslog']['use'] = true
-    expect(chef_run).to render_file(file.name).with_content(%r(^log_config = /etc/openstack/logging.conf$))
+    expect(chef_run).to render_file(file.name).with_content(%r{^log_config = /etc/openstack/logging.conf$})
   end
 
   it 'shows log_file if syslog use is disabled' do
     node.set['openstack']['image']['syslog']['use'] = false
-    expect(chef_run).to render_file(file.name).with_content(%r(^log_file = /var/log/glance/#{log_file_name}$))
+    expect(chef_run).to render_file(file.name).with_content(%r{^log_file = /var/log/glance/#{log_file_name}$})
   end
 end
 
 shared_examples 'keystone attribute setter' do |version|
   it 'sets the auth_uri value' do
-    expect(chef_run).to render_file(file.name).with_content(%r(^auth_uri = http://127.0.0.1:5000/v2.0$))
+    expect(chef_run).to render_file(file.name).with_content(%r{^auth_uri = http://127.0.0.1:5000/v2.0$})
   end
 
   it 'sets the identity_uri value' do
-    expect(chef_run).to render_file(file.name).with_content(%r(^identity_uri = http://127.0.0.1:35357/$))
+    expect(chef_run).to render_file(file.name).with_content(%r{^identity_uri = http://127.0.0.1:35357/$})
   end
 
   context 'auth version' do

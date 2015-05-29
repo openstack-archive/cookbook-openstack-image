@@ -88,7 +88,7 @@ end
 directory '/etc/glance' do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode  00700
+  mode 00700
 end
 
 directory ::File.dirname node['openstack']['image']['api']['auth']['cache_dir'] do
@@ -163,7 +163,7 @@ template '/etc/glance/glance-api.conf' do
   source 'glance-api.conf.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode   00640
+  mode 00640
   variables(
     api_bind_address: api_bind.host,
     api_bind_port: api_bind.port,
@@ -194,7 +194,7 @@ template '/etc/glance/glance-cache.conf' do
   source 'glance-cache.conf.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode   00640
+  mode 00640
   variables(
     registry_ip_address: registry_endpoint.host,
     registry_port: registry_endpoint.port,
@@ -208,7 +208,7 @@ template '/etc/glance/glance-scrubber.conf' do
   source 'glance-scrubber.conf.erb'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode   00640
+  mode 00640
   variables(
     registry_ip_address: registry_endpoint.host,
     registry_port: registry_endpoint.port
@@ -223,8 +223,8 @@ end
 
 # Configure glance-cache-cleaner to run at 00:01 everyday
 cron 'glance-cache-cleaner' do
-  minute  '01'
-  hour    '00'
+  minute '01'
+  hour '00'
   command "/usr/bin/glance-cache-cleaner #{node['openstack']['image']['cron']['redirection']}"
 end
 

@@ -73,7 +73,7 @@ def _upload_image_bare(name, api, url, public, type)
   execute "Uploading #{type} image #{name}" do
     cwd '/tmp'
     command "#{glance_cmd} image-create --name #{name} --is-public #{public} #{c_fmt} #{d_fmt} --location #{url}"
-    not_if "#{glance_cmd} image-list | grep #{name.to_s}"
+    not_if "#{glance_cmd} image-list | grep #{name}"
   end
 end
 
@@ -113,6 +113,6 @@ def _upload_ami(name, api, url, public) # rubocop:disable MethodLength
         rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public #{public} #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
         #{glance_cmd} image-create --name "#{name}" --is-public #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
-    not_if "#{glance_cmd} image-list | grep #{name.to_s}"
+    not_if "#{glance_cmd} image-list | grep #{name}"
   end
 end

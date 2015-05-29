@@ -48,7 +48,7 @@ node['openstack']['image']['upload_images'].each do |img|
   type = 'unknown'
   type = node['openstack']['image']['upload_image_type'][img.to_sym] if node['openstack']['image']['upload_image_type'][img.to_sym]
 
-  openstack_image_image "Image setup for #{img.to_s}" do
+  openstack_image_image "Image setup for #{img}" do
     image_url node['openstack']['image']['upload_image'][img.to_sym]
     image_name img
     image_type type

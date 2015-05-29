@@ -39,7 +39,7 @@ describe 'openstack-image::registry' do
       expect(chef_run).to upgrade_package('my-mysql-py').with(options: '-o Dpkg::Options::=\'--force-confold\' -o Dpkg::Options::=\'--force-confdef\' --force-yes')
     end
 
-    %w{db2 postgresql}.each do |service_type|
+    %w(db2 postgresql).each do |service_type|
       it "upgrades #{service_type} python packages if chosen" do
         node.set['openstack']['db']['image']['service_type'] = service_type
         node.set['openstack']['db']['python_packages'][service_type] = ["my-#{service_type}-py"]
@@ -243,7 +243,6 @@ describe 'openstack-image::registry' do
             end
           end
         end
-
       end
 
       it 'notifies glance-registry restart' do
