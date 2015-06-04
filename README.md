@@ -156,7 +156,11 @@ TODO: Add DB2 support on other platforms
 SSL attributes
 ---------------
 
-* `openstack['image']['ssl']['enabled']` - Enable SSL for Glance API and registry endpoints. NOTE: Once enabled, Glance service endpoint must be configured to use https on Keystone. Default is false.
+Once SSL is enabled, endpoints attributes in Common need to updated to specify the https protocol.
+
+* `openstack['image']['ssl']['enabled']` - Enable SSL for Glance API and registry bind endpoints. Default is false.
+* `openstack['image']['ssl']['api']['enabled']` - Enable SSL for Glance API bind endpoint. Default is from ['image']['ssl']['enabled'].
+* `openstack['image']['ssl']['registry']['enabled']` - Enable SSL for Glance Registry bind endpoint. Default is from ['image']['ssl']['enabled'].
 * `openstack['image']['ssl']['basedir']` -  Base directory for SSL certficate and key file.
 * `openstack['image']['ssl']['cert_file']` - Path of the cert file for SSL.
 * `openstack['image']['ssl']['key_file']` - Path of the keyfile for SSL.

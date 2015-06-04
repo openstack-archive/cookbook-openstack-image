@@ -100,7 +100,15 @@ describe 'openstack-image::api' do
             key_file: '/etc/glance/ssl/private/sslkey.pem'
           }
 
-          it 'configures SSL cert and key file' do
+          it 'configures SSL cert and key file when api is enabled for ssl' do
+            node.set['openstack']['image']['ssl']['api']['enabled'] = true
+            default_opts.each do |key, val|
+              r = line_regexp("#{key} = #{val}")
+              expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+
+          it 'configures SSL cert and key file when glance is enabled ssl' do
             node.set['openstack']['image']['ssl']['enabled'] = true
             default_opts.each do |key, val|
               r = line_regexp("#{key} = #{val}")
@@ -124,14 +132,13 @@ describe 'openstack-image::api' do
 
         context 'glance-registry configuration with ssl enabled' do
           it 'sets registry client protocol to https' do
-            node.set['openstack']['image']['ssl']['enabled'] = true
+            node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
             expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^registry_client_protocol = https$/)
           end
 
-          # if cert required then certfile
           context 'glance-registry with cert required' do
             it 'configures CA cert file' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
               node.set['openstack']['image']['ssl']['cert_required'] = true
               node.set['openstack']['image']['registry']['auth']['cafile'] = '/etc/glance/ssl/certs/sslca.pem'
               r = line_regexp('registry_client_ca_file = /etc/glance/ssl/certs/sslca.pem')
@@ -139,9 +146,34 @@ describe 'openstack-image::api' do
             end
           end
 
+          context 'glance-registry key and cert files' do
+            default_opts = {
+              registry_client_cert_file: '/etc/glance/ssl/certs/sslcert.pem',
+              registry_client_key_file: '/etc/glance/ssl/private/sslkey.pem'
+            }
+
+            it 'configures registry client key and cert files' do
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
+              default_opts.each do |key, val|
+                r = line_regexp("#{key} = #{val}")
+                expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
+              end
+            end
+
+            it 'does not configure registry client key and cert files when nil or empty' do
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
+              node.set['openstack']['openstack']['image']['ssl']['cert_file'] = nil
+              node.set['openstack']['openstack']['image']['ssl']['key_file'] = ''
+              default_opts.each do |key|
+                r = line_regexp("#{key} =")
+                expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', r)
+              end
+            end
+          end
+
           context 'glance-registry with cert not required' do
             it 'does not configure CA cert file' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
               node.set['openstack']['image']['ssl']['cert_required'] = false
               node.set['openstack']['image']['registry']['auth']['cafile'] = '/etc/glance/ssl/certs/sslca.pem'
               r = line_regexp('registry_client_ca_file = /etc/glance/ssl/certs/sslca.pem')
@@ -151,7 +183,7 @@ describe 'openstack-image::api' do
 
           context 'glance-registry with certificate validation enabled' do
             it 'enables SSL in insecure mode' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
               node.set['openstack']['image']['registry']['auth']['insecure'] = false
               r = line_regexp('registry_client_insecure = false')
               expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
@@ -160,7 +192,7 @@ describe 'openstack-image::api' do
 
           context 'glance-registry with certificate validation disabled' do
             it 'enables SSL in secure mode' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['endpoints']['image-registry']['scheme'] = 'https'
               node.set['openstack']['image']['registry']['auth']['insecure'] = true
               r = line_regexp('registry_client_insecure = true')
               expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
@@ -170,7 +202,6 @@ describe 'openstack-image::api' do
 
         context 'glance-registry configuration with ssl disabled' do
           it 'sets registry client protocol to http' do
-            node.set['openstack']['image']['ssl']['enabled'] = false
             expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', /^registry_client_protocol = http$/)
           end
         end

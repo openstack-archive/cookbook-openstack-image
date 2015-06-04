@@ -218,16 +218,25 @@ describe 'openstack-image::registry' do
           }
           cert = { 'ca_file' => '/etc/glance/ssl/certs/sslca.pem' }
 
-          it 'configures SSL cert and key file' do
+          it 'configures SSL cert and key file when api is enabled for ssl' do
+            node.set['openstack']['image']['ssl']['registry']['enabled'] = true
+            default_opts.each do |key, val|
+              r = line_regexp("#{key} = #{val}")
+              expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
+            end
+          end
+
+          it 'configures SSL cert and key file when glance is enabled ssl' do
             node.set['openstack']['image']['ssl']['enabled'] = true
             default_opts.each do |key, val|
               r = line_regexp("#{key} = #{val}")
               expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
             end
           end
+
           context 'with cert required' do
             it 'configures CA cert ' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['image']['ssl']['registry']['enabled'] = true
               node.set['openstack']['image']['ssl']['cert_required'] = true
               r = line_regexp("ca_file = #{cert['ca_file']}")
               expect(chef_run).to render_config_file(file.name).with_section_content('DEFAULT', r)
@@ -236,7 +245,7 @@ describe 'openstack-image::registry' do
 
           context 'with cert not required' do
             it 'configures CA cert ' do
-              node.set['openstack']['image']['ssl']['enabled'] = true
+              node.set['openstack']['image']['ssl']['registry']['enabled'] = true
               node.set['openstack']['image']['ssl']['cert_required'] = false
               r = line_regexp("ca_file = #{cert['ca_file']}")
               expect(chef_run).not_to render_config_file(file.name).with_section_content('DEFAULT', r)
