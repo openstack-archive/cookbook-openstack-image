@@ -348,6 +348,13 @@ rabbit_userid = <%= node["openstack"]["mq"]["image"]["rabbit"]["userid"] %>
 rabbit_password = <%= @mq_password %>
 rabbit_virtual_host = <%= node["openstack"]["mq"]["image"]["rabbit"]["vhost"] %>
 notification_topics = <%= node["openstack"]["mq"]["image"]["rabbit"]["notification_topic"] %>
+
+# Maximum retries with trying to connect to RabbitMQ
+# (the default of 0 implies an infinite retry count)
+rabbit_max_retries = <%= node["openstack"]["mq"]["image"]["rabbit"]["rabbit_max_retries"] %>
+
+# RabbitMQ connection retry interval
+rabbit_retry_interval = <%= node["openstack"]["mq"]["image"]["rabbit"]["rabbit_retry_interval"] %>
 <% end -%>
 
 [paste_deploy]
