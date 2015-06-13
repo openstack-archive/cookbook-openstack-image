@@ -1,5 +1,5 @@
 [gerrit]
 host=review.openstack.org
 port=29418
-project=stackforge/cookbook-openstack-image.git
+project=openstack/cookbook-openstack-image.git
 defaultbranch=stable/icehouse
