@@ -239,7 +239,9 @@ shared_examples 'messaging' do
 
     it 'has RPC/AMQP defaults set' do
       [/^amqp_durable_queues=false$/,
-       /^amqp_auto_delete=false$/].each do |line|
+       /^amqp_auto_delete=false$/,
+       /^heartbeat_timeout_threshold=0$/,
+       /^heartbeat_rate=2$/].each do |line|
         expect(chef_run).to render_file(file_name).with_content(line)
       end
     end
