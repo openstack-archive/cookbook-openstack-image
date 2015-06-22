@@ -156,7 +156,7 @@ elsif glance['api']['caching']
 end
 
 unless node['openstack']['image']['api']['vmware']['vmware_server_host'].empty?
-  vmware_server_password = get_secret node['openstack']['image']['api']['vmware']['secret_name']
+  vmware_server_password = get_password 'token', node['openstack']['image']['api']['vmware']['secret_name']
 end
 
 template '/etc/glance/glance-api.conf' do

@@ -5,8 +5,8 @@ shared_context 'vmware settings configurator' do
   before do
     node.set['openstack']['image']['api']['vmware']['vmware_server_host'] = 'vmware_server_host_value'
     node.set['openstack']['image']['api']['vmware']['secret_name'] = 'vmware_secret_name'
-    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
-      .with('vmware_secret_name')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('token', 'vmware_secret_name')
       .and_return('vmware_server_password_value')
   end
 

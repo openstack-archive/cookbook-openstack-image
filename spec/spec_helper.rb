@@ -50,11 +50,11 @@ shared_context 'image-stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:rabbit_servers)
       .and_return '1.1.1.1:5672,2.2.2.2:5672'
 
-    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
-      .with('openstack_identity_bootstrap_token')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('token', 'openstack_identity_bootstrap_token')
       .and_return('bootstrap-token')
-    allow_any_instance_of(Chef::Recipe).to receive(:get_secret)
-      .with('openstack_vmware_secret_name')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('token', 'openstack_vmware_secret_name')
       .and_return 'vmware_secret_name'
 
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
