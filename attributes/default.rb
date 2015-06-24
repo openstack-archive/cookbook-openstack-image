@@ -28,9 +28,12 @@ default['openstack']['image']['custom_template_banner'] = '
 '
 
 # SSL Options
-# Enable SSL for glance-api endpoint. NOTE: Once enabled, Glance service endpoint
-# must be set to https on Keystone
+# Enable SSL for glance api and registry bind endpoints.
 default['openstack']['image']['ssl']['enabled'] = false
+# Enable SSL for glance api bind endpoint.
+default['openstack']['image']['ssl']['api']['enabled'] = node['openstack']['image']['ssl']['enabled']
+# Enable SSL for glance registry bind endpoint.
+default['openstack']['image']['ssl']['registry']['enabled'] = node['openstack']['image']['ssl']['enabled']
 # Base directory for SSL certficate and key
 default['openstack']['image']['ssl']['basedir'] = '/etc/glance/ssl'
 # Path of the cert file for SSL.

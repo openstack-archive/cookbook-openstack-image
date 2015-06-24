@@ -85,7 +85,8 @@ log_file = /var/log/glance/registry.log
 
 # ================= SSL Options ===============================
 
-<% if node['openstack']['image']['ssl']['enabled'] -%>
+<% if node['openstack']['image']['ssl']['registry']['enabled'] -%>
+
 # Certificate file to use when starting registry server securely
 cert_file = <%= node['openstack']['image']['ssl']['cert_file'] %>
 

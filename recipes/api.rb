@@ -169,6 +169,7 @@ template '/etc/glance/glance-api.conf' do
     api_bind_port: api_bind.port,
     registry_ip_address: registry_endpoint.host,
     registry_port: registry_endpoint.port,
+    registry_scheme: registry_endpoint.scheme,
     sql_connection: sql_connection,
     glance_flavor: glance_flavor,
     auth_uri: auth_uri,
