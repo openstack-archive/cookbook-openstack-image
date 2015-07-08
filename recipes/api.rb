@@ -159,6 +159,16 @@ unless node['openstack']['image']['api']['vmware']['vmware_server_host'].empty?
   vmware_server_password = get_password 'token', node['openstack']['image']['api']['vmware']['secret_name']
 end
 
+if glance['filesystem_store_metadata_file']
+  template glance['filesystem_store_metadata_file'] do
+    source 'glance-metadata.json.erb'
+    owner glance['user']
+    group glance['group']
+    mode 00640
+    not_if { ::File.exist?(glance['filesystem_store_metadata_file']) }
+  end
+end
+
 template '/etc/glance/glance-api.conf' do
   source 'glance-api.conf.erb'
   owner node['openstack']['image']['user']

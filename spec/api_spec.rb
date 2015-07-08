@@ -608,5 +608,34 @@ describe 'openstack-image::api' do
       expect(cron.minute).to eq '01'
       expect(cron.hour).to eq '00'
     end
+
+    describe 'glance-metadata.json' do
+      let(:file) { chef_run.template('/etc/glance/glance-metadata.json') }
+
+      it 'not to create glance-metadata.json by default' do
+        expect(chef_run).not_to create_template('/etc/glance/glance-metadata.json')
+      end
+
+      context 'create right glance-metadata.json file' do
+        before do
+          node.set['openstack']['image']['filesystem_store_metadata_file'] = '/etc/glance/glance-metadata.json'
+        end
+
+        it 'create glance-metadata.json' do
+          expect(chef_run).to create_template(file.name).with(
+            user: 'glance',
+            group: 'glance',
+            mode: 00640
+          )
+        end
+
+        it 'configure id and mountpoint for image filesystem metadata' do
+          %w(id mountpoint).each do |attr|
+            node.set['openstack']['image']["filesystem_store_metadata_#{attr}"] = "metadata_#{attr}_value"
+            expect(chef_run).to render_file(file.name).with_content(/"#{attr}": "metadata_#{attr}_value"/)
+          end
+        end
+      end
+    end
   end
 end

@@ -1,0 +1,6 @@
+<%= node["openstack"]["image"]["custom_template_banner"] %>
+
+{
+  "id": "<%= node['openstack']['image']['filesystem_store_metadata_id'] %>",
+  "mountpoint": "<%= node['openstack']['image']['filesystem_store_metadata_mountpoint'] %>"
+}

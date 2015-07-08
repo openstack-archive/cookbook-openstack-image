@@ -136,6 +136,18 @@ default['openstack']['image']['api']['stores'] = ['file', 'http']
 
 default['openstack']['image']['filesystem_store_datadir'] = '/var/lib/glance/images'
 default['openstack']['image']['filesystem_store_metadata_file'] = nil
+
+# The following two attributes are only available when filesystem_store_metadata_file is specified but
+# not exist
+
+# An opaque string. In order for this module to know that the remote FS is the same one that is mounted
+# locally it must share information with the nova-compute deployment. Both glance and nova-compute must
+# be configured with an unqiue matching string. For example: '00000000-0000-0000-0000-000000000000'
+default['openstack']['image']['filesystem_store_metadata_id'] = nil
+# The location at which the file system is locally mounted. Nova-compute will directly access Glance images
+# from this local filesystem path. For example: '/mount/some_fs/images'
+default['openstack']['image']['filesystem_store_metadata_mountpoint'] = nil
+
 default['openstack']['image']['api']['swift']['container'] = 'glance'
 default['openstack']['image']['api']['swift']['large_object_size'] = '200'
 default['openstack']['image']['api']['swift']['large_object_chunk_size'] = '200'
