@@ -81,7 +81,7 @@ describe 'openstack-image::identity_registration' do
               endpoint_adminurl: 'http://127.0.0.1:9292',
               endpoint_internalurl: internal_url,
               endpoint_publicurl: 'http://127.0.0.1:9292'
-      )
+             )
     end
 
     it 'with different admin,internal,public urls' do
