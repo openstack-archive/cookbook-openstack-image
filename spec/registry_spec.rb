@@ -19,8 +19,15 @@ describe 'openstack-image::registry' do
     include_context 'image-stubs'
     include_examples 'common-logging-recipe'
     include_examples 'common-packages'
-    include_examples 'cache-directory'
     include_examples 'glance-directory'
+
+    it do
+      expect(chef_run).to create_directory('/var/cache/glance/registry').with(
+        user: 'glance',
+        group: 'glance',
+        mode: 00700
+      )
+    end
 
     it 'converges when configured to use sqlite' do
       node.set['openstack']['db']['image']['service_type'] = 'sqlite'

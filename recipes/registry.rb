@@ -79,10 +79,11 @@ platform_options['image_packages'].each do |pkg|
   end
 end
 
-directory ::File.dirname(node['openstack']['image']['registry']['auth']['cache_dir']) do
+directory node['openstack']['image']['registry']['auth']['cache_dir'] do
   owner glance_user
   group glance_group
   mode 00700
+  recursive true
 end
 
 service 'glance-registry' do

@@ -111,20 +111,6 @@ shared_examples 'common-packages' do
   end
 end
 
-shared_examples 'cache-directory' do
-  describe '/var/cache/glance' do
-    let(:dir) { chef_run.directory('/var/cache/glance') }
-
-    it 'creates directory /var/cache/glance' do
-      expect(chef_run).to create_directory(dir.name).with(
-        user: 'glance',
-        group: 'glance',
-        mode: 00700
-      )
-    end
-  end
-end
-
 shared_examples 'image-lib-cache-directory' do
   describe '/var/lib/glance/image-cache/' do
     let(:dir) { chef_run.directory('/var/lib/glance/image-cache/') }

@@ -91,10 +91,11 @@ directory '/etc/glance' do
   mode 00700
 end
 
-directory ::File.dirname node['openstack']['image']['api']['auth']['cache_dir'] do
+directory node['openstack']['image']['api']['auth']['cache_dir'] do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00700
+  recursive true
 end
 
 glance = node['openstack']['image']

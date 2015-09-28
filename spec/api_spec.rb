@@ -31,9 +31,16 @@ describe 'openstack-image::api' do
     include_context 'image-stubs'
     include_examples 'common-logging-recipe'
     include_examples 'common-packages'
-    include_examples 'cache-directory'
     include_examples 'image-lib-cache-directory'
     include_examples 'glance-directory'
+
+    it do
+      expect(chef_run).to create_directory('/var/cache/glance/api').with(
+        user: 'glance',
+        group: 'glance',
+        mode: 00700
+      )
+    end
 
     it 'does not upgrade swift package by default' do
       expect(chef_run).not_to upgrade_package('python-swift')
