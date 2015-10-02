@@ -36,7 +36,7 @@ action :upload do
 
   type = new_resource.image_type
   type = _determine_type(url) if type == 'unknown'
-  _upload_image(type, name, api, url, public)
+  _upload_image(type, name, api, url, public ? 'public' : 'private')
   new_resource.updated_by_last_action(true)
 end
 
@@ -70,9 +70,10 @@ def _upload_image_bare(name, api, url, public, type)
   c_fmt = '--container-format bare'
   d_fmt = "--disk-format #{type}"
 
-  execute "Uploading #{type} image #{name}" do
+  execute "Uploading #{type} image #{name}" do # :pragma-foodcritic: ~FC041
     cwd '/tmp'
-    command "#{glance_cmd} image-create --name #{name} --is-public #{public} #{c_fmt} #{d_fmt} --location #{url}"
+
+    command "curl -L #{url} | #{glance_cmd} image-create --name #{name} --visibility #{public} #{c_fmt} #{d_fmt}"
     not_if "#{glance_cmd} image-list | grep #{name}"
   end
 end
@@ -109,9 +110,9 @@ def _upload_ami(name, api, url, public) # rubocop:disable MethodLength
 
         kernel=$(ls *.img | head -n1)
 
-        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --is-public #{public} #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
-        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --is-public #{public} #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
-        #{glance_cmd} image-create --name "#{name}" --is-public #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
+        kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --visibility #{public} #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
+        rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --visibility #{public} #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
+        #{glance_cmd} image-create --name "#{name}" --visibility #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
     not_if "#{glance_cmd} image-list | grep #{name}"
   end
