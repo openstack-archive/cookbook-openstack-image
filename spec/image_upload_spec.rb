@@ -19,7 +19,7 @@ describe 'openstack-image::image_upload' do
 
     it 'uploads the cirros image' do
       expect(chef_run).to upload_openstack_image_image('Image setup for cirros').with(
-        image_url: 'http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img',
+        image_url: 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img',
         image_name: 'cirros',
         image_type: 'qcow',
         image_public: true
@@ -34,10 +34,10 @@ describe 'openstack-image::image_upload' do
 
     it 'uploads the tar image' do
       node.set['openstack']['image']['upload_images'] = ['imageName']
-      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-uec.tar.gz'
+      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-uec.tar.gz'
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
-        image_url: 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-uec.tar.gz',
+        image_url: 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-uec.tar.gz',
         image_name: 'imageName',
         image_type: 'unknown',
         image_public: true

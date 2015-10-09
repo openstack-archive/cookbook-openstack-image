@@ -185,9 +185,9 @@ default['openstack']['image']['upload_images'] = ['cirros']
 default['openstack']['image']['upload_image']['precise'] = 'http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img'
 default['openstack']['image']['upload_image']['oneiric'] = 'http://cloud-images.ubuntu.com/oneiric/current/oneiric-server-cloudimg-amd64-disk1.img'
 default['openstack']['image']['upload_image']['natty'] = 'http://cloud-images.ubuntu.com/natty/current/natty-server-cloudimg-amd64-disk1.img'
-default['openstack']['image']['upload_image']['cirros'] = 'http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img'
+default['openstack']['image']['upload_image']['cirros'] = 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img'
 # more images available at https://github.com/rackerjoe/oz-image-build
-default['openstack']['image']['upload_image']['centos'] = 'http://c250663.r63.cf1.rackcdn.com/centos60_x86_64.qcow2'
+default['openstack']['image']['upload_image']['centos'] = 'http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2'
 # To override image type
 # The following disk format types are supported: qcow vhd vmdk vdi iso raw
 # Bare container format will be used.
