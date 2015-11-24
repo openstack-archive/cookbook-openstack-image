@@ -85,6 +85,9 @@ default['openstack']['image']['api']['workers'] = [8, node['cpu']['total'].to_i]
 # Set the number of registry workers
 default['openstack']['image']['registry']['workers'] = [8, node['cpu']['total'].to_i].min
 
+# Set the maximum number of API results
+default['openstack']['image']['registry']['api_limit_max'] = 1000
+
 # Return the URL that references where the data is stored on the backend.
 default['openstack']['image']['api']['show_image_direct_url'] = 'False'
 
