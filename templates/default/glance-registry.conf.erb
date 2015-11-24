@@ -48,7 +48,7 @@ workers = <%= node["openstack"]["image"]["registry"]["workers"] %>
 
 # Limit the api to return `param_limit_max` items in a call to a container. If
 # a larger `limit` query param is provided, it will be reduced to this value.
-api_limit_max = 1000
+api_limit_max = <%= node["openstack"]["image"]["registry"]["api_limit_max"] %>
 
 # If a `limit` query param is not provided in an api request, it will
 # default to `limit_param_default`
