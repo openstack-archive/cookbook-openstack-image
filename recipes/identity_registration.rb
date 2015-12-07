@@ -22,24 +22,26 @@
 
 require 'uri'
 
-class ::Chef::Recipe # rubocop:disable Documentation
+class ::Chef::Recipe
   include ::Openstack
 end
 
-identity_admin_endpoint = admin_endpoint 'identity-admin'
+identity_admin_endpoint = admin_endpoint 'identity'
 
 token = get_password 'token', 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
-api_internal_endpoint = internal_endpoint 'image-api'
-api_public_endpoint = public_endpoint 'image-api'
-api_admin_endpoint = admin_endpoint 'image-api'
+api_internal_endpoint = internal_endpoint 'image_api'
+api_public_endpoint = public_endpoint 'image_api'
+api_admin_endpoint = admin_endpoint 'image_api'
 
 service_pass = get_password 'service', 'openstack-image'
-service_tenant_name = node['openstack']['image']['service_tenant_name']
-service_user = node['openstack']['image']['service_user']
+service_tenant_name =
+  node['openstack']['image_api']['conf']['keystone_authtoken']['tenant_name']
+service_user =
+  node['openstack']['image_api']['conf']['keystone_authtoken']['username']
 service_role = node['openstack']['image']['service_role']
-region = node['openstack']['image']['region']
+region = node['openstack']['region']
 
 # Register Image Service
 openstack_identity_register 'Register Image Service' do
@@ -48,7 +50,6 @@ openstack_identity_register 'Register Image Service' do
   service_name 'glance'
   service_type 'image'
   service_description 'Glance Image Service'
-
   action :create_service
 end
 
@@ -61,7 +62,6 @@ openstack_identity_register 'Register Image Endpoint' do
   endpoint_adminurl api_admin_endpoint.to_s
   endpoint_internalurl api_internal_endpoint.to_s
   endpoint_publicurl api_public_endpoint.to_s
-
   action :create_endpoint
 end
 
@@ -72,7 +72,6 @@ openstack_identity_register 'Register Service Tenant' do
   tenant_name service_tenant_name
   tenant_description 'Service Tenant'
   tenant_enabled true # Not required as this is the default
-
   action :create_tenant
 end
 
@@ -85,7 +84,6 @@ openstack_identity_register "Register #{service_user} User" do
   user_pass service_pass
   # String until https://review.openstack.org/#/c/29498/ merged
   user_enabled true
-
   action :create_user
 end
 
@@ -96,6 +94,5 @@ openstack_identity_register "Grant '#{service_role}' Role to #{service_user} Use
   tenant_name service_tenant_name
   user_name service_user
   role_name service_role
-
   action :grant_role
 end

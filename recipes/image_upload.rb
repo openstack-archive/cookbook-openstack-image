@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-class ::Chef::Recipe # rubocop:disable Documentation
+class ::Chef::Recipe
   include ::Openstack
 end
 
@@ -33,16 +33,15 @@ platform_options['image_client_packages'].each do |pkg|
   end
 end
 
-identity_endpoint = internal_endpoint 'identity-internal'
+package 'curl' do
+  options platform_options['package_overrides']
+  action :upgrade
+end
 
-# For glance client, only identity v2 is supported. See discussion on
-# https://bugs.launchpad.net/openstack-chef/+bug/1207504
-# So here auth_uri can not be transformed.
-auth_uri = identity_endpoint.to_s
-
-admin_user = node['openstack']['identity']['admin_user']
-admin_pass = get_password 'user', admin_user
-admin_tenant = node['openstack']['identity']['admin_tenant_name']
+auth_uri = public_endpoint('identity').to_s
+admin_user = node['openstack']['image_api']['conf']['keystone_authtoken']['username']
+admin_pass = get_password 'service', 'openstack-image'
+admin_tenant = node['openstack']['image_api']['conf']['keystone_authtoken']['tenant_name']
 
 node['openstack']['image']['upload_images'].each do |img|
   type = 'unknown'

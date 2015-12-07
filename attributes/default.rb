@@ -36,17 +36,11 @@ default['openstack']['image']['ssl']['api']['enabled'] = node['openstack']['imag
 default['openstack']['image']['ssl']['registry']['enabled'] = node['openstack']['image']['ssl']['enabled']
 # Base directory for SSL certficate and key
 default['openstack']['image']['ssl']['basedir'] = '/etc/glance/ssl'
-# Path of the cert file for SSL.
-default['openstack']['image']['ssl']['cert_file'] = "#{node['openstack']['image']['ssl']['basedir']}/certs/sslcert.pem"
-# Path of the keyfile for SSL.
-default['openstack']['image']['ssl']['key_file'] = "#{node['openstack']['image']['ssl']['basedir']}/private/sslkey.pem"
 # Specify server whether SSL certificate is required
 default['openstack']['image']['ssl']['cert_required'] = false
-# Path of the CA cert file for SSL. Only use if client certificate is required
-default['openstack']['image']['ssl']['ca_file'] = "#{node['openstack']['image']['ssl']['basedir']}/certs/sslca.pem"
 
 default['openstack']['image']['verbose'] = 'False'
-default['openstack']['image']['debug'] = 'False'
+
 # This is the name of the Chef role that will install the Keystone Service API
 default['openstack']['image']['identity_service_chef_role'] = 'os-identity'
 
@@ -56,129 +50,25 @@ default['openstack']['image']['region'] = node['openstack']['region']
 # The name of the Chef role that knows about the message queue server
 # that Glance uses
 default['openstack']['image']['rabbit_server_chef_role'] = 'os-ops-messaging'
-
 default['openstack']['image']['service_tenant_name'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
-default['openstack']['image']['service_role'] = 'service'
-
-default['openstack']['image']['notification_driver'] = 'noop'
-
-# RPC attributes
-# The AMQP exchange to connect to if using RabbitMQ or Qpid
-default['openstack']['image']['control_exchange'] = 'openstack'
-# Size of RPC thread pool
-default['openstack']['image']['rpc_thread_pool_size'] = 64
-# Size of RPC connection pool
-default['openstack']['image']['rpc_conn_pool_size'] = 30
-# Seconds to wait for a response from call or multicall
-default['openstack']['image']['rpc_response_timeout'] = 60
-case node['openstack']['mq']['service_type']
-when 'rabbitmq'
-  default['openstack']['image']['rpc_backend'] = 'rabbit'
-when 'qpid'
-  default['openstack']['image']['rpc_backend'] = 'qpid'
-end
-
-# Set the number of api workers
-default['openstack']['image']['api']['workers'] = [8, node['cpu']['total'].to_i].min
-
-# Set the number of registry workers
-default['openstack']['image']['registry']['workers'] = [8, node['cpu']['total'].to_i].min
-
-# Return the URL that references where the data is stored on the backend.
-default['openstack']['image']['api']['show_image_direct_url'] = 'False'
+default['openstack']['image']['service_role'] = 'admin'
 
 # Supported values for the 'container_format' image attribute
 default['openstack']['image']['api']['container_formats'] = %w(ami ari aki bare ovf ova docker dockerref)
 
 # Supported values for the 'disk_format' image attribute
-default['openstack']['image']['api']['disk_formats'] = %w(ami ari aki vhd vmdk raw qcow2 vdi iso)
-
-default['openstack']['image']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
-default['openstack']['image']['registry']['auth']['version'] = node['openstack']['api']['auth']['version']
-
-# Keystone PKI signing directories
-# XXX keystoneclient wants these dirs to exist even if it doesn't use them
-default['openstack']['image']['api']['auth']['cache_dir'] = '/var/cache/glance/api'
-default['openstack']['image']['registry']['auth']['cache_dir'] = '/var/cache/glance/registry'
-
-# A list of memcached server(s) to use for caching
-default['openstack']['image']['api']['auth']['memcached_servers'] = nil
-default['openstack']['image']['registry']['auth']['memcached_servers'] = nil
-
-# Whether token data should be authenticated or authenticated and encrypted. Acceptable values are MAC or ENCRYPT
-default['openstack']['image']['api']['auth']['memcache_security_strategy'] = nil
-default['openstack']['image']['registry']['auth']['memcache_security_strategy'] = nil
-
-# This string is used for key derivation
-default['openstack']['image']['api']['auth']['memcache_secret_key'] = nil
-default['openstack']['image']['registry']['auth']['memcache_secret_key'] = nil
-
-# Hash algorithms to use for hashing PKI tokens
-default['openstack']['image']['api']['auth']['hash_algorithms'] = 'md5'
-default['openstack']['image']['registry']['auth']['hash_algorithms'] = 'md5'
-
-# A PEM encoded Certificate Authority to use when verifying HTTPs connections
-default['openstack']['image']['api']['auth']['cafile'] = nil
-default['openstack']['image']['registry']['auth']['cafile'] = nil
-
-# Verify HTTPS connections
-default['openstack']['image']['api']['auth']['insecure'] = false
-default['openstack']['image']['registry']['auth']['insecure'] = false
 
 # Whether to use any of the default caching pipelines from the paste configuration file
 default['openstack']['image']['api']['caching'] = false
 default['openstack']['image']['api']['cache_management'] = false
 
-default['openstack']['image']['api']['default_store'] = 'file'
-# List of which store classes and store class locations are currently known to glance at startup
-default['openstack']['image']['api']['stores'] = ['file', 'http']
-
-default['openstack']['image']['filesystem_store_datadir'] = '/var/lib/glance/images'
-default['openstack']['image']['filesystem_store_metadata_file'] = nil
-
-# The following two attributes are only available when filesystem_store_metadata_file is specified but
-# not exist
-
-# An opaque string. In order for this module to know that the remote FS is the same one that is mounted
-# locally it must share information with the nova-compute deployment. Both glance and nova-compute must
-# be configured with an unqiue matching string. For example: '00000000-0000-0000-0000-000000000000'
-default['openstack']['image']['filesystem_store_metadata_id'] = nil
-# The location at which the file system is locally mounted. Nova-compute will directly access Glance images
-# from this local filesystem path. For example: '/mount/some_fs/images'
-default['openstack']['image']['filesystem_store_metadata_mountpoint'] = nil
-
-default['openstack']['image']['api']['swift']['container'] = 'glance'
-default['openstack']['image']['api']['swift']['large_object_size'] = '200'
-default['openstack']['image']['api']['swift']['large_object_chunk_size'] = '200'
-default['openstack']['image']['api']['swift']['enable_snet'] = 'False'
-default['openstack']['image']['api']['swift']['store_region'] = nil
-default['openstack']['image']['api']['cache']['image_cache_max_size'] = '10737418240'
-
-# Info to match when looking for cinder in the service catalog
-default['openstack']['image']['api']['block-storage']['cinder_catalog_info'] = 'volumev2:cinderv2:publicURL'
-# Allow to perform insecure SSL requests to cinder (boolean value)
-default['openstack']['image']['api']['block-storage']['cinder_api_insecure'] = false
-# Location of ca certicates file to use for cinder client requests
-default['openstack']['image']['api']['block-storage']['cinder_ca_certificates_file'] = nil
-
 # Directory for the Image Cache
 default['openstack']['image']['cache']['dir'] = '/var/lib/glance/image-cache/'
 # Number of seconds until an incomplete image is considered stalled an
-# eligible for reaping
-default['openstack']['image']['cache']['stall_time'] = 86400
+
 # Number of seconds to leave invalid images around before they are eligible to be reaped
 default['openstack']['image']['cache']['grace_period'] = 3600
-
-# Ceph Options
-default['openstack']['image']['api']['rbd']['ceph_conf'] = '/etc/ceph/ceph.conf'
-default['openstack']['image']['api']['rbd']['user'] = 'glance'
-default['openstack']['image']['api']['rbd']['pool'] = 'images'
-default['openstack']['image']['api']['rbd']['chunk_size'] = '8'
-
-# API to use for accessing data. Default value points to sqlalchemy
-# package.
-default['openstack']['image']['data_api'] = 'glance.db.sqlalchemy.api'
 
 # Default Image Locations
 default['openstack']['image']['upload_images'] = ['cirros']
@@ -200,21 +90,13 @@ default['openstack']['image']['syslog']['config_facility'] = 'local2'
 
 # vmware attributes
 default['openstack']['image']['api']['vmware']['secret_name'] = 'openstack_vmware_secret_name'
-default['openstack']['image']['api']['vmware']['vmware_server_host'] = ''
-default['openstack']['image']['api']['vmware']['vmware_server_username'] = ''
-default['openstack']['image']['api']['vmware']['vmware_datacenter_path'] = ''
-default['openstack']['image']['api']['vmware']['vmware_datastore_name'] = ''
-default['openstack']['image']['api']['vmware']['vmware_api_retry_count'] = 10
-default['openstack']['image']['api']['vmware']['vmware_task_poll_interval'] = 5
-default['openstack']['image']['api']['vmware']['vmware_store_image_dir'] = '/openstack_glance'
-default['openstack']['image']['api']['vmware']['vmware_api_insecure'] = false
 
 # cron output redirection
 default['openstack']['image']['cron']['redirection'] = '> /dev/null 2>&1'
 
 # platform-specific settings
 case platform_family
-when 'fedora', 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
+when 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
@@ -253,4 +135,21 @@ when 'debian'
     'image_registry_process_name' => 'glance-registry',
     'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
+end
+
+# ******************** OpenStack Image Endpoints ******************************
+
+# The OpenStack Image (Glance) endpoints
+%w(public internal admin).each do |ep_type|
+  %w(image_api image_registry).each do |service|
+    default['openstack']['endpoints'][service][ep_type]['scheme'] = 'http'
+    default['openstack']['endpoints']['image_api'][ep_type]['path'] = ''
+    default['openstack']['endpoints']['image_registry'][ep_type]['path'] = '/v2'
+  end
+  %w(endpoints bind_service).each do |type|
+    default['openstack'][type]['image_registry'][ep_type]['host'] = '127.0.0.1'
+    default['openstack'][type]['image_registry'][ep_type]['port'] = 9191
+    default['openstack'][type]['image_api'][ep_type]['host'] = '127.0.0.1'
+    default['openstack'][type]['image_api'][ep_type]['port'] = 9292
+  end
 end

@@ -31,7 +31,7 @@ action :upload do
   url = new_resource.image_url
   public = new_resource.image_public
 
-  ep = endpoint 'image-api'
+  ep = public_endpoint 'image_api'
   api = ep.to_s.gsub(ep.path, '') # remove trailing /v2
 
   type = new_resource.image_type
@@ -79,7 +79,7 @@ def _upload_image_bare(name, api, url, public, type)
 end
 
 # TODO(chrislaco) This refactor is in the works via Craig Tracey
-def _upload_ami(name, api, url, public) # rubocop:disable MethodLength
+def _upload_ami(name, api, url, public)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
   aki_fmt = '--container-format aki --disk-format aki'
   ari_fmt = '--container-format ari --disk-format ari'

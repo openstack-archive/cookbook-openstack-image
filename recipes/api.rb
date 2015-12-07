@@ -19,30 +19,19 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 require 'uri'
 
-class ::Chef::Recipe # rubocop:disable Documentation
+class ::Chef::Recipe
   include ::Openstack
 end
+
+include_recipe 'openstack-identity::client'
 
 if node['openstack']['image']['syslog']['use']
   include_recipe 'openstack-common::logging'
 end
 
 platform_options = node['openstack']['image']['platform']
-
-package 'python-keystoneclient' do
-  options platform_options['package_overrides']
-  action :upgrade
-end
-
-package 'curl' do
-  options platform_options['package_overrides']
-  action :upgrade
-end
 
 platform_options['image_packages'].each do |pkg|
   package pkg do
@@ -51,180 +40,124 @@ platform_options['image_packages'].each do |pkg|
   end
 end
 
-if node['openstack']['image']['api']['default_store'] == 'swift'
-  platform_options['swift_packages'].each do |pkg|
-    package pkg do
-      action :upgrade
-      options platform_options['package_overrides']
-    end
-  end
-
-elsif node['openstack']['image']['api']['default_store'] == 'rbd'
-  include_recipe 'ceph'
-
-  caps = { 'mon' => 'allow r',
-           'osd' => "allow class-read object_prefix rbd_children, allow rwx pool=#{node['openstack']['image']['api']['rbd']['pool']}" }
-
-  ceph_client node['openstack']['image']['api']['rbd']['user'] do
-    name node['openstack']['image']['api']['rbd']['user']
-    caps caps
-    keyname "client.#{node['openstack']['image']['api']['rbd']['user']}"
-    filename "/etc/ceph/ceph.client.#{node['openstack']['image']['api']['rbd']['user']}.keyring"
-    owner node['openstack']['image']['user']
-    group node['openstack']['image']['group']
-
-    action :add
-    notifies :restart, 'service[glance-api]'
-  end
-end
-
-service 'glance-api' do
-  service_name platform_options['image_api_service']
-  supports status: true, restart: true
-
-  action :enable
-end
-
 directory '/etc/glance' do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00700
 end
 
-directory node['openstack']['image']['api']['auth']['cache_dir'] do
+directory node['openstack']['image_api']['conf']['keystone_authtoken']['signing_dir'] do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00700
   recursive true
 end
 
-glance = node['openstack']['image']
-
-identity_endpoint = internal_endpoint 'identity-internal'
-identity_admin_endpoint = admin_endpoint 'identity-admin'
-service_pass = get_password 'service', 'openstack-image'
-
-auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
-identity_uri = identity_uri_transform(identity_admin_endpoint)
-
-db_user = node['openstack']['db']['image']['username']
-db_pass = get_password 'db', 'glance'
-sql_connection = db_uri('image', db_user, db_pass)
-
-mq_service_type = node['openstack']['mq']['image']['service_type']
-
-if mq_service_type == 'rabbitmq'
-  node['openstack']['mq']['image']['rabbit']['ha'] && (rabbit_hosts = rabbit_servers)
-  mq_password = get_password 'user', node['openstack']['mq']['image']['rabbit']['userid']
-elsif mq_service_type == 'qpid'
-  mq_password = get_password 'user', node['openstack']['mq']['image']['qpid']['username']
-end
-
-registry_endpoint = internal_endpoint 'image-registry'
-api_bind = internal_endpoint 'image-api-bind'
-cinder_endpoint = internal_endpoint 'block-storage-api'
-
-# Possible combinations of options here
-# - default_store=file
-#     * no other options required
-# - default_store=swift
-#     * if swift_store_auth_address is not defined
-#         - default to local swift
-#     * else if swift_store_auth_address is defined
-#         - get swift_store_auth_address, swift_store_user, swift_store_key, and
-#           swift_store_auth_version from the node attributes and use them to connect
-#           to the swift compatible API service running elsewhere - possibly
-#           Rackspace Cloud Files.
-if glance['api']['swift_store_auth_address'].nil?
-  swift_store_auth_address = auth_uri
-  swift_store_user = "#{glance['service_tenant_name']}_#{glance['service_user']}"
-  swift_user_tenant = nil
-  swift_store_key = service_pass
-  swift_store_auth_version = 2
-else
-  swift_store_auth_address = glance['api']['swift_store_auth_address']
-  swift_user_tenant = glance['api']['swift_user_tenant']
-  swift_store_user = glance['api']['swift_store_user']
-  swift_store_key = get_password 'service', swift_store_user
-  swift_store_auth_version = glance['api']['swift_store_auth_version']
-end
-
-glance_flavor = 'keystone'
-if glance['api']['cache_management']
-  glance_flavor += '+cachemanagement'
-elsif glance['api']['caching']
-  glance_flavor += '+caching'
-end
-
-unless node['openstack']['image']['api']['vmware']['vmware_server_host'].empty?
-  vmware_server_password = get_password 'token', node['openstack']['image']['api']['vmware']['secret_name']
-end
-
-if glance['filesystem_store_metadata_file']
-  template glance['filesystem_store_metadata_file'] do
-    source 'glance-metadata.json.erb'
-    owner glance['user']
-    group glance['group']
-    mode 00640
-    not_if { ::File.exist?(glance['filesystem_store_metadata_file']) }
+if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'file'
+  node.default['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] =
+    '/var/lib/glance/images'
+  directory node['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] do
+    owner node['openstack']['image']['user']
+    group node['openstack']['image']['group']
+    mode 00750
+    recursive true
   end
 end
 
+identity_endpoint = public_endpoint 'identity'
+node.default['openstack']['image_api']['conf_secrets']
+.[]('keystone_authtoken')['password'] =
+  get_password 'service', 'openstack-image'
+
+auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+
+db_user = node['openstack']['db']['image']['username']
+db_pass = get_password 'db', 'glance'
+node.default['openstack']['image_api']['conf_secrets']
+.[]('database')['connection'] =
+  db_uri('image', db_user, db_pass)
+
+if node['openstack']['image_api']['conf']['DEFAULT']['rpc_backend'] == 'rabbit'
+  user = node['openstack']['mq']['image']['rabbit']['userid']
+  node.default['openstack']['image_api']['conf_secrets']
+  .[]('oslo_messaging_rabbit')['rabbit_userid'] = user
+  node.default['openstack']['image_api']['conf_secrets']
+  .[]('oslo_messaging_rabbit')['rabbit_password'] =
+    get_password 'user', user
+end
+
+registry_endpoint = internal_endpoint 'image_registry'
+api_bind = node['openstack']['bind_service']['image_api']['internal']
+
+node.default['openstack']['image_api']['conf'].tap do |conf|
+  # [DEFAULT] section
+  conf['DEFAULT']['bind_host']  = api_bind.host
+  conf['DEFAULT']['bind_port']  = api_bind.port
+  conf['DEFAULT']['registry_host']  = registry_endpoint.host
+  conf['DEFAULT']['registry_port']  = registry_endpoint.port
+  conf['DEFAULT']['registry_client_protocol'] = registry_endpoint.scheme
+  # [keystone_authtoken] section
+  conf['keystone_authtoken']['auth_url'] = auth_url
+end
+
+node.default['openstack']['image_cache']['conf'].tap do |conf|
+  # [DEFAULT] section
+  conf['DEFAULT']['registry_host']  = registry_endpoint.host
+  conf['DEFAULT']['registry_port']  = registry_endpoint.port
+end
+
+node.default['openstack']['image_scrubber']['conf'].tap do |conf|
+  # [DEFAULT] section
+  conf['DEFAULT']['registry_host']  = registry_endpoint.host
+  conf['DEFAULT']['registry_port']  = registry_endpoint.port
+end
+
+# merge all config options and secrets
+glance_api_conf = merge_config_options 'image_api'
+glance_cache_conf = merge_config_options 'image_cache'
+glance_scrubber_conf = merge_config_options 'image_scrubber'
+
 template '/etc/glance/glance-api.conf' do
-  source 'glance-api.conf.erb'
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00640
   variables(
-    api_bind_address: api_bind.host,
-    api_bind_port: api_bind.port,
-    registry_ip_address: registry_endpoint.host,
-    registry_port: registry_endpoint.port,
-    registry_scheme: registry_endpoint.scheme,
-    sql_connection: sql_connection,
-    glance_flavor: glance_flavor,
-    auth_uri: auth_uri,
-    identity_uri: identity_uri,
-    cinder_endpoint: cinder_endpoint,
-    service_pass: service_pass,
-    rabbit_hosts: rabbit_hosts,
-    swift_store_key: swift_store_key,
-    swift_user_tenant: swift_user_tenant,
-    swift_store_user: swift_store_user,
-    swift_store_auth_address: swift_store_auth_address,
-    swift_store_auth_version: swift_store_auth_version,
-    notification_driver: node['openstack']['image']['notification_driver'],
-    mq_service_type: mq_service_type,
-    mq_password: mq_password,
-    vmware_server_password: vmware_server_password
+    service_config: glance_api_conf
   )
-
-  notifies :restart, 'service[glance-api]', :immediately
 end
 
 template '/etc/glance/glance-cache.conf' do
-  source 'glance-cache.conf.erb'
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00640
   variables(
-    registry_ip_address: registry_endpoint.host,
-    registry_port: registry_endpoint.port,
-    vmware_server_password: vmware_server_password
+    service_config: glance_cache_conf
   )
-
-  notifies :restart, 'service[glance-api]', :immediately
 end
 
 template '/etc/glance/glance-scrubber.conf' do
-  source 'glance-scrubber.conf.erb'
+  source 'openstack-service.conf.erb'
+  cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   mode 00640
   variables(
-    registry_ip_address: registry_endpoint.host,
-    registry_port: registry_endpoint.port
+    service_config: glance_scrubber_conf
   )
+end
+
+%w(image_api image_cache image_scrubber).each do |service|
+  # delete all secrets saved in the attribute
+  # node['openstack']['pi]['conf_secrets'] after creating the glance-api.conf
+  ruby_block "delete all attributes in node['openstack']['#{service}']['conf_secrets']" do
+    block do
+      node.rm('openstack', service, 'conf_secrets')
+    end
+  end
 end
 
 # Configure glance-cache-pruner to run every 30 minutes
@@ -248,11 +181,13 @@ directory node['openstack']['image']['cache']['dir'] do
   mode 00755
 end
 
-if node['openstack']['image']['api']['default_store'] == 'file'
-  directory node['openstack']['image']['filesystem_store_datadir'] do
-    owner node['openstack']['image']['user']
-    group node['openstack']['image']['group']
-    mode 00750
-    recursive true
-  end
+service 'glance-api' do
+  service_name platform_options['image_api_service']
+  supports status: true, restart: true
+  action [:enable, :start]
+  subscribes :restart, [
+    'template[/etc/glance/glance-scrubber.conf]',
+    'template[/etc/glance/glance-cache.conf]',
+    'template[/etc/glance/glance-api.conf]'
+  ]
 end
