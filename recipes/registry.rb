@@ -51,7 +51,8 @@ if node['openstack']['image_registry']['conf']['DEFAULT']['rpc_backend'] == 'rab
 end
 
 identity_endpoint = public_endpoint 'identity'
-registry_bind = node['openstack']['bind_service']['image_registry']['internal']
+registry_bind = node['openstack']['bind_service']['all']['image_registry']
+registry_bind_address = bind_address registry_bind
 
 node.default['openstack']['image_registry']['conf_secrets']
   .[]('keystone_authtoken')['password'] =
@@ -90,7 +91,7 @@ end
 
 node.default['openstack']['image_registry']['conf'].tap do |conf|
   # [DEFAULT] section
-  conf['DEFAULT']['bind_host'] = registry_bind.host
+  conf['DEFAULT']['bind_host'] = registry_bind_address
   conf['DEFAULT']['bind_port'] = registry_bind.port
 
   # [keystone_authtoken] section

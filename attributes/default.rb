@@ -142,14 +142,15 @@ end
 # The OpenStack Image (Glance) endpoints
 %w(public internal admin).each do |ep_type|
   %w(image_api image_registry).each do |service|
-    default['openstack']['endpoints'][service][ep_type]['scheme'] = 'http'
-    default['openstack']['endpoints']['image_api'][ep_type]['path'] = ''
-    default['openstack']['endpoints']['image_registry'][ep_type]['path'] = '/v2'
-  end
-  %w(endpoints bind_service).each do |type|
-    default['openstack'][type]['image_registry'][ep_type]['host'] = '127.0.0.1'
-    default['openstack'][type]['image_registry'][ep_type]['port'] = 9191
-    default['openstack'][type]['image_api'][ep_type]['host'] = '127.0.0.1'
-    default['openstack'][type]['image_api'][ep_type]['port'] = 9292
+    default['openstack']['endpoints'][ep_type][service]['scheme'] = 'http'
+    default['openstack']['endpoints'][ep_type][service]['host'] = '127.0.0.1'
+    default['openstack']['endpoints'][ep_type]['image_api']['path'] = ''
+    default['openstack']['endpoints'][ep_type]['image_api']['port'] = 9292
+    default['openstack']['endpoints'][ep_type]['image_registry']['path'] = '/v2'
+    default['openstack']['endpoints'][ep_type]['image_registry']['port'] = 9191
   end
 end
+default['openstack']['bind_service']['all']['image_registry']['host'] = '127.0.0.1'
+default['openstack']['bind_service']['all']['image_registry']['port'] = 9191
+default['openstack']['bind_service']['all']['image_api']['host'] = '127.0.0.1'
+default['openstack']['bind_service']['all']['image_api']['port'] = 9292

@@ -40,7 +40,7 @@ describe 'openstack-image::identity_registration' do
 
     it 'with different public url' do
       public_url = 'https://public.host:123/public_path'
-      node.set['openstack']['endpoints']['image_api']['public']['uri'] = public_url
+      node.set['openstack']['endpoints']['public']['image_api']['uri'] = public_url
       expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
         .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
               bootstrap_token: 'bootstrap-token',
@@ -54,7 +54,7 @@ describe 'openstack-image::identity_registration' do
 
     it 'with different admin url' do
       admin_url = 'http://admin.host:456/admin_path'
-      node.set['openstack']['endpoints']['image_api']['admin']['uri'] = admin_url
+      node.set['openstack']['endpoints']['admin']['image_api']['uri'] = admin_url
       expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
         .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
               bootstrap_token: 'bootstrap-token',
@@ -68,7 +68,7 @@ describe 'openstack-image::identity_registration' do
 
     it 'with different internal url' do
       internal_url = 'http://internal.host:789/internal_path'
-      node.set['openstack']['endpoints']['image_api']['internal']['uri'] = internal_url
+      node.set['openstack']['endpoints']['internal']['image_api']['uri'] = internal_url
       expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
         .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
               bootstrap_token: 'bootstrap-token',
@@ -84,9 +84,9 @@ describe 'openstack-image::identity_registration' do
       internal_url = 'http://internal.host:789/internal_path'
       admin_url = 'http://admin.host:456/admin_path'
       public_url = 'https://public.host:123/public_path'
-      node.set['openstack']['endpoints']['image_api']['internal']['uri'] = internal_url
-      node.set['openstack']['endpoints']['image_api']['admin']['uri'] = admin_url
-      node.set['openstack']['endpoints']['image_api']['public']['uri'] = public_url
+      node.set['openstack']['endpoints']['internal']['image_api']['uri'] = internal_url
+      node.set['openstack']['endpoints']['admin']['image_api']['uri'] = admin_url
+      node.set['openstack']['endpoints']['public']['image_api']['uri'] = public_url
       expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
         .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
               bootstrap_token: 'bootstrap-token',
