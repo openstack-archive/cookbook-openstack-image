@@ -129,5 +129,5 @@ service 'glance-registry' do
   service_name platform_options['image_registry_service']
   supports status: true, restart: true
   action [:enable, :start]
-  subscribes :restart, 'template[/etc/glance/glance-registry.conf]'
+  subscribes :restart, 'template[/etc/glance/glance-registry.conf]', :immediately
 end

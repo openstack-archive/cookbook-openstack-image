@@ -190,5 +190,5 @@ service 'glance-api' do
     'template[/etc/glance/glance-scrubber.conf]',
     'template[/etc/glance/glance-cache.conf]',
     'template[/etc/glance/glance-api.conf]'
-  ]
+  ], :immediately
 end

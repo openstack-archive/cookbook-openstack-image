@@ -229,9 +229,9 @@ describe 'openstack-image::api' do
 
     it do
       resource = chef_run.service('glance-api')
-      expect(resource).to subscribe_to('template[/etc/glance/glance-api.conf]')
-      expect(resource).to subscribe_to('template[/etc/glance/glance-cache.conf]')
-      expect(resource).to subscribe_to('template[/etc/glance/glance-scrubber.conf]')
+      expect(resource).to subscribe_to('template[/etc/glance/glance-api.conf]').on(:restart).immediately
+      expect(resource).to subscribe_to('template[/etc/glance/glance-cache.conf]').on(:restart).immediately
+      expect(resource).to subscribe_to('template[/etc/glance/glance-scrubber.conf]').on(:restart).immediately
     end
   end
 end

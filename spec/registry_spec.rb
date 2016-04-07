@@ -151,7 +151,7 @@ describe 'openstack-image::registry' do
 
     it do
       resource = chef_run.service('glance-registry')
-      expect(resource).to subscribe_to('template[/etc/glance/glance-registry.conf]')
+      expect(resource).to subscribe_to('template[/etc/glance/glance-registry.conf]').on(:restart).immediately
     end
   end
 end
