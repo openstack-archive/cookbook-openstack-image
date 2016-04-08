@@ -39,9 +39,9 @@ package 'curl' do
 end
 
 auth_uri = public_endpoint('identity').to_s
-admin_user = node['openstack']['image_api']['conf']['keystone_authtoken']['username']
-admin_pass = get_password 'service', 'openstack-image'
-admin_tenant = node['openstack']['image_api']['conf']['keystone_authtoken']['tenant_name']
+admin_user = node['openstack']['identity']['admin_user']
+admin_pass = get_password 'user', admin_user
+admin_tenant = node['openstack']['identity']['admin_tenant_name']
 
 node['openstack']['image']['upload_images'].each do |img|
   type = 'unknown'
