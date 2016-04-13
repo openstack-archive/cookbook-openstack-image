@@ -14,7 +14,7 @@ default['openstack']['image_api']['conf'].tap do |conf|
   conf['paste_deploy']['flavor'] = 'keystone'
 
   # [keystone_authtoken] section
-  conf['keystone_authtoken']['auth_plugin'] = 'v2password'
+  conf['keystone_authtoken']['auth_type'] = 'v2password'
   conf['keystone_authtoken']['region_name'] = node['openstack']['region']
   conf['keystone_authtoken']['username'] = 'glance'
   conf['keystone_authtoken']['tenant_name'] = 'service'

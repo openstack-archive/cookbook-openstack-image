@@ -88,7 +88,7 @@ describe 'openstack-image::registry' do
 
         it do
           [
-            /^auth_plugin = v2password$/,
+            /^auth_type = v2password$/,
             /^region_name = RegionOne$/,
             /^username = glance$/,
             /^tenant_name = service$/,
