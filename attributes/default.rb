@@ -36,8 +36,6 @@ default['openstack']['image']['ssl']['api']['enabled'] = node['openstack']['imag
 default['openstack']['image']['ssl']['registry']['enabled'] = node['openstack']['image']['ssl']['enabled']
 # Base directory for SSL certficate and key
 default['openstack']['image']['ssl']['basedir'] = '/etc/glance/ssl'
-# Specify server whether SSL certificate is required
-default['openstack']['image']['ssl']['cert_required'] = false
 
 default['openstack']['image']['verbose'] = 'False'
 
