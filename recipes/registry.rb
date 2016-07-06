@@ -38,8 +38,7 @@ end
 db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 node.default['openstack']['image_registry']['conf_secrets']
-  .[]('database')['connection'] =
-   db_uri('image', db_user, db_pass)
+  .[]('database')['connection'] = db_uri('image', db_user, db_pass)
 
 if node['openstack']['image_registry']['conf']['DEFAULT']['rpc_backend'] == 'rabbit'
   user = node['openstack']['mq']['image']['rabbit']['userid']
@@ -55,8 +54,7 @@ registry_bind = node['openstack']['bind_service']['all']['image_registry']
 registry_bind_address = bind_address registry_bind
 
 node.default['openstack']['image_registry']['conf_secrets']
-  .[]('keystone_authtoken')['password'] =
-   get_password 'service', 'openstack-image'
+  .[]('keystone_authtoken')['password'] = get_password 'service', 'openstack-image'
 
 auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
 glance_user = node['openstack']['image']['user']

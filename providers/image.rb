@@ -21,6 +21,8 @@
 
 include ::Openstack
 
+use_inline_resources
+
 action :upload do
   @user = new_resource.identity_user
   @pass = new_resource.identity_pass
@@ -50,7 +52,7 @@ def _determine_type(url)
   when '.qcow2', '.img'
     return 'qcow'
   else
-    fail ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for ami and .qcow2 and .img for qcow"
+    raise ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for ami and .qcow2 and .img for qcow"
   end
 end
 

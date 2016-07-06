@@ -53,12 +53,12 @@ describe 'openstack-image::image_upload' do
       it "uploads the #{image_type} image" do
         node.set['openstack']['image']['upload_images'] = ["#{image_type}_imageName"]
         node.set['openstack']['image']['upload_image']["#{image_type}_imageName"] = "image_file.#{image_type}"
-        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = "#{image_type}"
+        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = image_type
         stub_command("glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep #{image_type}_imageName").and_return(false)
         expect(chef_run).to upload_openstack_image_image("Image setup for #{image_type}_imageName").with(
           image_url: "image_file.#{image_type}",
           image_name: "#{image_type}_imageName",
-          image_type: "#{image_type}",
+          image_type: image_type,
           image_public: true
         )
       end
