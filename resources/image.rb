@@ -27,7 +27,7 @@ def initialize(*args)
   @action = :upload
 end
 
-BOOLEAN = [TrueClass, FalseClass]
+BOOLEAN = [TrueClass, FalseClass].freeze
 
 attribute :image_url, kind_of: String
 attribute :image_type, kind_of: String, default: 'unknown', equal_to: %w(unknown ami qcow vhd vmdk vdi iso raw)
