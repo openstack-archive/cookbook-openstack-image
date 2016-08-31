@@ -37,3 +37,5 @@ attribute :identity_user, kind_of: String
 attribute :identity_pass, kind_of: String
 attribute :identity_tenant, kind_of: String
 attribute :identity_uri, kind_of: String
+attribute :identity_user_domain_name, kind_of: String
+attribute :identity_project_domain_name, kind_of: String

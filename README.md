@@ -28,8 +28,9 @@ Cookbooks
 
 The following cookbooks are dependencies:
 
-- 'openstack-common', '>= 13.0.0'
-- 'openstack-identity', '>= 13.0.0'
+- 'openstack-common', '>= 14.0.0'
+- 'openstack-identity', '>= 14.0.0'
+- 'openstackclient', '>= 0.1.0'
 
 Attributes
 ==========
@@ -124,8 +125,7 @@ Action: `:upload`
 - `:identity_tenant`: Name of the Keystone admin user's tenant.
 - `:identity_uri`: URI of the Identity API endpoint.
 
-For testing this provider with ChefSpec, a custom matcher was added to
-`libraries/matchers.rb`.
+For testing this provider with ChefSpec, a custom matcher was added to `libraries/matchers.rb`.
 
 License and Author
 ==================

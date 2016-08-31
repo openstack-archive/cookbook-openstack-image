@@ -48,7 +48,7 @@ default['openstack']['image']['region'] = node['openstack']['region']
 # The name of the Chef role that knows about the message queue server
 # that Glance uses
 default['openstack']['image']['rabbit_server_chef_role'] = 'os-ops-messaging'
-default['openstack']['image']['service_tenant_name'] = 'service'
+default['openstack']['image']['service_project'] = 'service'
 default['openstack']['image']['service_user'] = 'glance'
 default['openstack']['image']['service_role'] = 'admin'
 
@@ -144,7 +144,7 @@ end
     default['openstack']['endpoints'][ep_type][service]['host'] = '127.0.0.1'
     default['openstack']['endpoints'][ep_type]['image_api']['path'] = ''
     default['openstack']['endpoints'][ep_type]['image_api']['port'] = 9292
-    default['openstack']['endpoints'][ep_type]['image_registry']['path'] = '/v2'
+    default['openstack']['endpoints'][ep_type]['image_registry']['path'] = '/v3'
     default['openstack']['endpoints'][ep_type]['image_registry']['port'] = 9191
   end
 end

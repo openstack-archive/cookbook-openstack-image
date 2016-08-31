@@ -12,5 +12,6 @@ version '14.0.0'
   supports os
 end
 
+depends 'openstackclient'
 depends 'openstack-common', '>= 14.0.0'
 depends 'openstack-identity', '>= 14.0.0'

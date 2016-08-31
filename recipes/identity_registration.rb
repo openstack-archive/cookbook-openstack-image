@@ -28,71 +28,79 @@ end
 
 identity_admin_endpoint = admin_endpoint 'identity'
 
-token = get_password 'token', 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
-api_internal_endpoint = internal_endpoint 'image_api'
-api_public_endpoint = public_endpoint 'image_api'
-api_admin_endpoint = admin_endpoint 'image_api'
+interfaces = {
+  public: { url: public_endpoint('image_api') },
+  internal: { url: internal_endpoint('image_api') },
+  admin: { url: admin_endpoint('image_api') }
+}
+
+admin_user = node['openstack']['identity']['admin_user']
+admin_pass = get_password 'user', admin_user
+admin_project = node['openstack']['identity']['admin_project']
+admin_domain = node['openstack']['identity']['admin_domain_name']
 
 service_pass = get_password 'service', 'openstack-image'
-service_tenant_name =
-  node['openstack']['image_api']['conf']['keystone_authtoken']['tenant_name']
+service_project =
+  node['openstack']['image_api']['conf']['keystone_authtoken']['project_name']
 service_user =
   node['openstack']['image_api']['conf']['keystone_authtoken']['username']
 service_role = node['openstack']['image']['service_role']
+service_domain_name = node['openstack']['image_api']['conf']['keystone_authtoken']['user_domain_name']
 region = node['openstack']['region']
 
+connection_params = {
+  openstack_auth_url:     "#{auth_url}/auth/tokens",
+  openstack_username:     admin_user,
+  openstack_api_key:      admin_pass,
+  openstack_project_name: admin_project,
+  openstack_domain_name:    admin_domain
+}
+
 # Register Image Service
-openstack_identity_register 'Register Image Service' do
-  auth_uri auth_url
-  bootstrap_token token
-  service_name 'glance'
-  service_type 'image'
-  service_description 'Glance Image Service'
-  action :create_service
+openstack_service 'glance' do
+  type 'image'
+  connection_params connection_params
 end
 
-# Register Image Endpoint
-openstack_identity_register 'Register Image Endpoint' do
-  auth_uri auth_url
-  bootstrap_token token
-  service_type 'image'
-  endpoint_region region
-  endpoint_adminurl api_admin_endpoint.to_s
-  endpoint_internalurl api_internal_endpoint.to_s
-  endpoint_publicurl api_public_endpoint.to_s
-  action :create_endpoint
+interfaces.each do |interface, res|
+  # Register Image Endpoints
+  openstack_endpoint 'image' do
+    service_name 'glance'
+    interface interface.to_s
+    url res[:url].to_s
+    region region
+    connection_params connection_params
+  end
 end
 
 # Register Service Tenant
-openstack_identity_register 'Register Service Tenant' do
-  auth_uri auth_url
-  bootstrap_token token
-  tenant_name service_tenant_name
-  tenant_description 'Service Tenant'
-  tenant_enabled true # Not required as this is the default
-  action :create_tenant
+openstack_project service_project do
+  connection_params connection_params
 end
 
 # Register Service User
-openstack_identity_register "Register #{service_user} User" do
-  auth_uri auth_url
-  bootstrap_token token
-  tenant_name service_tenant_name
-  user_name service_user
-  user_pass service_pass
-  # String until https://review.openstack.org/#/c/29498/ merged
-  user_enabled true
-  action :create_user
+openstack_user service_user do
+  project_name service_project
+  role_name service_role
+  password service_pass
+  connection_params connection_params
 end
 
-## Grant Service role to Service User for Service Tenant ##
-openstack_identity_register "Grant '#{service_role}' Role to #{service_user} User for #{service_tenant_name} Tenant" do
-  auth_uri auth_url
-  bootstrap_token token
-  tenant_name service_tenant_name
-  user_name service_user
+# Grant Service role to Service User for Service Tenant ##
+openstack_user service_user do
   role_name service_role
+  project_name service_project
+  connection_params connection_params
   action :grant_role
+end
+
+# Grant default domain to user with role of Service Tenant ##
+openstack_user service_user do
+  domain_name service_domain_name
+  role_name service_role
+  user_name service_user
+  connection_params connection_params
+  action :grant_domain
 end

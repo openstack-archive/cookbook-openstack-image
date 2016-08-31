@@ -12,12 +12,12 @@ describe 'openstack-image::image_upload' do
     include_context 'image-stubs'
 
     it do
-      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return(false)
+      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep cirros').and_return(false)
       expect(chef_run).to upgrade_package('curl')
     end
 
     it 'uploads the cirros image' do
-      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return(false)
+      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep cirros').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for cirros').with(
         image_url: 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img',
         image_name: 'cirros',
@@ -26,7 +26,7 @@ describe 'openstack-image::image_upload' do
         identity_user: 'admin',
         identity_pass: 'admin-pass',
         identity_tenant: 'admin',
-        identity_uri: 'http://127.0.0.1:5000/v2.0'
+        identity_uri: 'http://127.0.0.1:5000/v3'
       )
     end
 
@@ -39,7 +39,7 @@ describe 'openstack-image::image_upload' do
     it 'uploads the tar image' do
       node.set['openstack']['image']['upload_images'] = ['imageName']
       node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-uec.tar.gz'
-      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep imageName').and_return(false)
+      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
         image_url: 'http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-uec.tar.gz',
         image_name: 'imageName',
@@ -53,12 +53,12 @@ describe 'openstack-image::image_upload' do
       it "uploads the #{image_type} image" do
         node.set['openstack']['image']['upload_images'] = ["#{image_type}_imageName"]
         node.set['openstack']['image']['upload_image']["#{image_type}_imageName"] = "image_file.#{image_type}"
-        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = image_type
-        stub_command("glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep #{image_type}_imageName").and_return(false)
+        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = image_type.to_s
+        stub_command("glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep #{image_type}_imageName").and_return(false)
         expect(chef_run).to upload_openstack_image_image("Image setup for #{image_type}_imageName").with(
           image_url: "image_file.#{image_type}",
           image_name: "#{image_type}_imageName",
-          image_type: image_type,
+          image_type: image_type.to_s,
           image_public: true
         )
       end
@@ -70,8 +70,8 @@ describe 'openstack-image::image_upload' do
       node.set['openstack']['image']['upload_image_type']['raw_imageName'] = 'raw'
       node.set['openstack']['image']['upload_image']['vdi_imageName'] = 'image_file.vdi'
       node.set['openstack']['image']['upload_image_type']['vdi_imageName'] = 'vdi'
-      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep raw_imageName').and_return(false)
-      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-tenant-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep vdi_imageName').and_return(false)
+      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep raw_imageName').and_return(false)
+      stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep vdi_imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for raw_imageName').with(
         image_url: 'image_file.raw',
         image_name: 'raw_imageName',

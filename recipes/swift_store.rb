@@ -31,7 +31,7 @@ end
 identity_endpoint = public_endpoint 'identity'
 swift_store_auth_address =
   auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
-tenant = node['openstack']['image_api']['conf']['keystone_authtoken']['tenant_name']
+tenant = node['openstack']['image_api']['conf']['keystone_authtoken']['project']
 user = node['openstack']['image_api']['conf']['keystone_authtoken']['user']
 swift_store_user =  "#{tenant}_#{user}"
 swift_user_tenant = nil

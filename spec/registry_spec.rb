@@ -88,12 +88,13 @@ describe 'openstack-image::registry' do
 
         it do
           [
-            /^auth_type = v2password$/,
+            /^auth_type = v3password$/,
             /^region_name = RegionOne$/,
             /^username = glance$/,
-            /^tenant_name = service$/,
+            /^project_name = service/,
             %r{^signing_dir = /var/cache/glance/registry},
-            %r{^auth_url = http://127.0.0.1:5000/v2.0},
+            %r{^auth_url = http://127.0.0.1:5000/v3},
+            /^user_domain_name = Default$/,
             /^password = glance-pass$/
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)

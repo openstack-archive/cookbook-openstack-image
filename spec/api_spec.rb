@@ -97,13 +97,14 @@ describe 'openstack-image::api' do
 
       it do
         [
-          /^auth_type = v2password$/,
+          /^auth_type = v3password$/,
           /^region_name = RegionOne$/,
           /^username = glance$/,
-          /^tenant_name = service$/,
+          /^project_name = admin$/,
           %r{^signing_dir = /var/cache/glance/api$},
-          %r{^auth_url = http://127.0.0.1:5000/v2.0$},
-          /^password = glance-pass$/
+          %r{^auth_url = http://127.0.0.1:5000/v3$},
+          /^password = glance-pass$/,
+          /^user_domain_name = Default$/
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('keystone_authtoken', line)

@@ -62,7 +62,7 @@ shared_context 'image-stubs' do
       .and_return('admin-pass')
 
     allow(Chef::Application).to receive(:fatal!)
-    stub_command('glance --insecure --os-username glance --os-password glance-pass --os-tenant-name service --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v2.0 image-list | grep cirros').and_return('')
+    stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep cirros').and_return('')
   end
 end
 
@@ -169,7 +169,7 @@ end
 
 shared_examples 'keystone attribute setter' do |version|
   it 'sets the auth_uri value' do
-    expect(chef_run).to render_file(file.name).with_content(%r{^auth_uri = http://127.0.0.1:5000/v2.0$})
+    expect(chef_run).to render_file(file.name).with_content(%r{^auth_uri = http://127.0.0.1:5000/v3$})
   end
 
   it 'sets the identity_uri value' do
@@ -177,13 +177,13 @@ shared_examples 'keystone attribute setter' do |version|
   end
 
   context 'auth version' do
-    it 'shows the version attribute if it is different from v2.0' do
+    it 'shows the version attribute if it is different from v3' do
       node.set['openstack']['api']['auth']['version'] = 'v3.0'
       expect(chef_run).to render_file(file.name).with_content(/^auth_version = v3.0$/)
     end
   end
 
-  %w(tenant_name user).each do |attr|
+  %w(project user).each do |attr|
     it "sets the auth admin #{attr} attribute" do
       node.set['openstack']["image-#{version}"]['conf']['keystone_authtoken']["admin_#{attr}"] = "service_#{attr}_value"
       expect(chef_run).to render_file(file.name).with_content(/^admin_#{attr} = service_#{attr}_value$/)

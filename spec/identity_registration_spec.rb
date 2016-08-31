@@ -10,123 +10,85 @@ describe 'openstack-image::identity_registration' do
 
   include_context 'image-stubs'
 
-  it 'registers image service' do
-    expect(chef_run).to create_service_openstack_identity_register('Register Image Service')
-      .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-            bootstrap_token: 'bootstrap-token',
-            service_type: 'image',
-            service_description: 'Glance Image Service'
-           )
+  connection_params = {
+    openstack_auth_url: 'http://127.0.0.1:35357/v3/auth/tokens',
+    openstack_username: 'admin',
+    openstack_api_key: 'admin-pass',
+    openstack_project_name: 'admin',
+    openstack_domain_name: 'default'
+  }
+  service_name = 'glance'
+  service_type = 'image'
+  service_user = 'glance'
+  url = 'http://127.0.0.1:9292'
+  region = 'RegionOne'
+  project_name = 'admin'
+  role_name = 'admin'
+  password = 'glance-pass'
+  domain_name = 'Default'
+
+  it "registers #{project_name} Project" do
+    expect(chef_run).to create_openstack_project(
+      project_name
+    ).with(
+      connection_params: connection_params
+    )
   end
 
-  context 'registers compute endpoint' do
-    it 'with default values' do
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-              bootstrap_token: 'bootstrap-token',
-              service_type: 'image',
-              endpoint_region: 'RegionOne',
-              endpoint_adminurl: 'http://127.0.0.1:9292',
-              endpoint_internalurl: 'http://127.0.0.1:9292',
-              endpoint_publicurl: 'http://127.0.0.1:9292'
-             )
-    end
-
-    it 'with custom region override' do
-      node.set['openstack']['region'] = 'imageRegion'
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(endpoint_region: 'imageRegion')
-    end
-
-    it 'with different public url' do
-      public_url = 'https://public.host:123/public_path'
-      node.set['openstack']['endpoints']['public']['image_api']['uri'] = public_url
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-              bootstrap_token: 'bootstrap-token',
-              service_type: 'image',
-              endpoint_region: 'RegionOne',
-              endpoint_adminurl: 'http://127.0.0.1:9292',
-              endpoint_internalurl: 'http://127.0.0.1:9292',
-              endpoint_publicurl: public_url
-             )
-    end
-
-    it 'with different admin url' do
-      admin_url = 'http://admin.host:456/admin_path'
-      node.set['openstack']['endpoints']['admin']['image_api']['uri'] = admin_url
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-              bootstrap_token: 'bootstrap-token',
-              service_type: 'image',
-              endpoint_region: 'RegionOne',
-              endpoint_adminurl: admin_url,
-              endpoint_internalurl: 'http://127.0.0.1:9292',
-              endpoint_publicurl: 'http://127.0.0.1:9292'
-             )
-    end
-
-    it 'with different internal url' do
-      internal_url = 'http://internal.host:789/internal_path'
-      node.set['openstack']['endpoints']['internal']['image_api']['uri'] = internal_url
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-              bootstrap_token: 'bootstrap-token',
-              service_type: 'image',
-              endpoint_region: 'RegionOne',
-              endpoint_adminurl: 'http://127.0.0.1:9292',
-              endpoint_internalurl: internal_url,
-              endpoint_publicurl: 'http://127.0.0.1:9292'
-             )
-    end
-
-    it 'with different admin,internal,public urls' do
-      internal_url = 'http://internal.host:789/internal_path'
-      admin_url = 'http://admin.host:456/admin_path'
-      public_url = 'https://public.host:123/public_path'
-      node.set['openstack']['endpoints']['internal']['image_api']['uri'] = internal_url
-      node.set['openstack']['endpoints']['admin']['image_api']['uri'] = admin_url
-      node.set['openstack']['endpoints']['public']['image_api']['uri'] = public_url
-      expect(chef_run).to create_endpoint_openstack_identity_register('Register Image Endpoint')
-        .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-              bootstrap_token: 'bootstrap-token',
-              service_type: 'image',
-              endpoint_region: 'RegionOne',
-              endpoint_adminurl: admin_url,
-              endpoint_internalurl: internal_url,
-              endpoint_publicurl: public_url
-             )
-    end
+  it "registers #{service_name} service" do
+    expect(chef_run).to create_openstack_service(
+      service_name
+    ).with(
+      connection_params: connection_params,
+      type: service_type
+    )
   end
 
-  it 'registers service tenant' do
-    expect(chef_run).to create_tenant_openstack_identity_register('Register Service Tenant')
-      .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-            bootstrap_token: 'bootstrap-token',
-            tenant_name: 'service',
-            tenant_description: 'Service Tenant',
-            tenant_enabled: true
-           )
+  context "registers #{service_name} endpoint" do
+    %w(admin internal public).each do |interface|
+      it "#{interface} endpoint with default values" do
+        expect(chef_run).to create_openstack_endpoint(
+          service_type
+        ).with(
+          service_name: service_name,
+          # interface: interface,
+          url: url,
+          region: region,
+          connection_params: connection_params
+        )
+      end
+    end
   end
 
   it 'registers service user' do
-    expect(chef_run).to create_user_openstack_identity_register('Register glance User')
-      .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-            bootstrap_token: 'bootstrap-token',
-            tenant_name: 'service',
-            user_name: 'glance',
-            user_pass: 'glance-pass',
-            user_enabled: true
-           )
+    expect(chef_run).to create_openstack_user(
+      service_user
+    ).with(
+      project_name: project_name,
+      role_name: role_name,
+      password: password,
+      connection_params: connection_params
+    )
   end
 
-  it 'grants admin role to service user for service tenant' do
-    expect(chef_run).to grant_role_openstack_identity_register("Grant 'admin' Role to glance User for service Tenant")
-      .with(auth_uri: 'http://127.0.0.1:35357/v2.0',
-            bootstrap_token: 'bootstrap-token',
-            tenant_name: 'service',
-            role_name: 'admin',
-            user_name: 'glance'
-           )
+  it do
+    expect(chef_run).to grant_domain_openstack_user(
+      service_user
+    ).with(
+      domain_name: domain_name,
+      role_name: role_name,
+      connection_params: connection_params
+    )
+  end
+
+  it do
+    expect(chef_run).to grant_role_openstack_user(
+      service_user
+    ).with(
+      project_name: project_name,
+      role_name: role_name,
+      password: password,
+      connection_params: connection_params
+    )
   end
 end

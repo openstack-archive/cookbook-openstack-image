@@ -28,6 +28,8 @@ action :upload do
   @pass = new_resource.identity_pass
   @tenant = new_resource.identity_tenant
   @ks_uri = new_resource.identity_uri
+  @domain = new_resource.identity_user_domain_name
+  @project_domain_name = new_resource.identity_project_domain_name
 
   name = new_resource.image_name
   url = new_resource.image_url
@@ -68,7 +70,7 @@ def _upload_image(type, name, api, url, public)
 end
 
 def _upload_image_bare(name, api, url, public, type)
-  glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
+  glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-project-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri} --os-user-domain-name #{@domain} --os-project-domain-name #{@project_domain_name}"
   c_fmt = '--container-format bare'
   d_fmt = "--disk-format #{type}"
 
@@ -82,7 +84,7 @@ end
 
 # TODO(chrislaco) This refactor is in the works via Craig Tracey
 def _upload_ami(name, api, url, public)
-  glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-tenant-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri}"
+  glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-project-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri} --os-user-domain-name #{@domain} --os-project-domain-name #{@project_domain_name}"
   aki_fmt = '--container-format aki --disk-format aki'
   ari_fmt = '--container-format ari --disk-format ari'
   ami_fmt = '--container-format ami --disk-format ami'

@@ -11,9 +11,11 @@ default['openstack']['image_registry']['conf'].tap do |conf|
   conf['paste_deploy']['flavor'] = 'keystone'
 
   #  [keystone_authtoken] section
-  conf['keystone_authtoken']['auth_type'] = 'v2password'
+  conf['keystone_authtoken']['auth_type'] = 'v3password'
   conf['keystone_authtoken']['region_name'] = node['openstack']['region']
   conf['keystone_authtoken']['username'] = 'glance'
-  conf['keystone_authtoken']['tenant_name'] = 'service'
+  conf['keystone_authtoken']['project_name'] = 'service'
+  conf['keystone_authtoken']['user_domain_name'] = 'Default'
   conf['keystone_authtoken']['signing_dir'] = '/var/cache/glance/registry' # none in docs
+  conf['keystone_authtoken']['project_domain_name'] = 'Default'
 end
