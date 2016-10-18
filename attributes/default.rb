@@ -98,8 +98,7 @@ when 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'image_packages' => %w(openstack-glance cronie python-glanceclient),
-    'image_client_packages' => ['python-glanceclient'],
+    'image_packages' => %w(openstack-glance cronie),
     'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
@@ -111,8 +110,7 @@ when 'suse'
   default['openstack']['image']['user'] = 'openstack-glance'
   default['openstack']['image']['group'] = 'openstack-glance'
   default['openstack']['image']['platform'] = {
-    'image_packages' => ['openstack-glance', 'python-glanceclient'],
-    'image_client_packages' => ['python-glanceclient'],
+    'image_packages' => ['openstack-glance'],
     'ceph_packages' => [],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
@@ -125,7 +123,6 @@ when 'debian'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
     'image_packages' => ['glance'],
-    'image_client_packages' => ['python-glanceclient'],
     'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['python-swift'],
     'image_api_service' => 'glance-api',

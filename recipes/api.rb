@@ -25,7 +25,7 @@ class ::Chef::Recipe
   include ::Openstack
 end
 
-include_recipe 'openstack-identity::client'
+include_recipe 'openstack-common::client'
 
 if node['openstack']['image']['syslog']['use']
   include_recipe 'openstack-common::logging'

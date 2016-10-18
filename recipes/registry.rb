@@ -30,11 +30,6 @@ end
 
 platform_options = node['openstack']['image']['platform']
 
-package 'python-keystoneclient' do
-  options platform_options['package_overrides']
-  action :upgrade
-end
-
 db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'
 node.default['openstack']['image_registry']['conf_secrets']
