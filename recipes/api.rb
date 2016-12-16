@@ -77,13 +77,8 @@ node.default['openstack']['image_api']['conf_secrets']
 .[]('database')['connection'] =
   db_uri('image', db_user, db_pass)
 
-if node['openstack']['image_api']['conf']['DEFAULT']['rpc_backend'] == 'rabbit'
-  user = node['openstack']['mq']['image']['rabbit']['userid']
-  node.default['openstack']['image_api']['conf_secrets']
-  .[]('oslo_messaging_rabbit')['rabbit_userid'] = user
-  node.default['openstack']['image_api']['conf_secrets']
-  .[]('oslo_messaging_rabbit')['rabbit_password'] =
-    get_password 'user', user
+if node['openstack']['mq']['service_type'] == 'rabbit'
+  node.default['openstack']['image_api']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'image'
 end
 
 registry_endpoint = internal_endpoint 'image_registry'

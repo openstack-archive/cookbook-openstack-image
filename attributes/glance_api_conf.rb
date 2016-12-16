@@ -5,7 +5,6 @@ default['openstack']['image_api']['conf'].tap do |conf|
   else
     conf['DEFAULT']['log_file'] = '/var/log/glance/api.log'
   end
-  conf['DEFAULT']['rpc_backend'] = node['openstack']['mq']['service_type']
 
   # [glance_store] section
   conf['glance_store']['default_store'] = 'file'

@@ -1,6 +1,5 @@
 default['openstack']['image_registry']['conf'].tap do |conf|
   # [DEFAULT] section
-  conf['DEFAULT']['rpc_backend'] = node['openstack']['mq']['service_type']
   if node['openstack']['image']['syslog']['use']
     conf['DEFAULT']['log_config'] = '/etc/openstack/logging.conf'
   else

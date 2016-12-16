@@ -35,13 +35,8 @@ db_pass = get_password 'db', 'glance'
 node.default['openstack']['image_registry']['conf_secrets']
   .[]('database')['connection'] = db_uri('image', db_user, db_pass)
 
-if node['openstack']['image_registry']['conf']['DEFAULT']['rpc_backend'] == 'rabbit'
-  user = node['openstack']['mq']['image']['rabbit']['userid']
-  node.default['openstack']['image_registry']['conf_secrets']
-    .[]('oslo_messaging_rabbit')['rabbit_userid'] = user
-  node.default['openstack']['image_registry']['conf_secrets']
-    .[]('oslo_messaging_rabbit')['rabbit_password'] =
-    get_password 'user', user
+if node['openstack']['mq']['service_type'] == 'rabbit'
+  node.default['openstack']['image_registry']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'image'
 end
 
 identity_endpoint = public_endpoint 'identity'

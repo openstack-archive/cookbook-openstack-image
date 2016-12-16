@@ -64,7 +64,7 @@ describe 'openstack-image::api' do
       it do
         [
           %r{^log_file = /var/log/glance/api.log$},
-          /^rpc_backend = rabbit$/,
+          %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
           /^bind_host = 127.0.0.1$/,
           /^bind_port = 9292$/,
           /^registry_host = 127.0.0.1$/,
@@ -117,16 +117,6 @@ describe 'openstack-image::api' do
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('database', line)
-        end
-      end
-
-      it do
-        [
-          /^rabbit_userid = guest$/,
-          /^rabbit_password = mq-pass$/
-        ].each do |line|
-          expect(chef_run).to render_config_file(file.name)
-            .with_section_content('oslo_messaging_rabbit', line)
         end
       end
     end

@@ -67,7 +67,7 @@ describe 'openstack-image::registry' do
       context 'template contents' do
         it do
           [
-            /^rpc_backend = rabbit$/,
+            %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
             %r{^log_file = /var/log/glance/registry.log$},
             /^bind_port = 9191$/,
             /^bind_host = 127.0.0.1$/
@@ -108,16 +108,6 @@ describe 'openstack-image::registry' do
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('database', line)
-          end
-        end
-
-        it do
-          [
-            /^rabbit_userid = guest$/,
-            /^rabbit_password = mq-pass$/
-          ].each do |line|
-            expect(chef_run).to render_config_file(file.name)
-              .with_section_content('oslo_messaging_rabbit', line)
           end
         end
       end
