@@ -26,15 +26,9 @@ if node['openstack']['image']['syslog']['use']
   include_recipe 'openstack-common::logging'
 end
 
-platform_options = node['openstack']['image']['platform']
-platform_options['image_client_packages'].each do |pkg|
-  package pkg do
-    action :upgrade
-  end
-end
+include_recipe 'openstack-common::client'
 
 package 'curl' do
-  options platform_options['package_overrides']
   action :upgrade
 end
 

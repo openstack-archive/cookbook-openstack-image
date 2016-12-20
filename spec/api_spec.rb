@@ -12,7 +12,7 @@ describe 'openstack-image::api' do
     include_context 'image-stubs'
 
     it do
-      expect(chef_run).to include_recipe('openstack-identity::client')
+      expect(chef_run).to include_recipe('openstack-common::client')
     end
 
     it do
