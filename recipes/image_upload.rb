@@ -44,12 +44,14 @@ admin_domain = node['openstack']['image_api']['conf']['keystone_authtoken']['use
 node['openstack']['image']['upload_images'].each do |img|
   type = 'unknown'
   type = node['openstack']['image']['upload_image_type'][img.to_sym] if node['openstack']['image']['upload_image_type'][img.to_sym]
-
+  id = ''
+  id = node['openstack']['image']['upload_image_id'][img.to_sym] if node['openstack']['image']['upload_image_id'][img.to_sym]
   openstack_image_image "Image setup for #{img}" do
     image_url node['openstack']['image']['upload_image'][img.to_sym]
     image_name img
     image_type type
     image_public true
+    image_id id
     identity_user admin_user
     identity_pass admin_pass
     identity_tenant admin_project_name

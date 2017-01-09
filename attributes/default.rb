@@ -80,7 +80,7 @@ default['openstack']['image']['upload_image']['centos'] = 'http://cloud.centos.o
 # The following disk format types are supported: qcow vhd vmdk vdi iso raw
 # Bare container format will be used.
 default['openstack']['image']['upload_image_type']['cirros'] = 'qcow'
-
+default['openstack']['image']['upload_image_id']['cirros'] = 'e1847f1a-01d2-4957-a067-b56085bf3781'
 # logging attribute
 default['openstack']['image']['syslog']['use'] = false
 default['openstack']['image']['syslog']['facility'] = 'LOG_LOCAL2'

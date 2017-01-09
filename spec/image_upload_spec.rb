@@ -23,6 +23,7 @@ describe 'openstack-image::image_upload' do
         image_name: 'cirros',
         image_type: 'qcow',
         image_public: true,
+        image_id: 'e1847f1a-01d2-4957-a067-b56085bf3781',
         identity_user: 'admin',
         identity_pass: 'admin-pass',
         identity_tenant: 'admin',

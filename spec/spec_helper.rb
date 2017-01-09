@@ -64,7 +64,7 @@ shared_context 'image-stubs' do
       .with('image')
       .and_return('rabbit://guest:mypass@127.0.0.1:5672')
     allow(Chef::Application).to receive(:fatal!)
-    stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep cirros').and_return('')
+    stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list --id e1847f1a-01d2-4957-a067-b56085bf3781 | grep cirros').and_return('')
   end
 end
 

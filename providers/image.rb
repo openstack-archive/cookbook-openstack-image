@@ -30,17 +30,17 @@ action :upload do
   @ks_uri = new_resource.identity_uri
   @domain = new_resource.identity_user_domain_name
   @project_domain_name = new_resource.identity_project_domain_name
-
   name = new_resource.image_name
   url = new_resource.image_url
   public = new_resource.image_public
+  id = new_resource.image_id
 
   ep = public_endpoint 'image_api'
   api = ep.to_s.gsub(ep.path, '') # remove trailing /v2
 
   type = new_resource.image_type
   type = _determine_type(url) if type == 'unknown'
-  _upload_image(type, name, api, url, public ? 'public' : 'private')
+  _upload_image(type, name, api, url, public ? 'public' : 'private', id)
   new_resource.updated_by_last_action(true)
 end
 
@@ -58,18 +58,18 @@ def _determine_type(url)
   end
 end
 
-def _upload_image(type, name, api, url, public)
+def _upload_image(type, name, api, url, public, id)
   case type
   when 'ami'
-    _upload_ami(name, api, url, public)
+    _upload_ami(name, api, url, public, id)
   when 'qcow'
-    _upload_image_bare(name, api, url, public, 'qcow2')
+    _upload_image_bare(name, api, url, public, 'qcow2', id)
   else
-    _upload_image_bare(name, api, url, public, type)
+    _upload_image_bare(name, api, url, public, type, id)
   end
 end
 
-def _upload_image_bare(name, api, url, public, type)
+def _upload_image_bare(name, api, url, public, type, id)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-project-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri} --os-user-domain-name #{@domain} --os-project-domain-name #{@project_domain_name}"
   c_fmt = '--container-format bare'
   d_fmt = "--disk-format #{type}"
@@ -77,13 +77,13 @@ def _upload_image_bare(name, api, url, public, type)
   execute "Uploading #{type} image #{name}" do # :pragma-foodcritic: ~FC041
     cwd '/tmp'
 
-    command "curl -L #{url} | #{glance_cmd} image-create --name #{name} --visibility #{public} #{c_fmt} #{d_fmt}"
+    command "curl -L #{url} | #{glance_cmd} image-create --name #{name} #{"--id #{id}" unless id == ''} --visibility #{public} #{c_fmt} #{d_fmt}"
     not_if "#{glance_cmd} image-list | grep #{name}"
   end
 end
 
 # TODO(chrislaco) This refactor is in the works via Craig Tracey
-def _upload_ami(name, api, url, public)
+def _upload_ami(name, api, url, public, id)
   glance_cmd = "glance --insecure --os-username #{@user} --os-password #{@pass} --os-project-name #{@tenant} --os-image-url #{api} --os-auth-url #{@ks_uri} --os-user-domain-name #{@domain} --os-project-domain-name #{@project_domain_name}"
   aki_fmt = '--container-format aki --disk-format aki'
   ari_fmt = '--container-format ari --disk-format ari'
@@ -116,7 +116,7 @@ def _upload_ami(name, api, url, public)
 
         kid=$(#{glance_cmd} image-create --name "${image_name}-kernel" --visibility #{public} #{aki_fmt} < ${kernel_file} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
         rid=$(#{glance_cmd} image-create --name "${image_name}-initrd" --visibility #{public} #{ari_fmt} < ${ramdisk} | grep -m 1 '^|[ ]*id[ ]*|' | cut -d'|' -f3 | sed 's/ //')
-        #{glance_cmd} image-create --name "#{name}" --visibility #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
+        #{glance_cmd} image-create --name "#{name}" #{"--id #{id}" unless id == ''} --visibility #{public} #{ami_fmt} --property "kernel_id=$kid" --property "ramdisk_id=$rid" < ${kernel}
     EOH
     not_if "#{glance_cmd} image-list | grep #{name}"
   end
