@@ -43,13 +43,13 @@ end
 directory '/etc/glance' do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00700
+  mode 0o0700
 end
 
 directory node['openstack']['image_api']['conf']['keystone_authtoken']['signing_dir'] do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00700
+  mode 0o0700
   recursive true
 end
 
@@ -59,7 +59,7 @@ if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'f
   directory node['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] do
     owner node['openstack']['image']['user']
     group node['openstack']['image']['group']
-    mode 00750
+    mode 0o0750
     recursive true
   end
 end
@@ -118,7 +118,7 @@ template '/etc/glance/glance-api.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: glance_api_conf
   )
@@ -129,7 +129,7 @@ template '/etc/glance/glance-cache.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: glance_cache_conf
   )
@@ -140,7 +140,7 @@ template '/etc/glance/glance-scrubber.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: glance_scrubber_conf
   )
@@ -174,7 +174,7 @@ directory node['openstack']['image']['cache']['dir'] do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   recursive true
-  mode 00755
+  mode 0o0755
 end
 
 service 'glance-api' do

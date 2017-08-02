@@ -24,7 +24,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 00700
+          mode: 0o0700
         )
     end
 
@@ -33,7 +33,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 00750,
+          mode: 0o0750,
           recursive: true
         )
     end
@@ -43,7 +43,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 00700,
+          mode: 0o0700,
           recursive: true
         )
     end
@@ -57,7 +57,7 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 00640
+            mode: 0o0640
           )
       end
 
@@ -131,7 +131,7 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 00640
+            mode: 0o0640
           )
       end
 
@@ -158,7 +158,7 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 00640
+            mode: 0o0640
           )
       end
 
@@ -197,7 +197,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 00755,
+          mode: 0o0755,
           recursive: true
         )
     end

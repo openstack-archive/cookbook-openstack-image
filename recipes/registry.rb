@@ -68,7 +68,7 @@ end
 directory node['openstack']['image_registry']['conf']['keystone_authtoken']['signing_dir'] do
   owner glance_user
   group glance_group
-  mode 00700
+  mode 0o0700
   recursive true
 end
 
@@ -94,7 +94,7 @@ template '/etc/glance/glance-registry.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 00640
+  mode 0o0640
   variables(
     service_config: glance_registry_conf_options
   )

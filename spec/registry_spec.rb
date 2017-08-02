@@ -38,7 +38,7 @@ describe 'openstack-image::registry' do
       expect(chef_run).to create_directory('/var/cache/glance/registry').with(
         user: 'glance',
         group: 'glance',
-        mode: 00700
+        mode: 0o0700
       )
     end
 
@@ -60,7 +60,7 @@ describe 'openstack-image::registry' do
           cookbook: 'openstack-common',
           user: 'glance',
           group: 'glance',
-          mode: 00640
+          mode: 0o0640
         )
       end
 

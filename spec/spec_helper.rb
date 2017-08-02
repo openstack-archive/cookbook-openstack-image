@@ -105,7 +105,7 @@ shared_examples 'image-lib-cache-directory' do
       expect(chef_run).to create_directory(dir.name).with(
         user: 'glance',
         group: 'glance',
-        mode: 00755,
+        mode: 0o0755,
         recursive: true
       )
     end
@@ -120,7 +120,7 @@ shared_examples 'glance-directory' do
       expect(chef_run).to create_directory(dir.name).with(
         user: 'glance',
         group: 'glance',
-        mode: 00700
+        mode: 0o0700
       )
     end
   end
