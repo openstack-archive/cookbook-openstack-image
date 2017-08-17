@@ -104,7 +104,7 @@ describe 'openstack-image::registry' do
 
         it do
           [
-            %r{^connection = mysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$}
+            %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$}
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('database', line)
