@@ -33,7 +33,7 @@ auth_url = ::URI.decode identity_admin_endpoint.to_s
 interfaces = {
   public: { url: public_endpoint('image_api') },
   internal: { url: internal_endpoint('image_api') },
-  admin: { url: admin_endpoint('image_api') }
+  admin: { url: admin_endpoint('image_api') },
 }
 
 admin_user = node['openstack']['identity']['admin_user']
@@ -55,7 +55,7 @@ connection_params = {
   openstack_username:     admin_user,
   openstack_api_key:      admin_pass,
   openstack_project_name: admin_project,
-  openstack_domain_name:    admin_domain
+  openstack_domain_name:    admin_domain,
 }
 
 # Register Image Service

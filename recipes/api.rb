@@ -184,6 +184,6 @@ service 'glance-api' do
   subscribes :restart, [
     'template[/etc/glance/glance-scrubber.conf]',
     'template[/etc/glance/glance-cache.conf]',
-    'template[/etc/glance/glance-api.conf]'
+    'template[/etc/glance/glance-api.conf]',
   ], :immediately
 end

@@ -69,7 +69,7 @@ describe 'openstack-image::api' do
           /^bind_port = 9292$/,
           /^registry_host = 127.0.0.1$/,
           /^registry_port = 9191$/,
-          /^registry_client_protocol = http$/
+          /^registry_client_protocol = http$/,
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('DEFAULT', line)
@@ -79,7 +79,7 @@ describe 'openstack-image::api' do
       it do
         [
           %r{^filesystem_store_datadir = /var/lib/glance/images$},
-          /^default_store = file$/
+          /^default_store = file$/,
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('glance_store', line)
@@ -88,7 +88,7 @@ describe 'openstack-image::api' do
 
       it do
         [
-          /^flavor = keystone$/
+          /^flavor = keystone$/,
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('paste_deploy', line)
@@ -104,7 +104,7 @@ describe 'openstack-image::api' do
           %r{^signing_dir = /var/cache/glance/api$},
           %r{^auth_url = http://127.0.0.1:5000/v3$},
           /^password = glance-pass$/,
-          /^user_domain_name = Default$/
+          /^user_domain_name = Default$/,
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('keystone_authtoken', line)
@@ -113,7 +113,7 @@ describe 'openstack-image::api' do
 
       it do
         [
-          %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$}
+          %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$},
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('database', line)
@@ -139,7 +139,7 @@ describe 'openstack-image::api' do
         it do
           [
             /^registry_port = 9191$/,
-            /^registry_host = 127.0.0.1$/
+            /^registry_host = 127.0.0.1$/,
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('DEFAULT', line)
@@ -166,7 +166,7 @@ describe 'openstack-image::api' do
         it do
           [
             /^registry_port = 9191$/,
-            /^registry_host = 127.0.0.1$/
+            /^registry_host = 127.0.0.1$/,
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('DEFAULT', line)

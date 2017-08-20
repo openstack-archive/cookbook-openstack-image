@@ -15,7 +15,7 @@ describe 'openstack-image::identity_registration' do
     openstack_username: 'admin',
     openstack_api_key: 'admin-pass',
     openstack_project_name: 'admin',
-    openstack_domain_name: 'default'
+    openstack_domain_name: 'default',
   }
   service_name = 'glance'
   service_type = 'image'

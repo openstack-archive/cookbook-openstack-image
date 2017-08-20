@@ -70,7 +70,7 @@ describe 'openstack-image::registry' do
             %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
             %r{^log_file = /var/log/glance/registry.log$},
             /^bind_port = 9191$/,
-            /^bind_host = 127.0.0.1$/
+            /^bind_host = 127.0.0.1$/,
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('DEFAULT', line)
@@ -79,7 +79,7 @@ describe 'openstack-image::registry' do
 
         it do
           [
-            /^flavor = keystone$/
+            /^flavor = keystone$/,
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('paste_deploy', line)
@@ -95,7 +95,7 @@ describe 'openstack-image::registry' do
             %r{^signing_dir = /var/cache/glance/registry},
             %r{^auth_url = http://127.0.0.1:5000/v3},
             /^user_domain_name = Default$/,
-            /^password = glance-pass$/
+            /^password = glance-pass$/,
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('keystone_authtoken', line)
@@ -104,7 +104,7 @@ describe 'openstack-image::registry' do
 
         it do
           [
-            %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$}
+            %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$},
           ].each do |line|
             expect(chef_run).to render_config_file(file.name)
               .with_section_content('database', line)
