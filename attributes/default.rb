@@ -92,7 +92,7 @@ default['openstack']['image']['api']['vmware']['secret_name'] = 'openstack_vmwar
 default['openstack']['image']['cron']['redirection'] = '> /dev/null 2>&1'
 
 # platform-specific settings
-case platform_family
+case node['platform_family']
 when 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
