@@ -65,7 +65,6 @@ describe 'openstack-image::identity_registration' do
       service_user
     ).with(
       project_name: project_name,
-      role_name: role_name,
       password: password,
       connection_params: connection_params
     )
