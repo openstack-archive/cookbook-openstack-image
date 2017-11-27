@@ -19,13 +19,7 @@
 #
 
 actions :upload
-
-# In earlier versions of Chef the LWRP DSL doesn't support specifying
-# a default action, so you need to drop into Ruby.
-def initialize(*args)
-  super
-  @action = :upload
-end
+default_action :upload
 
 BOOLEAN = [TrueClass, FalseClass].freeze
 

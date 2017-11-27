@@ -41,7 +41,6 @@ action :upload do
   type = new_resource.image_type
   type = _determine_type(url) if type == 'unknown'
   _upload_image(type, name, api, url, public ? 'public' : 'private', id)
-  new_resource.updated_by_last_action(true)
 end
 
 private

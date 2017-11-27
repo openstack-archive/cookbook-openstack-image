@@ -78,6 +78,7 @@ describe 'openstack-image::identity_registration' do
       project_name: project_name,
       role_name: role_name,
       password: password,
+      domain_name: domain_name,
       connection_params: connection_params
     )
   end

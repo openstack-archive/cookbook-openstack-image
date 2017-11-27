@@ -88,7 +88,7 @@ api_bind_address = bind_address api_bind
 node.default['openstack']['image_api']['conf'].tap do |conf|
   # [DEFAULT] section
   conf['DEFAULT']['bind_host']  = api_bind_address
-  conf['DEFAULT']['bind_port']  = api_bind.port
+  conf['DEFAULT']['bind_port']  = api_bind['port']
   conf['DEFAULT']['registry_host']  = registry_endpoint.host
   conf['DEFAULT']['registry_port']  = registry_endpoint.port
   conf['DEFAULT']['registry_client_protocol'] = registry_endpoint.scheme

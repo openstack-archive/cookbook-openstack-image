@@ -127,7 +127,7 @@ when 'debian'
     'image_api_service' => 'glance-api',
     'image_registry_service' => 'glance-registry',
     'image_registry_process_name' => 'glance-registry',
-    'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'",
+    'package_overrides' => '',
   }
 end
 

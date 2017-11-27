@@ -80,7 +80,7 @@ end
 node.default['openstack']['image_registry']['conf'].tap do |conf|
   # [DEFAULT] section
   conf['DEFAULT']['bind_host'] = registry_bind_address
-  conf['DEFAULT']['bind_port'] = registry_bind.port
+  conf['DEFAULT']['bind_port'] = registry_bind['port']
 
   # [keystone_authtoken] section
   conf['keystone_authtoken']['auth_url'] = auth_url
