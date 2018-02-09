@@ -19,7 +19,7 @@ describe 'openstack-image::image_upload' do
     it 'uploads the cirros image' do
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep cirros').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for cirros').with(
-        image_url: 'http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img',
+        image_url: 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img',
         image_name: 'cirros',
         image_type: 'qcow',
         image_public: true,
@@ -39,10 +39,10 @@ describe 'openstack-image::image_upload' do
 
     it 'uploads the tar image' do
       node.set['openstack']['image']['upload_images'] = ['imageName']
-      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-uec.tar.gz'
+      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-uec.tar.gz'
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
-        image_url: 'http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-uec.tar.gz',
+        image_url: 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-uec.tar.gz',
         image_name: 'imageName',
         image_type: 'unknown',
         image_public: true
