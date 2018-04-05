@@ -97,7 +97,6 @@ when 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
     'image_packages' => %w(openstack-glance cronie),
-    'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
     'image_registry_service' => 'openstack-glance-registry',
@@ -109,7 +108,6 @@ when 'suse'
   default['openstack']['image']['group'] = 'openstack-glance'
   default['openstack']['image']['platform'] = {
     'image_packages' => ['openstack-glance'],
-    'ceph_packages' => [],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
     'image_registry_service' => 'openstack-glance-registry',
@@ -121,7 +119,6 @@ when 'debian'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
     'image_packages' => ['glance'],
-    'ceph_packages' => ['python-ceph'],
     'swift_packages' => ['python-swift'],
     'image_api_service' => 'glance-api',
     'image_registry_service' => 'glance-registry',
