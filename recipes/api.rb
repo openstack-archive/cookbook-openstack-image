@@ -64,11 +64,11 @@ if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'f
   end
 end
 
-identity_endpoint = public_endpoint 'identity'
 node.default['openstack']['image_api']['conf_secrets']
 .[]('keystone_authtoken')['password'] =
   get_password 'service', 'openstack-image'
 
+identity_endpoint = public_endpoint 'identity'
 auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
 
 db_user = node['openstack']['db']['image']['username']

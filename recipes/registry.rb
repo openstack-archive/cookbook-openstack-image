@@ -39,14 +39,15 @@ if node['openstack']['mq']['service_type'] == 'rabbit'
   node.default['openstack']['image_registry']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'image'
 end
 
-identity_endpoint = public_endpoint 'identity'
 registry_bind = node['openstack']['bind_service']['all']['image_registry']
 registry_bind_address = bind_address registry_bind
 
 node.default['openstack']['image_registry']['conf_secrets']
   .[]('keystone_authtoken')['password'] = get_password 'service', 'openstack-image'
 
+identity_endpoint = public_endpoint 'identity'
 auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+
 glance_user = node['openstack']['image']['user']
 glance_group = node['openstack']['image']['group']
 

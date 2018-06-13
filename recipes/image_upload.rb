@@ -32,7 +32,9 @@ package 'curl' do
   action :upgrade
 end
 
-auth_uri = public_endpoint('identity').to_s
+identity_endpoint = public_endpoint 'identity'
+auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+
 # admin_user = node['openstack']['image_api']['conf']['keystone_authtoken']['username']
 # admin_pass = get_password admin_user, admin_pass
 admin_user = node['openstack']['identity']['admin_user']
@@ -55,7 +57,7 @@ node['openstack']['image']['upload_images'].each do |img|
     identity_user admin_user
     identity_pass admin_pass
     identity_tenant admin_project_name
-    identity_uri auth_uri
+    identity_uri auth_url
     identity_user_domain_name admin_domain
     identity_project_domain_name admin_project_domain_name
     action :upload
