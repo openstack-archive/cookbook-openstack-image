@@ -21,8 +21,6 @@
 
 include ::Openstack
 
-use_inline_resources
-
 action :upload do
   @user = new_resource.identity_user
   @pass = new_resource.identity_pass
