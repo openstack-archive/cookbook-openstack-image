@@ -32,14 +32,14 @@ describe 'openstack-image::image_upload' do
     end
 
     it 'raises error for unsupported image extension type' do
-      node.set['openstack']['image']['upload_images'] = ['image1']
-      node.set['openstack']['image']['upload_image']['image1'] = 'http://download.net/image.xxx'
+      node.override['openstack']['image']['upload_images'] = ['image1']
+      node.override['openstack']['image']['upload_image']['image1'] = 'http://download.net/image.xxx'
       expect { chef_run }.to raise_error(ArgumentError)
     end
 
     it 'uploads the tar image' do
-      node.set['openstack']['image']['upload_images'] = ['imageName']
-      node.set['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-uec.tar.gz'
+      node.override['openstack']['image']['upload_images'] = ['imageName']
+      node.override['openstack']['image']['upload_image']['imageName'] = 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-uec.tar.gz'
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for imageName').with(
         image_url: 'http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-uec.tar.gz',
@@ -52,9 +52,9 @@ describe 'openstack-image::image_upload' do
 
     %w(vhd vmdk vdi iso raw).each do |image_type|
       it "uploads the #{image_type} image" do
-        node.set['openstack']['image']['upload_images'] = ["#{image_type}_imageName"]
-        node.set['openstack']['image']['upload_image']["#{image_type}_imageName"] = "image_file.#{image_type}"
-        node.set['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = image_type.to_s
+        node.override['openstack']['image']['upload_images'] = ["#{image_type}_imageName"]
+        node.override['openstack']['image']['upload_image']["#{image_type}_imageName"] = "image_file.#{image_type}"
+        node.override['openstack']['image']['upload_image_type']["#{image_type}_imageName"] = image_type.to_s
         stub_command("glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep #{image_type}_imageName").and_return(false)
         expect(chef_run).to upload_openstack_image_image("Image setup for #{image_type}_imageName").with(
           image_url: "image_file.#{image_type}",
@@ -66,11 +66,11 @@ describe 'openstack-image::image_upload' do
     end
 
     it 'uploads the raw and vdi images' do
-      node.set['openstack']['image']['upload_images'] = ['raw_imageName', 'vdi_imageName']
-      node.set['openstack']['image']['upload_image']['raw_imageName'] = 'image_file.raw'
-      node.set['openstack']['image']['upload_image_type']['raw_imageName'] = 'raw'
-      node.set['openstack']['image']['upload_image']['vdi_imageName'] = 'image_file.vdi'
-      node.set['openstack']['image']['upload_image_type']['vdi_imageName'] = 'vdi'
+      node.override['openstack']['image']['upload_images'] = ['raw_imageName', 'vdi_imageName']
+      node.override['openstack']['image']['upload_image']['raw_imageName'] = 'image_file.raw'
+      node.override['openstack']['image']['upload_image_type']['raw_imageName'] = 'raw'
+      node.override['openstack']['image']['upload_image']['vdi_imageName'] = 'image_file.vdi'
+      node.override['openstack']['image']['upload_image_type']['vdi_imageName'] = 'vdi'
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep raw_imageName').and_return(false)
       stub_command('glance --insecure --os-username admin --os-password admin-pass --os-project-name admin --os-image-url http://127.0.0.1:9292 --os-auth-url http://127.0.0.1:5000/v3 --os-user-domain-name Default --os-project-domain-name Default image-list | grep vdi_imageName').and_return(false)
       expect(chef_run).to upload_openstack_image_image('Image setup for raw_imageName').with(

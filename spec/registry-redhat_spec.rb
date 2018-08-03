@@ -12,7 +12,7 @@ describe 'openstack-image::registry' do
     include_context 'image-stubs'
 
     it 'converges when configured to use sqlite' do
-      node.set['openstack']['db']['image']['service_type'] = 'sqlite'
+      node.override['openstack']['db']['image']['service_type'] = 'sqlite'
 
       expect { chef_run }.to_not raise_error
     end

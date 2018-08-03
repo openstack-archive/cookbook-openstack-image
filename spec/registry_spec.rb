@@ -18,7 +18,7 @@ describe 'openstack-image::registry' do
     include_context 'image-stubs'
 
     it 'converges when configured to use sqlite' do
-      node.set['openstack']['db']['image']['service_type'] = 'sqlite'
+      node.override['openstack']['db']['image']['service_type'] = 'sqlite'
       expect { chef_run }.to_not raise_error
     end
 
@@ -28,8 +28,8 @@ describe 'openstack-image::registry' do
 
     %w(db2 postgresql).each do |service_type|
       it "upgrades #{service_type} python packages if chosen" do
-        node.set['openstack']['db']['image']['service_type'] = service_type
-        node.set['openstack']['db']['python_packages'][service_type] = ["my-#{service_type}-py"]
+        node.override['openstack']['db']['image']['service_type'] = service_type
+        node.override['openstack']['db']['python_packages'][service_type] = ["my-#{service_type}-py"]
         expect(chef_run).to upgrade_package("my-#{service_type}-py")
       end
     end
@@ -47,7 +47,7 @@ describe 'openstack-image::registry' do
     end
 
     it 'does not delete glance.sqlite when configured to use sqlite' do
-      node.set['openstack']['db']['image']['service_type'] = 'sqlite'
+      node.override['openstack']['db']['image']['service_type'] = 'sqlite'
       expect(chef_run).not_to delete_file('/var/lib/glance/glance.sqlite')
     end
 
@@ -127,7 +127,7 @@ describe 'openstack-image::registry' do
       end
 
       it 'does not run migrations when openstack/image/db/migrate is false' do
-        node.set['openstack']['db']['image']['migrate'] = false
+        node.override['openstack']['db']['image']['migrate'] = false
         expect(chef_run).not_to run_execute(cmd)
       end
     end
