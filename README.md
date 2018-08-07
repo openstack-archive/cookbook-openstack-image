@@ -12,7 +12,7 @@ Description
 
 This cookbook installs the OpenStack Image service **Glance** as part of an
 OpenStack reference deployment Chef for OpenStack. The
-https://github.com/openstack/openstack-chef-repo contains documentation for using
+https://github.com/openstack/openstack-chef contains documentation for using
 this cookbook in the context of a full OpenStack deployment. Glance is installed
 from packages, optionally populating the repository with default images.
 
