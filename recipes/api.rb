@@ -46,13 +46,6 @@ directory '/etc/glance' do
   mode 0o0700
 end
 
-directory node['openstack']['image_api']['conf']['keystone_authtoken']['signing_dir'] do
-  owner node['openstack']['image']['user']
-  group node['openstack']['image']['group']
-  mode 0o0700
-  recursive true
-end
-
 if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'file'
   node.default['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] =
     '/var/lib/glance/images'

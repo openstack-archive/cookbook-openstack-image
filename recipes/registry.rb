@@ -66,13 +66,6 @@ platform_options['image_packages'].each do |pkg|
   end
 end
 
-directory node['openstack']['image_registry']['conf']['keystone_authtoken']['signing_dir'] do
-  owner glance_user
-  group glance_group
-  mode 0o0700
-  recursive true
-end
-
 file '/var/lib/glance/glance.sqlite' do
   action :delete
   not_if { node['openstack']['db']['image']['service_type'] == 'sqlite' }

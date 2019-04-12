@@ -32,7 +32,6 @@ auth_url = ::URI.decode identity_endpoint.to_s
 interfaces = {
   public: { url: public_endpoint('image_api') },
   internal: { url: internal_endpoint('image_api') },
-  admin: { url: admin_endpoint('image_api') },
 }
 
 admin_user = node['openstack']['identity']['admin_user']
@@ -48,13 +47,15 @@ service_user =
 service_role = node['openstack']['image']['service_role']
 service_domain_name = node['openstack']['image_api']['conf']['keystone_authtoken']['user_domain_name']
 region = node['openstack']['region']
+endpoint_type = node['openstack']['identity']['endpoint_type']
 
 connection_params = {
-  openstack_auth_url:     "#{auth_url}/auth/tokens",
-  openstack_username:     admin_user,
-  openstack_api_key:      admin_pass,
-  openstack_project_name: admin_project,
-  openstack_domain_name:    admin_domain,
+  openstack_auth_url:      "#{auth_url}/auth/tokens",
+  openstack_username:      admin_user,
+  openstack_api_key:       admin_pass,
+  openstack_project_name:  admin_project,
+  openstack_domain_name:   admin_domain,
+  openstack_endpoint_type: endpoint_type,
 }
 
 # Register Image Service

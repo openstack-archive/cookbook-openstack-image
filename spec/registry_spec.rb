@@ -34,14 +34,6 @@ describe 'openstack-image::registry' do
       end
     end
 
-    it do
-      expect(chef_run).to create_directory('/var/cache/glance/registry').with(
-        user: 'glance',
-        group: 'glance',
-        mode: 0o0700
-      )
-    end
-
     it 'deletes glance.sqlite' do
       expect(chef_run).to delete_file('/var/lib/glance/glance.sqlite')
     end
@@ -92,7 +84,6 @@ describe 'openstack-image::registry' do
             /^region_name = RegionOne$/,
             /^username = glance$/,
             /^project_name = service/,
-            %r{^signing_dir = /var/cache/glance/registry},
             %r{^auth_url = http://127.0.0.1:5000/v3},
             /^user_domain_name = Default$/,
             /^password = glance-pass$/,

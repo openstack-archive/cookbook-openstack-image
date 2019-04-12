@@ -18,6 +18,5 @@ default['openstack']['image_api']['conf'].tap do |conf|
   conf['keystone_authtoken']['username'] = 'glance'
   conf['keystone_authtoken']['project_name'] = 'admin'
   conf['keystone_authtoken']['user_domain_name'] = 'Default'
-  conf['keystone_authtoken']['signing_dir'] = '/var/cache/glance/api'
   conf['keystone_authtoken']['project_domain_name'] = 'Default'
 end
