@@ -38,16 +38,6 @@ describe 'openstack-image::api' do
         )
     end
 
-    it do
-      expect(chef_run).to create_directory('/var/cache/glance/api')
-        .with(
-          user: 'glance',
-          group: 'glance',
-          mode: 0o0700,
-          recursive: true
-        )
-    end
-
     describe 'glance-api.conf' do
       let(:file) { chef_run.template('/etc/glance/glance-api.conf') }
       it do
@@ -101,7 +91,6 @@ describe 'openstack-image::api' do
           /^region_name = RegionOne$/,
           /^username = glance$/,
           /^project_name = admin$/,
-          %r{^signing_dir = /var/cache/glance/api$},
           %r{^auth_url = http://127.0.0.1:5000/v3$},
           /^password = glance-pass$/,
           /^user_domain_name = Default$/,

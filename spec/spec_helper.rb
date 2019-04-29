@@ -190,11 +190,6 @@ shared_examples 'keystone attribute setter' do |version|
   it 'sets the admin password attribute' do
     expect(chef_run).to render_file(file.name).with_content(/^admin_password = admin_password_value$/)
   end
-
-  it 'sets the signing dir attribute' do
-    node.override['openstack']["image-#{version}"]['conf']['keystone_authtoken']['signing_dir'] = 'cache_dir_value'
-    expect(chef_run).to render_file(file.name).with_content(/^signing_dir = cache_dir_value$/)
-  end
 end
 
 shared_examples 'messaging' do |version|

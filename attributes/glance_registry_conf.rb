@@ -15,6 +15,5 @@ default['openstack']['image_registry']['conf'].tap do |conf|
   conf['keystone_authtoken']['username'] = 'glance'
   conf['keystone_authtoken']['project_name'] = 'service'
   conf['keystone_authtoken']['user_domain_name'] = 'Default'
-  conf['keystone_authtoken']['signing_dir'] = '/var/cache/glance/registry' # none in docs
   conf['keystone_authtoken']['project_domain_name'] = 'Default'
 end
