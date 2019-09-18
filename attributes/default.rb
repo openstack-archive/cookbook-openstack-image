@@ -118,8 +118,8 @@ when 'debian'
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'image_packages' => ['glance'],
-    'swift_packages' => ['python-swift'],
+    'image_packages' => ['python3-glance', 'glance'],
+    'swift_packages' => ['python3-swift'],
     'image_api_service' => 'glance-api',
     'package_overrides' => '',
   }

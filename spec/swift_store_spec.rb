@@ -10,7 +10,7 @@ describe 'openstack-image::swift_store' do
     end
     include_context 'image-stubs'
     it do
-      expect(chef_run).to upgrade_package('python-swift')
+      expect(chef_run).to upgrade_package('python3-swift')
     end
   end
 end
