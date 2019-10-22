@@ -74,7 +74,6 @@ if node['openstack']['mq']['service_type'] == 'rabbit'
   node.default['openstack']['image_api']['conf_secrets']['DEFAULT']['transport_url'] = rabbit_transport_url 'image'
 end
 
-registry_endpoint = internal_endpoint 'image_registry'
 api_bind = node['openstack']['bind_service']['all']['image_api']
 api_bind_address = bind_address api_bind
 
@@ -82,23 +81,8 @@ node.default['openstack']['image_api']['conf'].tap do |conf|
   # [DEFAULT] section
   conf['DEFAULT']['bind_host']  = api_bind_address
   conf['DEFAULT']['bind_port']  = api_bind['port']
-  conf['DEFAULT']['registry_host']  = registry_endpoint.host
-  conf['DEFAULT']['registry_port']  = registry_endpoint.port
-  conf['DEFAULT']['registry_client_protocol'] = registry_endpoint.scheme
   # [keystone_authtoken] section
   conf['keystone_authtoken']['auth_url'] = auth_url
-end
-
-node.default['openstack']['image_cache']['conf'].tap do |conf|
-  # [DEFAULT] section
-  conf['DEFAULT']['registry_host']  = registry_endpoint.host
-  conf['DEFAULT']['registry_port']  = registry_endpoint.port
-end
-
-node.default['openstack']['image_scrubber']['conf'].tap do |conf|
-  # [DEFAULT] section
-  conf['DEFAULT']['registry_host']  = registry_endpoint.host
-  conf['DEFAULT']['registry_port']  = registry_endpoint.port
 end
 
 # merge all config options and secrets

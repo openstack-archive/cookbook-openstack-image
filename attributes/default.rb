@@ -28,12 +28,10 @@ default['openstack']['image']['custom_template_banner'] = '
 '
 
 # SSL Options
-# Enable SSL for glance api and registry bind endpoints.
+# Enable SSL for glance api bind endpoints.
 default['openstack']['image']['ssl']['enabled'] = false
 # Enable SSL for glance api bind endpoint.
 default['openstack']['image']['ssl']['api']['enabled'] = node['openstack']['image']['ssl']['enabled']
-# Enable SSL for glance registry bind endpoint.
-default['openstack']['image']['ssl']['registry']['enabled'] = node['openstack']['image']['ssl']['enabled']
 # Base directory for SSL certficate and key
 default['openstack']['image']['ssl']['basedir'] = '/etc/glance/ssl'
 
@@ -68,6 +66,10 @@ default['openstack']['image']['cache']['dir'] = '/var/lib/glance/image-cache/'
 # Number of seconds to leave invalid images around before they are eligible to be reaped
 default['openstack']['image']['cache']['grace_period'] = 3600
 
+# Default configuration for image cache and scrubber
+default['openstack']['image_cache']['conf'] = {}
+default['openstack']['image_scrubber']['conf'] = {}
+
 # Default Image Locations
 default['openstack']['image']['upload_images'] = ['cirros']
 default['openstack']['image']['upload_image']['artful'] = 'http://cloud-images.ubuntu.com/artful/current/artful-server-cloudimg-amd64-disk1.img'
@@ -99,7 +101,6 @@ when 'rhel' # :pragma-foodcritic: ~FC024 - won't fix this
     'image_packages' => %w(openstack-glance cronie),
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
-    'image_registry_service' => 'openstack-glance-registry',
     'image_api_process_name' => 'glance-api',
     'package_overrides' => '',
   }
@@ -110,7 +111,6 @@ when 'suse'
     'image_packages' => ['openstack-glance'],
     'swift_packages' => ['openstack-swift'],
     'image_api_service' => 'openstack-glance-api',
-    'image_registry_service' => 'openstack-glance-registry',
     'image_api_process_name' => 'glance-api',
     'package_overrides' => '',
   }
@@ -121,8 +121,6 @@ when 'debian'
     'image_packages' => ['glance'],
     'swift_packages' => ['python-swift'],
     'image_api_service' => 'glance-api',
-    'image_registry_service' => 'glance-registry',
-    'image_registry_process_name' => 'glance-registry',
     'package_overrides' => '',
   }
 end
@@ -130,17 +128,13 @@ end
 # ******************** OpenStack Image Endpoints ******************************
 
 # The OpenStack Image (Glance) endpoints
-%w(public internal admin).each do |ep_type|
-  %w(image_api image_registry).each do |service|
+%w(public internal).each do |ep_type|
+  %w(image_api).each do |service|
     default['openstack']['endpoints'][ep_type][service]['scheme'] = 'http'
     default['openstack']['endpoints'][ep_type][service]['host'] = '127.0.0.1'
     default['openstack']['endpoints'][ep_type]['image_api']['path'] = ''
     default['openstack']['endpoints'][ep_type]['image_api']['port'] = 9292
-    default['openstack']['endpoints'][ep_type]['image_registry']['path'] = '/v3'
-    default['openstack']['endpoints'][ep_type]['image_registry']['port'] = 9191
   end
 end
-default['openstack']['bind_service']['all']['image_registry']['host'] = '127.0.0.1'
-default['openstack']['bind_service']['all']['image_registry']['port'] = 9191
 default['openstack']['bind_service']['all']['image_api']['host'] = '127.0.0.1'
 default['openstack']['bind_service']['all']['image_api']['port'] = 9292

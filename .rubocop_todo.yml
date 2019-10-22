@@ -17,7 +17,6 @@ Style/IfUnlessModifier:
   Exclude:
     - 'recipes/api.rb'
     - 'recipes/image_upload.rb'
-    - 'recipes/registry.rb'
 
 # Offense count: 97
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

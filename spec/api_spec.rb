@@ -57,9 +57,6 @@ describe 'openstack-image::api' do
           %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
           /^bind_host = 127.0.0.1$/,
           /^bind_port = 9292$/,
-          /^registry_host = 127.0.0.1$/,
-          /^registry_port = 9191$/,
-          /^registry_client_protocol = http$/,
         ].each do |line|
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('DEFAULT', line)
@@ -123,18 +120,6 @@ describe 'openstack-image::api' do
             mode: 0o0640
           )
       end
-
-      context 'template contents' do
-        it do
-          [
-            /^registry_port = 9191$/,
-            /^registry_host = 127.0.0.1$/,
-          ].each do |line|
-            expect(chef_run).to render_config_file(file.name)
-              .with_section_content('DEFAULT', line)
-          end
-        end
-      end
     end
 
     describe 'glance-scrubber.conf' do
@@ -149,18 +134,6 @@ describe 'openstack-image::api' do
             group: 'glance',
             mode: 0o0640
           )
-      end
-
-      context 'template contents' do
-        it do
-          [
-            /^registry_port = 9191$/,
-            /^registry_host = 127.0.0.1$/,
-          ].each do |line|
-            expect(chef_run).to render_config_file(file.name)
-              .with_section_content('DEFAULT', line)
-          end
-        end
       end
     end
 

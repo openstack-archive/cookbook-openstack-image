@@ -49,8 +49,8 @@ descriptions of all the settable attributes for this cookbook.
 
 Note that all attributes are in the `default['openstack']` "namespace"
 
-The usage of attributes to generate the glance-api.conf glance-registry.conf is
-decribed in the openstack-common cookbook.
+The usage of attributes to generate the glance-api.conf is described in the
+openstack-common cookbook.
 
 Recipes
 =======
@@ -64,14 +64,11 @@ Recipes
 ## openstack-image::identityr_registration
 - Registers the API endpoint and glance service Keystone user
 
-## openstack-image::registry
-- Installs the glance-registry server
-
 ## openstack-image::image-upload
 - Upload image to glance. If you want to upload image during openstack
   installation, you need to add this recipe or the os-image role to the run list
   in a certain role and ensure before this recipe or the os-image role glance api
-  and glance registry recipes have been executed.
+  recipes have been executed.
 
 Glance Backend
 ==============
