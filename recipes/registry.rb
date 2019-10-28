@@ -48,9 +48,6 @@ node.default['openstack']['image_registry']['conf_secrets']
 identity_endpoint = internal_endpoint 'identity'
 auth_url = ::URI.decode identity_endpoint.to_s
 
-glance_user = node['openstack']['image']['user']
-glance_group = node['openstack']['image']['group']
-
 db_type = node['openstack']['db']['image']['service_type']
 node['openstack']['db']['python_packages'][db_type].each do |pkg|
   package pkg do
@@ -99,12 +96,6 @@ ruby_block "delete all attributes in node['openstack']['image_registry']['conf_s
   block do
     node.rm(:openstack, :image_registry, :conf_secrets)
   end
-end
-
-execute 'glance-manage db_sync' do
-  user glance_user
-  group glance_group
-  only_if { node['openstack']['db']['image']['migrate'] }
 end
 
 service 'glance-registry' do

@@ -149,6 +149,12 @@ end
   end
 end
 
+execute 'glance-manage db_sync' do
+  user node['openstack']['image']['user']
+  group node['openstack']['image']['group']
+  only_if { node['openstack']['db']['image']['migrate'] }
+end
+
 # Configure glance-cache-pruner to run every 30 minutes
 cron 'glance-cache-pruner' do
   minute '*/30'

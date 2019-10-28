@@ -110,19 +110,6 @@ describe 'openstack-image::registry' do
       )
     end
 
-    describe 'db_sync' do
-      let(:cmd) { 'glance-manage db_sync' }
-
-      it 'runs migrations' do
-        expect(chef_run).to run_execute(cmd).with(user: 'glance', group: 'glance')
-      end
-
-      it 'does not run migrations when openstack/image/db/migrate is false' do
-        node.override['openstack']['db']['image']['migrate'] = false
-        expect(chef_run).not_to run_execute(cmd)
-      end
-    end
-
     it do
       expect(chef_run).to enable_service('glance-registry')
     end
