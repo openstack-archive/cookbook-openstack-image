@@ -1,13 +1,14 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-image
+# Cookbook:: openstack-image
 # Recipe:: api
 #
-# Copyright 2012, Rackspace US, Inc.
-# Copyright 2012-2013, Opscode, Inc.
-# Copyright 2012-2013, AT&T Services, Inc.
-# Copyright 2013, Craig Tracey <craigtracey@gmail.com>
-# Copyright 2013, IBM Corp.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2012-2013, Opscode, Inc.
+# Copyright:: 2012-2013, AT&T Services, Inc.
+# Copyright:: 2013, Craig Tracey <craigtracey@gmail.com>
+# Copyright:: 2013, IBM Corp.
+# Copyright:: 2019-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,7 +44,7 @@ end
 directory '/etc/glance' do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 0o0700
+  mode '700'
 end
 
 if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'file'
@@ -52,7 +53,7 @@ if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'f
   directory node['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] do
     owner node['openstack']['image']['user']
     group node['openstack']['image']['group']
-    mode 0o0750
+    mode '750'
     recursive true
   end
 end
@@ -95,7 +96,8 @@ template '/etc/glance/glance-api.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 0o0640
+  mode '640'
+  sensitive true
   variables(
     service_config: glance_api_conf
   )
@@ -106,7 +108,7 @@ template '/etc/glance/glance-cache.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 0o0640
+  mode '640'
   variables(
     service_config: glance_cache_conf
   )
@@ -117,7 +119,7 @@ template '/etc/glance/glance-scrubber.conf' do
   cookbook 'openstack-common'
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
-  mode 0o0640
+  mode '640'
   variables(
     service_config: glance_scrubber_conf
   )
@@ -157,7 +159,7 @@ directory node['openstack']['image']['cache']['dir'] do
   owner node['openstack']['image']['user']
   group node['openstack']['image']['group']
   recursive true
-  mode 0o0755
+  mode '755'
 end
 
 service 'glance-api' do

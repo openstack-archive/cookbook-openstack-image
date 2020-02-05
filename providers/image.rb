@@ -1,10 +1,11 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-image
+# Cookbook:: openstack-image
 # Provider:: image
 #
-# Copyright 2012, Rackspace US, Inc.
-# Copyright 2013, Opscode, Inc.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2013, Opscode, Inc.
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,9 +48,9 @@ def _determine_type(url)
   # Lets do our best to determine the type from the file extension
   case ::File.extname(url)
   when '.gz', '.tgz'
-    return 'ami'
+    'ami'
   when '.qcow2', '.img'
-    return 'qcow'
+    'qcow'
   else
     raise ArgumentError, "File extension not supported for #{url}, supported extensions are: .gz, .tgz for ami and .qcow2 and .img for qcow"
   end
@@ -73,7 +74,7 @@ def _upload_image_bare(name, api, url, public, type, id)
 
   execute "Uploading #{type} image #{name}" do # :pragma-foodcritic: ~FC041
     cwd '/tmp'
-
+    sensitive true
     command "curl -L #{url} | #{glance_cmd} image-create --name #{name} #{"--id #{id}" unless id == ''} --visibility #{public} #{c_fmt} #{d_fmt}"
     not_if "#{glance_cmd} image-list | grep #{name}"
   end
@@ -89,6 +90,7 @@ def _upload_ami(name, api, url, public, id)
   bash "Uploading AMI image #{name}" do
     cwd '/tmp'
     user 'root'
+    sensitive true
     code <<-EOH
         set -x
         mkdir -p images/#{name}

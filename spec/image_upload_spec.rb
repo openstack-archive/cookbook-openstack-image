@@ -82,7 +82,7 @@ describe 'openstack-image::image_upload' do
 
     context 'uploads the raw and vdi images' do
       cached(:chef_run) do
-        node.override['openstack']['image']['upload_images'] = ['raw_imageName', 'vdi_imageName']
+        node.override['openstack']['image']['upload_images'] = %w(raw_imageName vdi_imageName)
         node.override['openstack']['image']['upload_image']['raw_imageName'] = 'image_file.raw'
         node.override['openstack']['image']['upload_image_type']['raw_imageName'] = 'raw'
         node.override['openstack']['image']['upload_image']['vdi_imageName'] = 'image_file.vdi'

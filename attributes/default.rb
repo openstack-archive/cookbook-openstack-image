@@ -1,11 +1,11 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-image
+# Cookbook:: openstack-image
 # Attributes:: default
 #
-# Copyright 2012, Rackspace US, Inc.
-# Copyright 2013, Craig Tracey <craigtracey@gmail.com>
-# Copyright 2013, Opscode, Inc.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2013, Craig Tracey <craigtracey@gmail.com>
+# Copyright:: 2019-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ when 'debian'
   default['openstack']['image']['user'] = 'glance'
   default['openstack']['image']['group'] = 'glance'
   default['openstack']['image']['platform'] = {
-    'image_packages' => ['python3-glance', 'glance'],
+    'image_packages' => %w(python3-glance glance),
     'swift_packages' => ['python3-swift'],
     'image_api_service' => 'glance-api',
     'package_overrides' => '',

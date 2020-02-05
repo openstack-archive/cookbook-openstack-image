@@ -1,6 +1,6 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-image
+# Cookbook:: openstack-image
 # Recipe:: swift_store
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

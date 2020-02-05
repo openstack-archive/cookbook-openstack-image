@@ -20,9 +20,9 @@ https://docs.openstack.org/glance/latest
 Requirements
 ============
 
-- Chef 14 or higher
-- ChefDK 3.2.30 for testing (also includes Berkshelf for cookbook
-  dependency resolution)
+- Chef 15 or higher
+- Chef Workstation 0.15.18 for testing (also includes Berkshelf for
+  cookbook dependency resolution)
 
 Platform
 ========
@@ -37,8 +37,8 @@ Cookbooks
 The following cookbooks are dependencies:
 
 - 'openstackclient'
-- 'openstack-common', '>= 18.0.0'
-- 'openstack-identity', '>= 18.0.0'
+- 'openstack-common', '>= 19.0.0'
+- 'openstack-identity', '>= 19.0.0'
 
 Attributes
 ==========
@@ -144,9 +144,6 @@ Action: ``:upload``
 - ``:identity_project_domain_name``: Project domain name for Keystone
   admin user.
 
-For testing this provider with ChefSpec, a custom matcher was added to
-``libraries/matchers.rb``.
-
 License and Author
 ==================
 
@@ -209,7 +206,7 @@ License and Author
 +-----------------+----------------------------------------------------------+
 | **Copyright**   | Copyright (c) 2014, SUSE Linux, GmbH.                    |
 +-----------------+----------------------------------------------------------+
-| **Copyright**   | Copyright (c) 2019, Oregon State University              |
+| **Copyright**   | Copyright (c) 2019-2020, Oregon State University         |
 +-----------------+----------------------------------------------------------+
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may

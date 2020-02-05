@@ -1,9 +1,10 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-image
+# Cookbook:: openstack-image
 # Resource:: image
 #
-# Copyright 2012, Rackspace US, Inc.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

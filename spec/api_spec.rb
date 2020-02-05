@@ -24,7 +24,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 0o0700
+          mode: '700'
         )
     end
 
@@ -33,7 +33,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 0o0750,
+          mode: '750',
           recursive: true
         )
     end
@@ -47,60 +47,61 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 0o0640
+            mode: '640'
           )
       end
 
-      it do
-        [
-          %r{^log_file = /var/log/glance/api.log$},
-          %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
-          /^bind_host = 127.0.0.1$/,
-          /^bind_port = 9292$/,
-        ].each do |line|
+      [
+        %r{^log_file = /var/log/glance/api.log$},
+        %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
+        /^bind_host = 127.0.0.1$/,
+        /^bind_port = 9292$/,
+      ].each do |line|
+        it do
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('DEFAULT', line)
         end
       end
 
-      it do
-        [
-          %r{^filesystem_store_datadir = /var/lib/glance/images$},
-          /^default_store = file$/,
-        ].each do |line|
+      [
+        %r{^filesystem_store_datadir = /var/lib/glance/images$},
+        /^stores = file,http$/,
+        /^default_store = file$/,
+      ].each do |line|
+        it do
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('glance_store', line)
         end
       end
 
-      it do
-        [
-          /^flavor = keystone$/,
-        ].each do |line|
+      [
+        /^flavor = keystone$/,
+      ].each do |line|
+        it do
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('paste_deploy', line)
         end
       end
 
-      it do
-        [
-          /^auth_type = v3password$/,
-          /^region_name = RegionOne$/,
-          /^username = glance$/,
-          /^project_name = admin$/,
-          %r{^auth_url = http://127.0.0.1:5000/v3$},
-          /^password = glance-pass$/,
-          /^user_domain_name = Default$/,
-        ].each do |line|
+      [
+        /^auth_type = password$/,
+        /^region_name = RegionOne$/,
+        /^username = glance$/,
+        /^project_name = admin$/,
+        %r{^auth_url = http://127.0.0.1:5000/v3$},
+        /^password = glance-pass$/,
+        /^user_domain_name = Default$/,
+      ].each do |line|
+        it do
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('keystone_authtoken', line)
         end
       end
 
-      it do
-        [
-          %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$},
-        ].each do |line|
+      [
+        %r{^connection = mysql\+pymysql://glance:db-pass@127\.0\.0\.1:3306/glance\?charset=utf8$},
+      ].each do |line|
+        it do
           expect(chef_run).to render_config_file(file.name)
             .with_section_content('database', line)
         end
@@ -117,7 +118,7 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 0o0640
+            mode: '640'
           )
       end
     end
@@ -132,7 +133,7 @@ describe 'openstack-image::api' do
             cookbook: 'openstack-common',
             user: 'glance',
             group: 'glance',
-            mode: 0o0640
+            mode: '640'
           )
       end
     end
@@ -159,7 +160,7 @@ describe 'openstack-image::api' do
         .with(
           user: 'glance',
           group: 'glance',
-          mode: 0o0755,
+          mode: '755',
           recursive: true
         )
     end
