@@ -40,7 +40,7 @@ node.default['openstack']['image_api']['conf_secrets']
 swift_store_auth_version = 2
 
 node.default['openstack']['image_api']['conf']['glance_store'].tap do |store|
-  store['default_store'] = 'swift'
+  store['default_backend'] = 'swift'
   store['swift_store_auth_version'] = swift_store_auth_version
   store['swift_store_auth_address'] = swift_store_auth_address
   store['swift_store_user'] = "#{swift_user_tenant}:#{swift_store_user}"

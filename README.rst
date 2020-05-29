@@ -21,7 +21,7 @@ Requirements
 ============
 
 - Chef 15 or higher
-- Chef Workstation 0.15.18 for testing (also includes Berkshelf for
+- Chef Workstation 0.18.3 for testing (also includes Berkshelf for
   cookbook dependency resolution)
 
 Platform
@@ -37,8 +37,8 @@ Cookbooks
 The following cookbooks are dependencies:
 
 - 'openstackclient'
-- 'openstack-common', '>= 19.0.0'
-- 'openstack-identity', '>= 19.0.0'
+- 'openstack-common', '>= 20.0.0'
+- 'openstack-identity', '>= 20.0.0'
 
 Attributes
 ==========

@@ -56,6 +56,7 @@ describe 'openstack-image::api' do
         %r{^transport_url = rabbit://guest:mypass@127.0.0.1:5672$},
         /^bind_host = 127.0.0.1$/,
         /^bind_port = 9292$/,
+        /^enabled_backends = file:file,http:http$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)
@@ -65,8 +66,7 @@ describe 'openstack-image::api' do
 
       [
         %r{^filesystem_store_datadir = /var/lib/glance/images$},
-        /^stores = file,http$/,
-        /^default_store = file$/,
+        /^default_backend = file$/,
       ].each do |line|
         it do
           expect(chef_run).to render_config_file(file.name)

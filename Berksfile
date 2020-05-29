@@ -10,7 +10,7 @@ solver :ruby, :required
   %w(-integration-test integration),
   %w(-network integration),
   %w(-ops-database integration),
-  %w(-ops-messaging integration)
+  %w(-ops-messaging integration),
 ].each do |cookbook, group|
   if Dir.exist?("../cookbook-openstack#{cookbook}")
     cookbook "openstack#{cookbook}", path: "../cookbook-openstack#{cookbook}", group: group

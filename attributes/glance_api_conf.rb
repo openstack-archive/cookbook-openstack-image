@@ -5,10 +5,10 @@ default['openstack']['image_api']['conf'].tap do |conf|
   else
     conf['DEFAULT']['log_file'] = '/var/log/glance/api.log'
   end
+  conf['DEFAULT']['enabled_backends'] = 'file:file,http:http'
 
   # [glance_store] section
-  conf['glance_store']['stores'] = 'file,http'
-  conf['glance_store']['default_store'] = 'file'
+  conf['glance_store']['default_backend'] = 'file'
 
   # [paste_deploy] section
   conf['paste_deploy']['flavor'] = 'keystone'

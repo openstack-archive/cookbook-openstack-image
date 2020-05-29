@@ -47,7 +47,7 @@ directory '/etc/glance' do
   mode '700'
 end
 
-if node['openstack']['image_api']['conf']['glance_store']['default_store'] == 'file'
+if node['openstack']['image_api']['conf']['glance_store']['default_backend'] == 'file'
   node.default['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] =
     '/var/lib/glance/images'
   directory node['openstack']['image_api']['conf']['glance_store']['filesystem_store_datadir'] do
