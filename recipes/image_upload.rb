@@ -33,7 +33,7 @@ package 'curl' do
 end
 
 identity_endpoint = public_endpoint 'identity'
-auth_url = ::URI.decode identity_endpoint.to_s
+auth_url = identity_endpoint.to_s
 
 # admin_user = node['openstack']['image_api']['conf']['keystone_authtoken']['username']
 # admin_pass = get_password admin_user, admin_pass
