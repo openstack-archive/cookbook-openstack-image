@@ -20,7 +20,6 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-require 'uri'
 
 class ::Chef::Recipe
   include ::Openstack
@@ -63,7 +62,7 @@ node.default['openstack']['image_api']['conf_secrets']
   get_password 'service', 'openstack-image'
 
 identity_endpoint = internal_endpoint 'identity'
-auth_url = ::URI.decode identity_endpoint.to_s
+auth_url = identity_endpoint.to_s
 
 db_user = node['openstack']['db']['image']['username']
 db_pass = get_password 'db', 'glance'

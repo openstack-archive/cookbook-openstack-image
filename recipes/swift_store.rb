@@ -29,7 +29,7 @@ platform_options['swift_packages'].each do |pkg|
 end
 
 identity_endpoint = public_endpoint 'identity'
-swift_store_auth_address = ::URI.decode identity_endpoint.to_s
+swift_store_auth_address = identity_endpoint.to_s
 tenant = node['openstack']['image_api']['conf']['keystone_authtoken']['project']
 user = node['openstack']['image_api']['conf']['keystone_authtoken']['user']
 swift_store_user =  "#{tenant}_#{user}"
