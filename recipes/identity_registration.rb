@@ -2,10 +2,10 @@
 # Cookbook:: openstack-image
 # Recipe:: identity_registration
 #
-# Copyright:: 2013, AT&T Services, Inc.
-# Copyright:: 2013, Craig Tracey <craigtracey@gmail.com>
-# Copyright:: 2013, Opscode, Inc.
-# Copyright:: 2019-2020, Oregon State University
+# Copyright:: 2013-2021, AT&T Services, Inc.
+# Copyright:: 2013-2021, Craig Tracey <craigtracey@gmail.com>
+# Copyright:: 2013-2021, Chef Software, Inc.
+# Copyright:: 2019-2021, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
